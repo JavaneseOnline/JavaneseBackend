@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module external.linked.project.id="javanese" external.linked.project.path="$MODULE_DIR$/../.." external.root.project.path="$MODULE_DIR$/../.." external.system.id="GRADLE" external.system.module.group="online.javanese" external.system.module.version="1.0-SNAPSHOT" type="JAVA_MODULE" version="4">
+  <component name="FacetManager">
+    <facet type="kotlin-language" name="Kotlin">
+      <configuration version="3" platform="JVM 1.8" useProjectSettings="false">
+        <compilerSettings />
+        <compilerArguments>
+          <option name="destination" value="$MODULE_DIR$/../../build/classes/kotlin/main" />
+          <option name="noStdlib" value="true" />
+          <option name="noReflect" value="true" />
+          <option name="moduleName" value="javanese_main" />
+          <option name="jvmTarget" value="1.8" />
+          <option name="addCompilerBuiltIns" value="true" />
+          <option name="loadBuiltInsFromDependencies" value="true" />
+          <option name="languageVersion" value="1.2" />
+          <option name="apiVersion" value="1.2" />
+          <option name="pluginOptions">
+            <array />
+          </option>
+          <option name="pluginClasspaths">
+            <array />
+          </option>
+          <option name="coroutinesState" value="enable" />
+        </compilerArguments>
+      </configuration>
+    </facet>
+  </component>
+  <component name="NewModuleRootManager">
+    <output url="file://$MODULE_DIR$/../../out/production/classes" />
+    <output-test url="file://$MODULE_DIR$/../../out/test/classes" />
+    <exclude-output />
+    <content url="file://$MODULE_DIR$/../..">
+      <sourceFolder url="file://$MODULE_DIR$/../../src/main/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/../../src/main/kotlin" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/../../src/test/java" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/../../src/test/kotlin" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/../../src/main/resources" type="java-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/../../src/test/resources" type="java-test-resource" />
+      <excludeFolder url="file://$MODULE_DIR$/../../.gradle" />
+      <excludeFolder url="file://$MODULE_DIR$/../../build" />
+      <excludeFolder url="file://$MODULE_DIR$/../../out" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: org.jetbrains.ktor:ktor-netty:0.4.0-alpha-15" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: org.jetbrains.ktor:ktor-hosts-common:0.4.0-alpha-15" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: org.jetbrains.ktor:ktor-core:0.4.0-alpha-15" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib-jre8:1.2-M2" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: ch.qos.logback:logback-classic:1.2.1" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: org.jetbrains.kotlin:kotlin-reflect:1.1.4" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:0.17" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: org.jetbrains.kotlinx:kotlinx-coroutines-core:0.17" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib-jre7:1.2-M2" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib:1.2-M2" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: org.slf4j:slf4j-api:1.7.25" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: com.typesafe:config:1.3.1" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: io.netty:netty-codec-http2:4.1.12.Final" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: org.eclipse.jetty.alpn:alpn-api:1.1.3.v20160715" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: ch.qos.logback:logback-core:1.2.1" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: io.netty:netty-codec-http:4.1.12.Final" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: io.netty:netty-handler:4.1.12.Final" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: io.netty:netty-codec:4.1.12.Final" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: io.netty:netty-transport:4.1.12.Final" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: io.netty:netty-buffer:4.1.12.Final" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: io.netty:netty-resolver:4.1.12.Final" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: io.netty:netty-common:4.1.12.Final" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: org.jetbrains:annotations:13.0" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Gradle: org.jetbrains.ktor:ktor-netty:0.4.0-alpha-15" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Gradle: org.jetbrains.ktor:ktor-hosts-common:0.4.0-alpha-15" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Gradle: org.jetbrains.ktor:ktor-core:0.4.0-alpha-15" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib-jre8:1.2-M2" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Gradle: ch.qos.logback:logback-classic:1.2.1" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Gradle: org.jetbrains.kotlin:kotlin-reflect:1.1.4" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Gradle: org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:0.17" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Gradle: org.jetbrains.kotlinx:kotlinx-coroutines-core:0.17" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib-jre7:1.2-M2" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib:1.2-M2" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Gradle: org.slf4j:slf4j-api:1.7.25" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Gradle: com.typesafe:config:1.3.1" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Gradle: io.netty:netty-codec-http2:4.1.12.Final" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Gradle: org.eclipse.jetty.alpn:alpn-api:1.1.3.v20160715" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Gradle: ch.qos.logback:logback-core:1.2.1" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Gradle: io.netty:netty-codec-http:4.1.12.Final" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Gradle: io.netty:netty-handler:4.1.12.Final" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Gradle: io.netty:netty-codec:4.1.12.Final" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Gradle: io.netty:netty-transport:4.1.12.Final" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Gradle: io.netty:netty-buffer:4.1.12.Final" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Gradle: io.netty:netty-resolver:4.1.12.Final" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Gradle: io.netty:netty-common:4.1.12.Final" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Gradle: org.jetbrains:annotations:13.0" level="project" />
+    <orderEntry type="library" scope="TEST" name="Gradle: org.jetbrains.ktor:ktor-netty:0.4.0-alpha-15" level="project" />
+    <orderEntry type="library" scope="TEST" name="Gradle: org.jetbrains.ktor:ktor-hosts-common:0.4.0-alpha-15" level="project" />
+    <orderEntry type="library" scope="TEST" name="Gradle: org.jetbrains.ktor:ktor-core:0.4.0-alpha-15" level="project" />
+    <orderEntry type="library" scope="TEST" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib-jre8:1.2-M2" level="project" />
+    <orderEntry type="library" scope="TEST" name="Gradle: ch.qos.logback:logback-classic:1.2.1" level="project" />
+    <orderEntry type="library" scope="TEST" name="Gradle: junit:junit:4.12" level="project" />
+    <orderEntry type="library" scope="TEST" name="Gradle: org.jetbrains.kotlin:kotlin-reflect:1.1.4" level="project" />
+    <orderEntry type="library" scope="TEST" name="Gradle: org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:0.17" level="project" />
+    <orderEntry type="library" scope="TEST" name="Gradle: org.jetbrains.kotlinx:kotlinx-coroutines-core:0.17" level="project" />
+    <orderEntry type="library" scope="TEST" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib-jre7:1.2-M2" level="project" />
+    <orderEntry type="library" scope="TEST" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib:1.2-M2" level="project" />
+    <orderEntry type="library" scope="TEST" name="Gradle: org.slf4j:slf4j-api:1.7.25" level="project" />
+    <orderEntry type="library" scope="TEST" name="Gradle: com.typesafe:config:1.3.1" level="project" />
+    <orderEntry type="library" scope="TEST" name="Gradle: io.netty:netty-codec-http2:4.1.12.Final" level="project" />
+    <orderEntry type="library" scope="TEST" name="Gradle: org.eclipse.jetty.alpn:alpn-api:1.1.3.v20160715" level="project" />
+    <orderEntry type="library" scope="TEST" name="Gradle: ch.qos.logback:logback-core:1.2.1" level="project" />
+    <orderEntry type="library" scope="TEST" name="Gradle: org.hamcrest:hamcrest-core:1.3" level="project" />
+    <orderEntry type="library" scope="TEST" name="Gradle: io.netty:netty-codec-http:4.1.12.Final" level="project" />
+    <orderEntry type="library" scope="TEST" name="Gradle: io.netty:netty-handler:4.1.12.Final" level="project" />
+    <orderEntry type="library" scope="TEST" name="Gradle: io.netty:netty-codec:4.1.12.Final" level="project" />
+    <orderEntry type="library" scope="TEST" name="Gradle: io.netty:netty-transport:4.1.12.Final" level="project" />
+    <orderEntry type="library" scope="TEST" name="Gradle: io.netty:netty-buffer:4.1.12.Final" level="project" />
+    <orderEntry type="library" scope="TEST" name="Gradle: io.netty:netty-resolver:4.1.12.Final" level="project" />
+    <orderEntry type="library" scope="TEST" name="Gradle: io.netty:netty-common:4.1.12.Final" level="project" />
+    <orderEntry type="library" scope="TEST" name="Gradle: org.jetbrains:annotations:13.0" level="project" />
+  </component>
+</module>
