@@ -8,6 +8,9 @@ import online.javanese.model.PageDao
 import online.javanese.route.createTopLevelRouteHandler
 import online.javanese.template.IndexPageBinding
 import org.jetbrains.ktor.application.install
+import org.jetbrains.ktor.content.files
+import org.jetbrains.ktor.content.static
+import org.jetbrains.ktor.content.staticRootFolder
 import org.jetbrains.ktor.features.StatusPages
 import org.jetbrains.ktor.host.embeddedServer
 import org.jetbrains.ktor.http.ContentType
@@ -17,6 +20,7 @@ import org.jetbrains.ktor.response.respondText
 import org.jetbrains.ktor.routing.get
 import org.jetbrains.ktor.routing.routing
 import org.thymeleaf.templatemode.TemplateMode
+import java.io.File
 import java.io.FileInputStream
 import java.sql.DriverManager
 import java.util.*
@@ -29,7 +33,7 @@ object JavaneseServer {
         org.postgresql.Driver::class.java
         val localProps = Properties().apply {
             load(FileInputStream("local.properties"))
-            /* Must contain 'database', 'user', 'password', 'static' */
+            /* Must contain 'database', 'user', 'password', 'localStaticDir', optional 'exposedStaticDir' */
         }
         val database = localProps["database"]
         val connection = DriverManager.getConnection("jdbc:postgresql:$database", localProps)
@@ -50,8 +54,9 @@ object JavaneseServer {
                 dialects = LayoutDialect()
         )
 
-        val staticResDir = localProps["static"] as String
-        val indexPageBinding = IndexPageBinding(staticResDir, templateEngine, Locale.getDefault())
+        val localStaticDir = localProps["localStaticDir"] as String?
+        val exposedStaticDir = localProps["exposedStaticDir"] as String
+        val indexPageBinding = IndexPageBinding(exposedStaticDir, templateEngine, Locale.getDefault())
 
         embeddedServer(Netty, 8080) {
             routing {
@@ -66,6 +71,14 @@ object JavaneseServer {
                 install(StatusPages) {
                     exception<NotFoundException> {
                         call.respondText(it.message, ContentType.Text.Plain, HttpStatusCode.NotFound) // todo: error pages
+                    }
+                }
+
+                if (localStaticDir != null) {
+                    static(exposedStaticDir) {
+                        val localStaticDirFile = File(localStaticDir)
+                        staticRootFolder = localStaticDirFile.parentFile
+                        files(localStaticDirFile.name)
                     }
                 }
             }
