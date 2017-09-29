@@ -1,0 +1,117 @@
+/*.float-left {
+  float: left;
+}*/
+pre {
+  white-space: pre-wrap;
+}
+
+@media screen and (max-width:479px) {
+  /** phone */
+  .no-pad.mdl-tabs > .mdl-tabs__panel,
+  .content > :not(.no-pad):not(pre):not(.trace):not(article),
+  .content > article > :not(.no-pad):not(pre):not(.trace) {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+  .content > :first-child:not(.no-pad):not(.no-pad-top) {
+    padding-top: 10px;
+  }
+  .content > :last-child:not(.no-pad) {
+    padding-bottom: 10px;
+  }
+  .content-padding-v {
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
+  .content > pre > samp,
+  .content > article > pre > samp,
+  .hljs {
+    padding: 10px;
+  }
+  /*.content-padding {
+    padding: 10px;
+  }*/
+  .content-padding-t {
+    padding-top: 10px;
+  }
+  .content-padding-b {
+    padding-bottom: 10px;
+  }
+  .content-padding-h {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+  .content-margin {
+    margin: 10px;
+  }
+  .container-margin-t {
+    margin-top:20px;
+  }
+}
+
+@media screen and (min-width:480px) {
+  /** tablet and desktop */
+  .no-pad.mdl-tabs > .mdl-tabs__panel,
+  .content > :not(.no-pad):not(pre):not(.trace):not(article),
+  .content > article > :not(.no-pad):not(pre):not(.trace) {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+  .content > :first-child:not(.no-pad):not(.no-pad-top) {
+    padding-top: 16px;
+  }
+  .content > :last-child:not(.no-pad) {
+    padding-bottom: 16px;
+  }
+  .content-padding-v {
+    padding-top: 16px;
+    padding-bottom: 16px;
+  }
+  .content > pre > samp,
+  .content > article > pre > samp,
+  .hljs {
+    padding: 16px;
+  }
+  /*.content-padding {
+    padding: 16px;
+  }*/
+  .content-padding-t {
+    padding-top: 16px;
+  }
+  .content-padding-b {
+    padding-bottom: 16px;
+  }
+  .content-padding-h {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+  .content-margin {
+    margin: 16px;
+  }
+  .container-margin-t {
+    margin-top:32px;
+  }
+}
+
+@media screen and (max-width:839px){
+  /** phone and tablet */
+  body {
+    padding: 5vmin 0 calc(20vmin + 56px) 0;
+    /* big space around «up» FAB */
+  }
+}
+@media screen and (min-width:840px){
+  /** phone and tablet */
+  body {
+    padding: 5vmin 0 10vmin 0;
+    /* smaller space around «up» FAB */
+  }
+}
+
+.m-r-0 {
+  margin-right: 0;
+}
+
+.high-line {
+  line-height: 1.1ex;
+}

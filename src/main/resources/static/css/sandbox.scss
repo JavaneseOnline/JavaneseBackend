@@ -1,0 +1,58 @@
+.sandbox {
+/*  input[type=submit] {
+    padding: 0 8px;
+  }
+  textarea, input[type=text] {
+    border: 1px solid #999999;
+    -webkit-border-radius: 2px;
+    -moz-border-radius: 2px;
+    border-radius: 2px;
+  }
+  textarea:read-only, input[type=text]:read-only {
+    background: #eeeeee;
+  }
+  textarea:-moz-read-only, input[type=text]:-moz-read-only {
+    background: #eeeeee;
+  }*/
+  .messages {
+    pre {
+      margin: 0;
+      white-space: pre-wrap; /* css-3 */
+      white-space: -moz-pre-wrap; /* Mozilla, since 1999 */
+      white-space: -pre-wrap; /* Opera 4-6 */
+      white-space: -o-pre-wrap; /* Opera 7 */
+      word-wrap: break-word; /* Internet Explorer 5.5+ */
+      border-bottom: 1px solid #DDD;
+      padding: 10px;
+    }
+    pre:hover {
+      background: #F6F6F6;
+    }
+  }
+
+  .editor {
+    min-height: 200px;
+  }
+
+  .runtime-status {
+    color: gray;
+  }
+  .runtime-in {
+    color: darkgreen;
+  }
+  .runtime-out {
+    color: black;
+  }
+  .runtime-err {
+    color: darkred;
+  }
+  .runtime-exit {
+    color: darkblue;
+  }
+  .runtime-deadline, .runtime-no_var, .runtime-no_eq, .runtime-illegal_output, .runtime-not_matches {
+    color: orangered;
+  }
+  .runtime-correct_solution {
+    color: limegreen;
+  }
+}

@@ -1,0 +1,93 @@
+@import "material.blue_grey-lime.min";
+@import "dialog-polyfill.min";
+@import "highlight.darkula";
+
+html, body {
+  margin: 0;
+  padding: 0;
+}
+body {
+  font-family: 'Tenor Sans', serif;
+  background: #f6f6f6;
+}
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'PT Sans Caption', sans-serif;
+}
+
+ul {
+  list-style-type: none;
+  padding-left: 0;
+}
+ul ul {
+  padding-left: 20px;
+}
+
+p, li, nav, td {
+  /* don't change <a> style in <menu> */
+  a[href] {
+    color: #455a64;
+  }
+  a:visited {
+    color: #607d8b
+  }
+  a[href]:hover, a[href]:active, a[href]:focus {
+    color: #F6F6F6;
+    background-color: #607d8b;
+  }
+  kbd {
+    font-size: .9em;
+    padding: 1px;
+  }
+}
+
+p img {
+  max-width: 100%;
+}
+
+/** main container */
+.wrapper, .content {
+  max-width: 940px;
+  margin: 16px auto;
+  border-top: 1px solid transparent;
+}
+.content > pre,
+.content > article > pre {
+  padding-left: 0;
+  padding-right: 0;
+}
+.content > pre > samp,
+.content > article > pre > samp {
+  display: block;
+  background: #2b2b2b;
+  color: #bababa;
+}
+.card {
+  background: #ffffff;
+}
+
+#up-button {
+  display: none;
+  position: fixed;
+  right: 10vmin;
+  bottom: 10vmin;
+}
+
+/** forms */
+form label {
+  display: block !important;
+}
+textarea {
+  display: block;
+  width: 100%;
+  min-height: 10ex;
+  resize: vertical;
+}
+
+/** screenshots from IDEA */
+.ide-bg {
+  background: #2b2b2b;
+}
+
+@import "indents";
+@import "sandbox";
+@import "trace";

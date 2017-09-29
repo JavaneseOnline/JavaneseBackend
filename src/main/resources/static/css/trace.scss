@@ -1,0 +1,46 @@
+/* common */
+.trace {
+  max-width: 100%;
+  overflow-x: auto;
+  white-space: nowrap;
+  position: relative;
+  margin: 0 0 16px;
+
+  span {
+    display: inline-block;
+    line-height: 1.4em;
+    height: 1.4em;
+    position: relative;
+    span {
+      top: 1.5em;
+      margin: 0 .5em;
+    }
+  }
+  kbd {
+    position: absolute;
+    left: 0;
+    right: 0;
+    padding: 0 .5em;
+  }
+}
+
+/* colours */
+.trace > span {
+  background: #9966FF;
+}
+.trace > span > samp > span {
+  background: #6699FF;
+}
+.trace > span > samp > span > samp > span {
+  background: #66FF99;
+}
+.trace > span > samp > span > samp > span > samp > span {
+  background: #FF9966;
+}
+.trace > span > samp > span > samp > span > samp > span > samp > span {
+  background: #FF6666;
+}
+.trace span.crash {
+  background: #FF5500;
+  color: #fff;
+}

@@ -1,0 +1,92 @@
+/*
+Darkula color scheme from the JetBrains family of IDEs
+*/
+
+.hljs {
+  display: block;
+  overflow-x: auto;
+  background: #2b2b2b;
+}
+
+.hljs {
+  color: #a9b7c6;
+}
+
+.hljs-strong,
+.hljs-emphasis {
+  color: #a8a8a2;
+}
+
+.hljs-bullet,
+.hljs-quote,
+.hljs-link,
+.hljs-number,
+.hljs-regexp,
+.hljs-literal {
+  color: #6896ba;
+}
+
+.hljs-code,
+.hljs-selector-class {
+  color: #a6e22e;
+}
+
+.hljs-emphasis {
+  font-style: italic;
+}
+
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-section,
+.hljs-attribute,
+.hljs-name,
+.hljs-variable {
+  color: #cb7832;
+}
+
+.hljs-params {
+  color: #b9b9b9;
+}
+
+.hljs-subst,
+.hljs-type,
+.hljs-built_in,
+.hljs-builtin-name,
+.hljs-symbol,
+.hljs-selector-id,
+.hljs-selector-attr,
+.hljs-selector-pseudo,
+.hljs-template-tag,
+.hljs-template-variable,
+.hljs-addition {
+  color: #e0c46c;
+}
+
+.hljs-comment,
+.hljs-deletion,
+.hljs-meta {
+  color: #7f7f7f;
+}
+
+/** changed */
+.hljs-string {
+  color: #547f55;
+}
+
+/** additional */
+.hljs mark {
+  background: transparent;
+}
+.hljs mark .hljs-string {
+  color: #be592c;
+}
+.hljs .java-annotation {
+	color: #BBB529;
+}
+.hljs .type-variable,
+.hljs .type-variable .hljs-function .hljs-params {
+  color: #507874;
+}
+.hljs-function .hljs-title {
+    color: #e7b362;
+}
