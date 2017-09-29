@@ -6,6 +6,7 @@ import org.thymeleaf.context.Context
 import java.util.*
 
 class IndexPageBinding(
+        private val staticResourcesDir: String,
         private val templateEngine: TemplateEngine,
         private val locale: Locale
 ): (Page) -> String {
@@ -15,7 +16,8 @@ class IndexPageBinding(
                 "index",
                 Context(locale,
                         mapOf(
-                                "page" to page
+                                "page" to page,
+                                "static" to staticResourcesDir
                         )
                 )
         )

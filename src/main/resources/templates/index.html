@@ -4,9 +4,8 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorator="layout"
       th:with="title = ${page.title}, head = ${page.headMarkup}">
-<body>
 
-<th:block layout:fragment="head" th:replace="fragments/common :: meta(model = ${page})" />
+<th:block layout:fragment="head" th:replace="~{fragments/common :: meta(model = ${page})}" />
 
 <th:block layout:fragment="content">
 
@@ -14,5 +13,4 @@
 
 </th:block>
 
-</body>
 </html>

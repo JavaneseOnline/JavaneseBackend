@@ -10,13 +10,10 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <meta name="_csrf" th:content="${_csrf.token}" />
-    <meta name="_csrf_header" th:content="${_csrf.headerName}" />
-
     <!-- fonts & icons -->
     <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Tenor+Sans%7CPT+Sans+Caption%7CMaterial+Icons" />
     <!-- mdl, dialog polyfill, highlight darkula, custom styles, sandbox, trace -->
-    <link th:href="@{/css/main.min.css}" rel="stylesheet" />
+    <link th:href="${static + '/css/main.min.css'}" rel="stylesheet" />
 
     <th:block th:if="${head}" th:utext="${head}" />
 
@@ -32,7 +29,7 @@
 
     <!-- Vue.js, Zepto, Material Design Lite, dialog polyfill, highlight.js, trace, scroll to top, blur link on click,
     mdl tabs fix to work with url #fragment, async form handling -->
-    <script type="text/javascript" th:src="@{/js/vue_zepto_mdl_dialog_highlight_trace_scroll_unfocus_tabs_form.min.js}"></script>
+    <script type="text/javascript" th:src="${static + '/js/vue_zepto_mdl_dialog_highlight_trace_scroll_unfocus_tabs_form.min.js'}"></script>
 
     <div id="toast-container" class="mdl-js-snackbar mdl-snackbar">
         <div class="mdl-snackbar__text"></div>

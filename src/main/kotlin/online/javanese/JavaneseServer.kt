@@ -2,6 +2,7 @@ package online.javanese
 
 import com.github.andrewoma.kwery.core.DefaultSession
 import com.github.andrewoma.kwery.core.dialect.PostgresDialect
+import nz.net.ultraq.thymeleaf.LayoutDialect
 import online.javanese.exception.NotFoundException
 import online.javanese.model.PageDao
 import online.javanese.route.createTopLevelRouteHandler
@@ -26,9 +27,12 @@ object JavaneseServer {
     fun main(args: Array<String>) {
 
         org.postgresql.Driver::class.java
-        val dbProps = Properties().apply { load(FileInputStream("local.properties")) }
-        val database = dbProps["database"]
-        val connection = DriverManager.getConnection("jdbc:postgresql:$database", dbProps)
+        val localProps = Properties().apply {
+            load(FileInputStream("local.properties"))
+            /* Must contain 'database', 'user', 'password', 'static' */
+        }
+        val database = localProps["database"]
+        val connection = DriverManager.getConnection("jdbc:postgresql:$database", localProps)
 
         val session = DefaultSession(connection, PostgresDialect())
 
@@ -42,10 +46,12 @@ object JavaneseServer {
                 ),
                 messageResolver = MessageResolver(
                         stream = javaClass.getResourceAsStream("/locale/messages_ru.properties")
-                )
+                ),
+                dialects = LayoutDialect()
         )
 
-        val indexPageBinding = IndexPageBinding(templateEngine, Locale.getDefault())
+        val staticResDir = localProps["static"] as String
+        val indexPageBinding = IndexPageBinding(staticResDir, templateEngine, Locale.getDefault())
 
         embeddedServer(Netty, 8080) {
             routing {

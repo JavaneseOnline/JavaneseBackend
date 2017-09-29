@@ -1,6 +1,7 @@
 package online.javanese
 
 import org.thymeleaf.TemplateEngine
+import org.thymeleaf.dialect.IDialect
 import org.thymeleaf.messageresolver.IMessageResolver
 import org.thymeleaf.messageresolver.StandardMessageResolver
 import org.thymeleaf.templatemode.TemplateMode
@@ -28,8 +29,10 @@ fun MessageResolver(stream: InputStream) = StandardMessageResolver().also {
 
 fun TemplateEngine(
         templateResolver: ITemplateResolver,
-        messageResolver: IMessageResolver
+        messageResolver: IMessageResolver,
+        vararg dialects: IDialect
 ) = TemplateEngine().also {
     it.addTemplateResolver(templateResolver)
     it.addMessageResolver(messageResolver)
+    dialects.forEach { d -> it.addDialect(d) }
 }

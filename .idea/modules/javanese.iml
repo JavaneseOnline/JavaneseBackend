@@ -49,6 +49,8 @@
     <orderEntry type="library" scope="PROVIDED" name="Gradle: org.postgresql:postgresql:42.1.4" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Gradle: com.github.andrewoma.kwery:mapper:0.17" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Gradle: com.github.andrewoma.kwery:core:0.17" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect:2.2.2" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: nz.net.ultraq.thymeleaf:thymeleaf-expression-processor:1.1.3" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Gradle: org.thymeleaf:thymeleaf:3.0.7.RELEASE" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Gradle: ch.qos.logback:logback-classic:1.2.1" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Gradle: org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:0.17" level="project" />
@@ -64,16 +66,17 @@
     <orderEntry type="library" scope="PROVIDED" name="Gradle: ognl:ognl:3.1.12" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Gradle: org.attoparser:attoparser:2.0.4.RELEASE" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Gradle: org.unbescape:unbescape:1.1.5.RELEASE" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: org.codehaus.groovy:groovy:2.4.6" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Gradle: ch.qos.logback:logback-core:1.2.1" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Gradle: io.netty:netty-codec-http:4.1.12.Final" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Gradle: io.netty:netty-handler:4.1.12.Final" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Gradle: org.javassist:javassist:3.20.0-GA" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Gradle: io.netty:netty-codec:4.1.12.Final" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Gradle: io.netty:netty-transport:4.1.12.Final" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Gradle: io.netty:netty-buffer:4.1.12.Final" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Gradle: io.netty:netty-resolver:4.1.12.Final" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Gradle: io.netty:netty-common:4.1.12.Final" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Gradle: org.jetbrains:annotations:13.0" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: org.javassist:javassist:3.20.0-GA" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Gradle: org.jetbrains.ktor:ktor-netty:0.4.0-alpha-15" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Gradle: org.jetbrains.ktor:ktor-hosts-common:0.4.0-alpha-15" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Gradle: org.jetbrains.ktor:ktor-core:0.4.0-alpha-15" level="project" />
@@ -81,6 +84,8 @@
     <orderEntry type="library" scope="RUNTIME" name="Gradle: org.postgresql:postgresql:42.1.4" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Gradle: com.github.andrewoma.kwery:mapper:0.17" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Gradle: com.github.andrewoma.kwery:core:0.17" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Gradle: nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect:2.2.2" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Gradle: nz.net.ultraq.thymeleaf:thymeleaf-expression-processor:1.1.3" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Gradle: org.thymeleaf:thymeleaf:3.0.7.RELEASE" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Gradle: ch.qos.logback:logback-classic:1.2.1" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Gradle: org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:0.17" level="project" />
@@ -96,16 +101,17 @@
     <orderEntry type="library" scope="RUNTIME" name="Gradle: ognl:ognl:3.1.12" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Gradle: org.attoparser:attoparser:2.0.4.RELEASE" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Gradle: org.unbescape:unbescape:1.1.5.RELEASE" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Gradle: org.codehaus.groovy:groovy:2.4.6" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Gradle: ch.qos.logback:logback-core:1.2.1" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Gradle: io.netty:netty-codec-http:4.1.12.Final" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Gradle: io.netty:netty-handler:4.1.12.Final" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Gradle: org.javassist:javassist:3.20.0-GA" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Gradle: io.netty:netty-codec:4.1.12.Final" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Gradle: io.netty:netty-transport:4.1.12.Final" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Gradle: io.netty:netty-buffer:4.1.12.Final" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Gradle: io.netty:netty-resolver:4.1.12.Final" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Gradle: io.netty:netty-common:4.1.12.Final" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Gradle: org.jetbrains:annotations:13.0" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Gradle: org.javassist:javassist:3.20.0-GA" level="project" />
     <orderEntry type="library" scope="TEST" name="Gradle: org.jetbrains.ktor:ktor-netty:0.4.0-alpha-15" level="project" />
     <orderEntry type="library" scope="TEST" name="Gradle: org.jetbrains.ktor:ktor-hosts-common:0.4.0-alpha-15" level="project" />
     <orderEntry type="library" scope="TEST" name="Gradle: org.jetbrains.ktor:ktor-core:0.4.0-alpha-15" level="project" />
@@ -113,6 +119,8 @@
     <orderEntry type="library" scope="TEST" name="Gradle: org.postgresql:postgresql:42.1.4" level="project" />
     <orderEntry type="library" scope="TEST" name="Gradle: com.github.andrewoma.kwery:mapper:0.17" level="project" />
     <orderEntry type="library" scope="TEST" name="Gradle: com.github.andrewoma.kwery:core:0.17" level="project" />
+    <orderEntry type="library" scope="TEST" name="Gradle: nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect:2.2.2" level="project" />
+    <orderEntry type="library" scope="TEST" name="Gradle: nz.net.ultraq.thymeleaf:thymeleaf-expression-processor:1.1.3" level="project" />
     <orderEntry type="library" scope="TEST" name="Gradle: org.thymeleaf:thymeleaf:3.0.7.RELEASE" level="project" />
     <orderEntry type="library" scope="TEST" name="Gradle: ch.qos.logback:logback-classic:1.2.1" level="project" />
     <orderEntry type="library" scope="TEST" name="Gradle: junit:junit:4.12" level="project" />
@@ -129,16 +137,17 @@
     <orderEntry type="library" scope="TEST" name="Gradle: ognl:ognl:3.1.12" level="project" />
     <orderEntry type="library" scope="TEST" name="Gradle: org.attoparser:attoparser:2.0.4.RELEASE" level="project" />
     <orderEntry type="library" scope="TEST" name="Gradle: org.unbescape:unbescape:1.1.5.RELEASE" level="project" />
+    <orderEntry type="library" scope="TEST" name="Gradle: org.codehaus.groovy:groovy:2.4.6" level="project" />
     <orderEntry type="library" scope="TEST" name="Gradle: ch.qos.logback:logback-core:1.2.1" level="project" />
     <orderEntry type="library" scope="TEST" name="Gradle: org.hamcrest:hamcrest-core:1.3" level="project" />
     <orderEntry type="library" scope="TEST" name="Gradle: io.netty:netty-codec-http:4.1.12.Final" level="project" />
     <orderEntry type="library" scope="TEST" name="Gradle: io.netty:netty-handler:4.1.12.Final" level="project" />
-    <orderEntry type="library" scope="TEST" name="Gradle: org.javassist:javassist:3.20.0-GA" level="project" />
     <orderEntry type="library" scope="TEST" name="Gradle: io.netty:netty-codec:4.1.12.Final" level="project" />
     <orderEntry type="library" scope="TEST" name="Gradle: io.netty:netty-transport:4.1.12.Final" level="project" />
     <orderEntry type="library" scope="TEST" name="Gradle: io.netty:netty-buffer:4.1.12.Final" level="project" />
     <orderEntry type="library" scope="TEST" name="Gradle: io.netty:netty-resolver:4.1.12.Final" level="project" />
     <orderEntry type="library" scope="TEST" name="Gradle: io.netty:netty-common:4.1.12.Final" level="project" />
     <orderEntry type="library" scope="TEST" name="Gradle: org.jetbrains:annotations:13.0" level="project" />
+    <orderEntry type="library" scope="TEST" name="Gradle: org.javassist:javassist:3.20.0-GA" level="project" />
   </component>
 </module>
