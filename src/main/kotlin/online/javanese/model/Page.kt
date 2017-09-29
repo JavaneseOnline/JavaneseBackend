@@ -11,11 +11,9 @@ class Page(
         val id: UUID,
         val urlPathComponent: String, // was 'url'
         val magic: Magic,
-        val metaKeywords: String,
-        val metaDescription: String,
-        val title: String,
-        val h1: String,
+        val meta: Meta,
         val headMarkup: String, // was 'head'
+        val h1: String,
         val contentMarkup: String, // was 'markup', todo: display as HTML in admin panel
         val beforeBodyEndMarkup: String, // was 'beforeBodyEnd'
         val lastModified: LocalDateTime
@@ -31,11 +29,11 @@ object PagesTable : Table<Page, UUID>("pages"), VersionedWithTimestamp {
     private val Id by col(Page::id, name = "id", id = true, default = DefaultUuid, converter = UuidConverter)
     private val UrlPathComponent by col(Page::urlPathComponent, name = "urlPathComponent")
     private val Magic by col(Page::magic, name = "magic", default = Page.Magic.Index)
-    private val MetaKeywords by col(Page::metaKeywords, name = "metaKeywords")
-    private val MetaDescription by col(Page::metaDescription, name = "metaDescription")
-    private val Title by col(Page::title, name = "title")
-    private val H1 by col(Page::h1, name = "h1")
+    private val Title by col(Meta::title, Page::meta, name = "title")
+    private val MetaDescription by col(Meta::description, Page::meta, name = "metaDescription")
+    private val MetaKeywords by col(Meta::keywords, Page::meta, name = "metaKeywords")
     private val HeadMarkup by col(Page::headMarkup, name = "headMarkup")
+    private val H1 by col(Page::h1, name = "h1")
     private val ContentMarkup by col(Page::contentMarkup, name = "contentMarkup")
     private val BeforeBodyEndMarkup by col(Page::beforeBodyEndMarkup, name = "beforeBodyEndMarkup")
     private val LastModified by col(Page::lastModified, name = "lastModified", version = true)
@@ -46,12 +44,14 @@ object PagesTable : Table<Page, UUID>("pages"), VersionedWithTimestamp {
             id = value of Id,
             urlPathComponent = value of UrlPathComponent,
             magic = value of Magic,
-            metaKeywords = value of MetaKeywords,
-            metaDescription = value of MetaDescription,
-            title = value of Title,
+            meta = Meta(
+                    title = value of Title,
+                    description = value of MetaDescription,
+                    keywords = value of MetaKeywords
+            ),
             h1 = value of H1,
-            headMarkup = value of HeadMarkup,
             contentMarkup = value of ContentMarkup,
+            headMarkup = value of HeadMarkup,
             beforeBodyEndMarkup = value of BeforeBodyEndMarkup,
             lastModified = value of LastModified
     )

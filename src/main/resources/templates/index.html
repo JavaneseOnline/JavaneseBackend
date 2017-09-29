@@ -2,15 +2,23 @@
 <html lang="en"
       xmlns:th="http://www.thymeleaf.org/"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorator="layout"
-      th:with="title = ${page.title}, head = ${page.headMarkup}">
+      layout:decorate="~{layout}"
+      th:with="title = ${page.meta.title}, head = ${page.headMarkup}">
 
-<th:block layout:fragment="head" th:replace="~{fragments/common :: meta(model = ${page})}" />
+<head>
 
-<th:block layout:fragment="content">
+    <th:block layout:fragment="beforeHeadEnd" th:replace="~{fragments/common :: meta(model = ${page.meta})}" />
 
-    <th:block th:utext="${page.contentMarkup}" />
+</head>
 
-</th:block>
+<body>
+
+    <th:block layout:fragment="content">
+
+        <th:block th:utext="${page.contentMarkup}" />
+
+    </th:block>
+
+</body>
 
 </html>
