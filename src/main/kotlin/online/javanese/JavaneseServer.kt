@@ -2,11 +2,17 @@ package online.javanese
 
 import com.github.andrewoma.kwery.core.DefaultSession
 import com.github.andrewoma.kwery.core.dialect.PostgresDialect
+import online.javanese.exception.NotFoundException
 import online.javanese.model.PageDao
-import online.javanese.route.topLevelRouteFactory
+import online.javanese.route.createTopLevelRouteHandler
 import online.javanese.template.IndexPageBinding
+import org.jetbrains.ktor.application.install
+import org.jetbrains.ktor.features.StatusPages
 import org.jetbrains.ktor.host.embeddedServer
+import org.jetbrains.ktor.http.ContentType
+import org.jetbrains.ktor.http.HttpStatusCode
 import org.jetbrains.ktor.netty.Netty
+import org.jetbrains.ktor.response.respondText
 import org.jetbrains.ktor.routing.get
 import org.jetbrains.ktor.routing.routing
 import org.thymeleaf.templatemode.TemplateMode
@@ -45,10 +51,17 @@ object JavaneseServer {
             routing {
                 val pageDao = PageDao(session)
 
-                val topLevelRoute = topLevelRouteFactory(pageDao, indexPageBinding)
+                val topLevelRoute =
+                        createTopLevelRouteHandler(pageDao, indexPageBinding)
 
                 get("/") { topLevelRoute(call, "") }
                 get("/{query}/") { topLevelRoute(call, call.parameters["query"]!!) }
+
+                install(StatusPages) {
+                    exception<NotFoundException> {
+                        call.respondText(it.message, ContentType.Text.Plain, HttpStatusCode.NotFound) // todo: error pages
+                    }
+                }
             }
         }.start(wait = true)
     }
