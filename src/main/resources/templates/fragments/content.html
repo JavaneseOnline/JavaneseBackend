@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org/">
+<head>
+    <meta charset="UTF-8" />
+    <title>n/a</title>
+</head>
+<body>
+
+<!-- links -->
+
+<a th:fragment="linkToCourse" th:inline="text"
+   th:href="@{~/{course}/ (course=${course.urlPathComponent})}"
+   th:title="${course.title}"
+><th:block th:if="${ordinal} != null">[[#{tree.course}]] [[${ordinal}]].</th:block> [[${course.title}]]</a>
+
+<a th:fragment="linkToChapter" th:inline="text"
+   th:href="@{~/{course}/{chapter}/ (course=${chapter.course.urlPathComponent}, chapter=${chapter.urlPathComponent})}"
+   th:title="${chapter.title}"
+><th:block th:if="${ordinal} != null">[[#{tree.chapter}]] [[${j.count}]].</th:block> [[${chapter.title}]]</a>
+
+<a th:fragment="linkToLesson" th:inline="text"
+   th:href="@{~/{course}/{chapter}/{lesson}/ (course=${lesson.chapter.course.urlPathComponent}, chapter=${lesson.chapter.urlPathComponent}, lesson=${lesson.urlPathComponent})}"
+   th:title="${lesson.title}"
+><!--th:block th:if="${ordinal} != null">[[${k.count}]]. [[#{tree.lesson}]]</th:block-->[[${lesson.title}]]</a>
+
+<!-- lesson-targeting trees -->
+
+<ul th:fragment="coursesTree" th:inline="text">
+    <li th:each="course, i : ${courses}">
+        <a th:replace="fragments/content :: linkToCourse(ordinal = ${i.count}, course = ${course})"></a>
+
+        <!--<ul th:replace="fragments/content :: chaptersTree(chapters = ${course.chapters})"></ul>-->
+    </li>
+</ul>
+
+<ul th:fragment="chaptersTree" th:inline="text">
+    <li th:each="chapter, j : ${chapters}">
+        <a th:replace="fragments/content :: linkToChapter(ordinal = ${j.count}, chapter = ${chapter})"></a>
+
+        <ul th:replace="fragments/content :: lessonsTree(lessons = ${chapter.lessons})"></ul>
+    </li>
+</ul>
+
+<ul th:fragment="lessonsTree" th:inline="text">
+    <li th:each="lesson, k : ${lessons}">
+        <a th:replace="fragments/content :: linkToLesson(ordinal = ${k.count}, lesson = ${lesson})"></a>
+    </li>
+</ul>
+
+<!-- task-targeting trees -->
+
+<ul th:fragment="coursesTasksTree" th:inline="text">
+    <li th:each="course, i : ${courses}">
+        <a th:replace="fragments/content :: linkToCourse(ordinal = ${i.count}, course = ${course})"></a>
+
+        <!--<ul th:replace="fragments/content :: chaptersTasksTree(chapters = ${course.chapters})"></ul>-->
+    </li>
+</ul>
+
+<ul th:fragment="chaptersTasksTree" th:inline="text">
+    <li th:each="chapter, j : ${chapters}">
+        <a th:replace="fragments/content :: linkToChapter(ordinal = ${j.count}, chapter = ${chapter})"></a>
+
+        <ul th:replace="fragments/content :: lessonsTasksTree(lessons = ${chapter.lessons})"></ul>
+    </li>
+</ul>
+
+<ul th:fragment="lessonsTasksTree" th:inline="text">
+    <li th:each="lesson, k : ${lessons}">
+        <small>[[${lesson.title}]]</small>
+
+        <ul th:replace="fragments/content :: tasks(tasks = ${lesson.tasks})"></ul>
+    </li>
+</ul>
+
+<!-- just tasks -->
+
+<ul th:fragment="tasks" th:inline="text">
+    <li th:each="task, l : ${tasks}">
+        <a th:href="@{/{course}/{chapter}/{lesson}/ (course=${lesson.chapter.course.url}, chapter=${lesson.chapter.url}, lesson=${lesson.url})}+'#'+${task.url}"
+           th:title="${task.title}">
+            <!--[[#{tree.task}]] [[${l.count}]]. -->[[${task.title}]]
+        </a>
+    </li>
+</ul>
+
+<!-- prev / next -->
+
+<nav th:fragment="prevNext(prev, next, prevText, nextText)" th:if="${prev} or ${next}" class="mdl-grid mdl-grid--no-spacing">
+    <p class="mdl-cell mdl-cell--4-col mdl-cell--6-col-desktop">
+        <th:block th:if="${prev}">
+            <a th:href="${prev.fullUrl}"
+               th:text="${prevText}"></a>
+        </th:block>
+    </p>
+    <p class="mdl-cell mdl-cell--4-col-tablet mdl-cell--6-col-desktop mdl-cell--hide-phone mdl-typography--text-right">
+        <th:block th:if="${next}">
+            <a th:href="${next.fullUrl}"
+               th:text="${nextText}"></a>
+        </th:block>
+    </p>
+    <p class="mdl-cell mdl-cell--4-col mdl-cell--hide-desktop mdl-cell--hide-tablet">
+        <th:block th:if="${next}">
+            <a th:href="${next.fullUrl}"
+               th:text="${nextText}"></a>
+        </th:block>
+    </p>
+</nav>
+
+</body>
+</html>

@@ -4,9 +4,11 @@ import com.github.andrewoma.kwery.core.DefaultSession
 import com.github.andrewoma.kwery.core.dialect.PostgresDialect
 import nz.net.ultraq.thymeleaf.LayoutDialect
 import online.javanese.exception.NotFoundException
+import online.javanese.model.CourseDao
 import online.javanese.model.PageDao
 import online.javanese.route.createTopLevelRouteHandler
 import online.javanese.template.IndexPageBinding
+import online.javanese.template.TreePageBinding
 import org.jetbrains.ktor.application.install
 import org.jetbrains.ktor.content.files
 import org.jetbrains.ktor.content.static
@@ -56,15 +58,19 @@ object JavaneseServer {
 
         val localStaticDir = localProps["localStaticDir"] as String?
         val exposedStaticDir = localProps["exposedStaticDir"] as String
-        val indexPageBinding = IndexPageBinding(exposedStaticDir, templateEngine, Locale.getDefault())
+
+        val locale = Locale.Builder().setLanguage("ru").setScript("Cyrl").build()
+        val indexPageBinding = IndexPageBinding(exposedStaticDir, templateEngine, locale)
+        val treePageBinding = TreePageBinding(exposedStaticDir, templateEngine, locale)
+
+        val pageDao = PageDao(session)
+        val courseDao = CourseDao(session)
+
+        val topLevelRoute =
+                createTopLevelRouteHandler(pageDao, courseDao, indexPageBinding, treePageBinding)
 
         embeddedServer(Netty, 8080) {
             routing {
-                val pageDao = PageDao(session)
-
-                val topLevelRoute =
-                        createTopLevelRouteHandler(pageDao, indexPageBinding)
-
                 get("/") { topLevelRoute(call, "") }
                 get("/{query}/") { topLevelRoute(call, call.parameters["query"]!!) }
 

@@ -24,7 +24,7 @@ fun ClassLoaderTemplateResolver(
 }
 
 fun MessageResolver(stream: InputStream) = StandardMessageResolver().also {
-    it.defaultMessages.load(stream)
+    it.defaultMessages.load(stream.bufferedReader())
 }
 
 fun TemplateEngine(

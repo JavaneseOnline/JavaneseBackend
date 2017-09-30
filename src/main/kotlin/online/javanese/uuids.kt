@@ -1,10 +1,11 @@
 package online.javanese
 
 import com.github.andrewoma.kwery.mapper.SimpleConverter
-import java.util.*
 
-object UuidConverter : SimpleConverter<UUID>(
-        { row, name -> row.obj(name) as UUID }
+typealias Uuid = java.util.UUID
+
+object UuidConverter : SimpleConverter<Uuid>(
+        { row, name -> row.obj(name) as Uuid }
 )
 
-val DefaultUuid = UUID(0L, 0L)
+val DefaultUuid = Uuid(0L, 0L)
