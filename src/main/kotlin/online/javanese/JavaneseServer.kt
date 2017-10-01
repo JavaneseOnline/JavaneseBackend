@@ -4,8 +4,12 @@ import com.github.andrewoma.kwery.core.DefaultSession
 import com.github.andrewoma.kwery.core.dialect.PostgresDialect
 import nz.net.ultraq.thymeleaf.LayoutDialect
 import online.javanese.exception.NotFoundException
+import online.javanese.model.ChapterDao
 import online.javanese.model.CourseDao
 import online.javanese.model.PageDao
+import online.javanese.repository.ChapterRepository
+import online.javanese.repository.CourseRepository
+import online.javanese.repository.PageRepository
 import online.javanese.route.createTopLevelRouteHandler
 import online.javanese.template.IndexPageBinding
 import online.javanese.template.TreePageBinding
@@ -53,21 +57,26 @@ object JavaneseServer {
                 messageResolver = MessageResolver(
                         stream = javaClass.getResourceAsStream("/locale/messages_ru.properties")
                 ),
-                dialects = LayoutDialect()
+                dialects = *arrayOf(LayoutDialect())
         )
 
         val localStaticDir = localProps["localStaticDir"] as String?
         val exposedStaticDir = localProps["exposedStaticDir"] as String
 
+        val pageDao = PageDao(session)
+        val courseDao = CourseDao(session)
+        val chapterDao = ChapterDao(session)
+
+        val pageRepo = PageRepository(pageDao)
+        val chapterRepo = ChapterRepository(chapterDao)
+        val courseRepo = CourseRepository(courseDao, chapterRepo)
+
         val locale = Locale.Builder().setLanguage("ru").setScript("Cyrl").build()
         val indexPageBinding = IndexPageBinding(exposedStaticDir, templateEngine, locale)
         val treePageBinding = TreePageBinding(exposedStaticDir, templateEngine, locale)
 
-        val pageDao = PageDao(session)
-        val courseDao = CourseDao(session)
-
         val topLevelRoute =
-                createTopLevelRouteHandler(pageDao, courseDao, indexPageBinding, treePageBinding)
+                createTopLevelRouteHandler(pageRepo, courseRepo, indexPageBinding, treePageBinding)
 
         embeddedServer(Netty, 8080) {
             routing {

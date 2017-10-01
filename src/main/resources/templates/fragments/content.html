@@ -11,13 +11,13 @@
 
 <a th:fragment="linkToCourse" th:inline="text"
    th:href="@{~/{course}/ (course=${course.urlPathComponent})}"
-   th:title="${course.title}"
-><th:block th:if="${ordinal} != null">[[#{tree.course}]] [[${ordinal}]].</th:block> [[${course.title}]]</a>
+   th:title="${course.linkText}"
+><th:block th:if="${ordinal} != null">[[#{tree.course}]] [[${ordinal}]].</th:block> [[${course.linkText}]]</a>
 
 <a th:fragment="linkToChapter" th:inline="text"
    th:href="@{~/{course}/{chapter}/ (course=${chapter.course.urlPathComponent}, chapter=${chapter.urlPathComponent})}"
-   th:title="${chapter.title}"
-><th:block th:if="${ordinal} != null">[[#{tree.chapter}]] [[${j.count}]].</th:block> [[${chapter.title}]]</a>
+   th:title="${chapter.linkText}"
+><th:block th:if="${ordinal} != null">[[#{tree.chapter}]] [[${j.count}]].</th:block> [[${chapter.linkText}]]</a>
 
 <a th:fragment="linkToLesson" th:inline="text"
    th:href="@{~/{course}/{chapter}/{lesson}/ (course=${lesson.chapter.course.urlPathComponent}, chapter=${lesson.chapter.urlPathComponent}, lesson=${lesson.urlPathComponent})}"
@@ -30,7 +30,7 @@
     <li th:each="course, i : ${courses}">
         <a th:replace="fragments/content :: linkToCourse(ordinal = ${i.count}, course = ${course})"></a>
 
-        <!--<ul th:replace="fragments/content :: chaptersTree(chapters = ${course.chapters})"></ul>-->
+        <ul th:replace="fragments/content :: chaptersTree(chapters = ${course.chapters})"></ul>
     </li>
 </ul>
 
@@ -38,7 +38,7 @@
     <li th:each="chapter, j : ${chapters}">
         <a th:replace="fragments/content :: linkToChapter(ordinal = ${j.count}, chapter = ${chapter})"></a>
 
-        <ul th:replace="fragments/content :: lessonsTree(lessons = ${chapter.lessons})"></ul>
+        <!-- TODO <ul th:replace="fragments/content :: lessonsTree(lessons = ${chapter.lessons})"></ul>-->
     </li>
 </ul>
 
@@ -54,7 +54,7 @@
     <li th:each="course, i : ${courses}">
         <a th:replace="fragments/content :: linkToCourse(ordinal = ${i.count}, course = ${course})"></a>
 
-        <!--<ul th:replace="fragments/content :: chaptersTasksTree(chapters = ${course.chapters})"></ul>-->
+        <ul th:replace="fragments/content :: chaptersTasksTree(chapters = ${course.chapters})"></ul>
     </li>
 </ul>
 
@@ -62,7 +62,7 @@
     <li th:each="chapter, j : ${chapters}">
         <a th:replace="fragments/content :: linkToChapter(ordinal = ${j.count}, chapter = ${chapter})"></a>
 
-        <ul th:replace="fragments/content :: lessonsTasksTree(lessons = ${chapter.lessons})"></ul>
+        <!-- TODO <ul th:replace="fragments/content :: lessonsTasksTree(lessons = ${chapter.lessons})"></ul>-->
     </li>
 </ul>
 

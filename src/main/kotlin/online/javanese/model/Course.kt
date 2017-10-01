@@ -2,43 +2,56 @@ package online.javanese.model
 
 import com.github.andrewoma.kwery.core.Session
 import com.github.andrewoma.kwery.mapper.*
+import online.javanese.Html
 import online.javanese.Uuid
 import java.time.LocalDateTime
 
 class Course(
         val id: Uuid,
-        val urlPathComponent: String,
+        val basicInfo: BasicInfo,
         val meta: Meta,
-        val title: String,
-        val description: String,
+        val h1: String,
+        val description: Html, // todo: edit as HTML
         val sortIndex: Int, // todo: use this index in admin panel
         val lastModified: LocalDateTime
-        // todo: chapters
-)
+) {
 
-object CoursesTable : Table<Course, Uuid>("courses"), VersionedWithTimestamp {
+    class BasicInfo(
+            val id: Uuid,
+            val urlPathComponent: String,
+            val linkText: String
+    )
 
-    val Id by uuidCol(Course::id)
-    val UrlPathComponent by urlPathComponentCol(Course::urlPathComponent)
+}
+
+private object CourseTable : Table<Course, Uuid>("courses"), VersionedWithTimestamp {
+
+    val Id by idCol(Course::id)
+    val UrlPathComponent by urlPathComponentCol(Course.BasicInfo::urlPathComponent, Course::basicInfo)
     val MetaTitle by metaTitleCol(Course::meta)
     val MetaDescription by metaDescriptionCol(Course::meta)
     val MetaKeywords by metaKeywordsCol(Course::meta)
-    val Title by col(Course::title, name = "title")
+    val LinkText by col(Course.BasicInfo::linkText, Course::basicInfo, name = "linkText")
+    val H1 by col(Course::h1, name = "h1")
     val Description by col(Course::description, name = "description")
-    val SortIndex by col(Course::sortIndex, name = "sortIndex")
+    val SortIndex by sortIndexCol(Course::sortIndex)
     val LastModified by lastModifiedCol(Course::lastModified)
 
     override fun idColumns(id: Uuid): Set<Pair<Column<Course, *>, *>> = setOf(Id of id)
 
     override fun create(value: Value<Course>): Course = Course(
             id = value of Id,
-            urlPathComponent = value of UrlPathComponent,
+            basicInfo = Course.BasicInfo(
+                    id = value of Id,
+                    urlPathComponent = value of UrlPathComponent,
+                    linkText = value of LinkText
+            ),
             meta = Meta(
                     title = value of MetaTitle,
                     description = value of MetaDescription,
                     keywords = value of MetaKeywords
             ),
-            title = value of Title,
+            h1 = value of H1,
             description = value of Description,
             sortIndex = value of SortIndex,
             lastModified = value of LastModified
@@ -46,18 +59,47 @@ object CoursesTable : Table<Course, Uuid>("courses"), VersionedWithTimestamp {
 
 }
 
-class CourseDao(
+private object BasicCourseInfoTable : Table<Course.BasicInfo, Uuid>("courses") {
+
+    val Id by idCol(Course.BasicInfo::id)
+    val UrlPathComponent by urlPathComponentCol(Course.BasicInfo::urlPathComponent)
+    val LinkText by col(Course.BasicInfo::linkText, name = "linkText")
+
+    override fun idColumns(id: Uuid): Set<Pair<Column<Course.BasicInfo, *>, *>> = setOf(Id of id)
+
+    override fun create(value: Value<Course.BasicInfo>): Course.BasicInfo = Course.BasicInfo(
+            id = value of Id,
+            urlPathComponent = value of UrlPathComponent,
+            linkText = value of LinkText
+    )
+
+}
+
+internal class CourseDao(
         private val session: Session,
-        private val baseDao: Dao<Course, Uuid> = object : AbstractDao<Course, Uuid>(session, CoursesTable, Course::id) {}
+        private val baseDao: Dao<Course, Uuid> = object : AbstractDao<Course, Uuid>(session, CourseTable, Course::id) {}
 ): Dao<Course, Uuid> by baseDao {
 
-    private val tableName = CoursesTable.name
-    private val urlPathComponentName = CoursesTable.UrlPathComponent.name
+    private val tableName = CourseTable.name
+    private val sortIndexColName = CourseTable.SortIndex.name
+
+    override fun findById(id: Uuid, columns: Set<Column<Course, *>>): Course? =
+            session.select(
+                    sql = """SELECT * FROM $tableName WHERE "id" = :id""",
+                    parameters = mapOf("id" to id),
+                    mapper = CourseTable.rowMapper()
+            ).firstOrNull()
+
+    fun findAllBasicSortedBySortIndex(): List<Course.BasicInfo> =
+            session.select(
+                    sql = """SELECT "id", "urlPathComponent", "linkText" FROM $tableName ORDER BY "$sortIndexColName" ASC""",
+                    mapper = BasicCourseInfoTable.rowMapper()
+            )
 
     fun findAllSortedBySortIndex() =
             session.select(
-                    sql = """SELECT * FROM $tableName ORDER BY "$urlPathComponentName" ASC""",
-                    mapper = CoursesTable.rowMapper()
+                    sql = """SELECT * FROM $tableName ORDER BY "$sortIndexColName" ASC""",
+                    mapper = CourseTable.rowMapper()
             )
 
 }
@@ -66,10 +108,11 @@ class CourseDao(
 CREATE TABLE public.courses (
 	id uuid NOT NULL,
 	"urlPathComponent" varchar(64) NOT NULL,
+	"linkText" varchar(256) NOT NULL,
 	"metaTitle" varchar(256) NOT NULL,
 	"metaDescription" varchar(256) NOT NULL,
 	"metaKeywords" varchar(256) NOT NULL,
-	title varchar(256) NOT NULL,
+	h1 varchar(256) NOT NULL,
 	description text NOT NULL,
 	"sortIndex" int4 NOT NULL,
 	"lastModified" timestamp NOT NULL,

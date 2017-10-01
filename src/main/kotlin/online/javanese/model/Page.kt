@@ -2,28 +2,29 @@ package online.javanese.model
 
 import com.github.andrewoma.kwery.core.Session
 import com.github.andrewoma.kwery.mapper.*
+import online.javanese.Html
 import online.javanese.Uuid
 import java.time.LocalDateTime
 
 class Page(
         val id: Uuid,
-        val urlPathComponent: String, // was 'url'
+        val urlPathComponent: String,
         val magic: Magic,
         val meta: Meta,
-        val headMarkup: String, // was 'head'
+        val headMarkup: Html,
         val h1: String,
-        val contentMarkup: String, // was 'markup', todo: display as HTML in admin panel
-        val beforeBodyEndMarkup: String, // was 'beforeBodyEnd'
+        val contentMarkup: Html, // todo: display as HTML in admin panel
+        val beforeBodyEndMarkup: Html,
         val lastModified: LocalDateTime
 ) {
-    enum class Magic {
+    enum class Magic { // todo: transform to sealed class
         Index, Tree, Articles, CodeReview
     }
 }
 
-object PagesTable : Table<Page, Uuid>("pages"), VersionedWithTimestamp {
+private object PagesTable : Table<Page, Uuid>("pages"), VersionedWithTimestamp {
 
-    val Id by uuidCol(Page::id)
+    val Id by idCol(Page::id)
     val UrlPathComponent by urlPathComponentCol(Page::urlPathComponent)
     val Magic by col(Page::magic, name = "magic", default = Page.Magic.Index)
     val MetaTitle by metaTitleCol(Page::meta)
@@ -55,7 +56,7 @@ object PagesTable : Table<Page, Uuid>("pages"), VersionedWithTimestamp {
 
 }
 
-class PageDao(
+internal class PageDao(
         private val session: Session,
         private val baseDao: Dao<Page, Uuid> = object : AbstractDao<Page, Uuid>(session, PagesTable, Page::id) {}
 ) : Dao<Page, Uuid> by baseDao {
