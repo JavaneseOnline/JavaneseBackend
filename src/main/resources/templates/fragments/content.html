@@ -21,8 +21,8 @@
 
 <a th:fragment="linkToLesson" th:inline="text"
    th:href="@{~/{course}/{chapter}/{lesson}/ (course=${lesson.chapter.course.urlPathComponent}, chapter=${lesson.chapter.urlPathComponent}, lesson=${lesson.urlPathComponent})}"
-   th:title="${lesson.title}"
-><!--th:block th:if="${ordinal} != null">[[${k.count}]]. [[#{tree.lesson}]]</th:block-->[[${lesson.title}]]</a>
+   th:title="${lesson.linkText}"
+><!--th:block th:if="${ordinal} != null">[[${k.count}]]. [[#{tree.lesson}]]</th:block-->[[${lesson.linkText}]]</a>
 
 <!-- lesson-targeting trees -->
 
@@ -38,7 +38,7 @@
     <li th:each="chapter, j : ${chapters}">
         <a th:replace="fragments/content :: linkToChapter(ordinal = ${j.count}, chapter = ${chapter})"></a>
 
-        <!-- TODO <ul th:replace="fragments/content :: lessonsTree(lessons = ${chapter.lessons})"></ul>-->
+        <ul th:replace="fragments/content :: lessonsTree(lessons = ${chapter.lessons})"></ul>
     </li>
 </ul>
 
@@ -62,15 +62,15 @@
     <li th:each="chapter, j : ${chapters}">
         <a th:replace="fragments/content :: linkToChapter(ordinal = ${j.count}, chapter = ${chapter})"></a>
 
-        <!-- TODO <ul th:replace="fragments/content :: lessonsTasksTree(lessons = ${chapter.lessons})"></ul>-->
+        <ul th:replace="fragments/content :: lessonsTasksTree(lessons = ${chapter.lessons})"></ul>
     </li>
 </ul>
 
 <ul th:fragment="lessonsTasksTree" th:inline="text">
     <li th:each="lesson, k : ${lessons}">
-        <small>[[${lesson.title}]]</small>
+        <small>[[${lesson.linkText}]]</small>
 
-        <ul th:replace="fragments/content :: tasks(tasks = ${lesson.tasks})"></ul>
+        <!-- TODO: <ul th:replace="fragments/content :: tasks(tasks = ${lesson.tasks})"></ul>-->
     </li>
 </ul>
 

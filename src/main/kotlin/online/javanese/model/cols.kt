@@ -10,6 +10,9 @@ import kotlin.reflect.KProperty1
 internal fun <T : Any> Table<T, Uuid>.idCol(idProp: KProperty1<T, Uuid>) =
         col(idProp, name = "id", id = true, default = DefaultUuid, converter = UuidConverter)
 
+internal fun <T : Any, C> Table<T, Uuid>.idCol(idProp: KProperty1<C, Uuid>, path: (T) -> C) =
+        col(idProp, path, name = "id", id = true, default = DefaultUuid, converter = UuidConverter)
+
 internal fun <T : Any> Table<T, Uuid>.uuidCol(idProp: KProperty1<T, Uuid>, name: String) =
         col(idProp, name = name, default = DefaultUuid, converter = UuidConverter)
 

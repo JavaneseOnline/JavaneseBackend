@@ -2,20 +2,21 @@ package online.javanese.repository
 
 import online.javanese.Uuid
 import online.javanese.model.ChapterDao
-import online.javanese.model.Course
 
 class ChapterRepository internal constructor(
-        private val chapterDao: ChapterDao
+        private val chapterDao: ChapterDao,
+        private val lessonRepo: LessonRepository
 ) {
 
-    fun findTreeSortedBySortIndex(course: Course.BasicInfo): List<ChapterTree> =
-            chapterDao.findBasicSortedBySortIndex(course)
+    fun findTreeSortedBySortIndex(course: CourseTree): List<ChapterTree> =
+            chapterDao.findBasicSortedBySortIndex(course.id)
                     .map { ChapterTree(
                             id = it.id,
                             courseId = it.courseId,
                             urlPathComponent = it.urlPathComponent,
                             linkText = it.linkText,
-                            course = course
+                            course = course,
+                            lessons = lessonRepo::findTreeSortedBySortIndex
                     ) }
 
 }
@@ -25,6 +26,10 @@ class ChapterTree(
         val courseId: Uuid,
         val urlPathComponent: String,
         val linkText: String,
-        val course: Course.BasicInfo
-        // todo: lessons
-)
+        val course: CourseTree,
+        lessons: (ChapterTree) -> List<LessonTree>
+) {
+
+    val lessons = lessons(this)
+
+}

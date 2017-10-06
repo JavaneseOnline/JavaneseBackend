@@ -6,9 +6,11 @@ import nz.net.ultraq.thymeleaf.LayoutDialect
 import online.javanese.exception.NotFoundException
 import online.javanese.model.ChapterDao
 import online.javanese.model.CourseDao
+import online.javanese.model.LessonDao
 import online.javanese.model.PageDao
 import online.javanese.repository.ChapterRepository
 import online.javanese.repository.CourseRepository
+import online.javanese.repository.LessonRepository
 import online.javanese.repository.PageRepository
 import online.javanese.route.createTopLevelRouteHandler
 import online.javanese.template.IndexPageBinding
@@ -66,9 +68,11 @@ object JavaneseServer {
         val pageDao = PageDao(session)
         val courseDao = CourseDao(session)
         val chapterDao = ChapterDao(session)
+        val lessonDao = LessonDao(session)
 
         val pageRepo = PageRepository(pageDao)
-        val chapterRepo = ChapterRepository(chapterDao)
+        val lessonRepo = LessonRepository(lessonDao)
+        val chapterRepo = ChapterRepository(chapterDao, lessonRepo)
         val courseRepo = CourseRepository(courseDao, chapterRepo)
 
         val locale = Locale.Builder().setLanguage("ru").setScript("Cyrl").build()
@@ -80,6 +84,9 @@ object JavaneseServer {
 
         embeddedServer(Netty, 8080) {
             routing {
+
+                // todo: addresses as objects
+
                 get("/") { topLevelRoute(call, "") }
                 get("/{query}/") { topLevelRoute(call, call.parameters["query"]!!) }
 

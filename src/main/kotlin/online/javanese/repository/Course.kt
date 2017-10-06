@@ -11,8 +11,12 @@ class CourseRepository internal constructor(
     fun findTreeSortedBySortIndex(): List<CourseTree> =
             courseDao
                     .findAllBasicSortedBySortIndex()
-                    .map { CourseTree(it.id, it.urlPathComponent, it.linkText, chapterRepo.findTreeSortedBySortIndex(it)) }
-
+                    .map { CourseTree(
+                            id = it.id,
+                            urlPathComponent = it.urlPathComponent,
+                            linkText = it.linkText,
+                            chapters = chapterRepo::findTreeSortedBySortIndex
+                    ) }
 
 }
 
@@ -20,5 +24,9 @@ class CourseTree(
         val id: Uuid,
         val urlPathComponent: String,
         val linkText: String,
-        val chapters: List<ChapterTree>
-)
+        chapters: (CourseTree) -> List<ChapterTree>
+) {
+
+    val chapters = chapters(this)
+
+}

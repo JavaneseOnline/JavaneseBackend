@@ -7,7 +7,6 @@ import online.javanese.Uuid
 import java.time.LocalDateTime
 
 class Course(
-        val id: Uuid,
         val basicInfo: BasicInfo,
         val meta: Meta,
         val h1: String,
@@ -26,7 +25,7 @@ class Course(
 
 private object CourseTable : Table<Course, Uuid>("courses"), VersionedWithTimestamp {
 
-    val Id by idCol(Course::id)
+    val Id by idCol(Course.BasicInfo::id, Course::basicInfo)
     val UrlPathComponent by urlPathComponentCol(Course.BasicInfo::urlPathComponent, Course::basicInfo)
     val MetaTitle by metaTitleCol(Course::meta)
     val MetaDescription by metaDescriptionCol(Course::meta)
@@ -40,7 +39,6 @@ private object CourseTable : Table<Course, Uuid>("courses"), VersionedWithTimest
     override fun idColumns(id: Uuid): Set<Pair<Column<Course, *>, *>> = setOf(Id of id)
 
     override fun create(value: Value<Course>): Course = Course(
-            id = value of Id,
             basicInfo = Course.BasicInfo(
                     id = value of Id,
                     urlPathComponent = value of UrlPathComponent,
@@ -77,7 +75,7 @@ private object BasicCourseInfoTable : Table<Course.BasicInfo, Uuid>("courses") {
 
 internal class CourseDao(
         private val session: Session,
-        private val baseDao: Dao<Course, Uuid> = object : AbstractDao<Course, Uuid>(session, CourseTable, Course::id) {}
+        private val baseDao: Dao<Course, Uuid> = object : AbstractDao<Course, Uuid>(session, CourseTable, { it.basicInfo.id }) {}
 ): Dao<Course, Uuid> by baseDao {
 
     private val tableName = CourseTable.name

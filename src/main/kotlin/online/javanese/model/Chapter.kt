@@ -7,7 +7,6 @@ import online.javanese.Uuid
 import java.time.LocalDateTime
 
 class Chapter(
-        val id: Uuid,
         val basicInfo: BasicInfo,
         val meta: Meta,
         val h1: String,
@@ -27,7 +26,7 @@ class Chapter(
 
 private object ChapterTable : Table<Chapter, Uuid>("chapters"), VersionedWithTimestamp {
 
-    val Id by idCol(Chapter::id)
+    val Id by idCol(Chapter.BasicInfo::id, Chapter::basicInfo)
     val CourseId by uuidCol(Chapter.BasicInfo::courseId, Chapter::basicInfo, name = "courseId")
     val UrlPathComponent by urlPathComponentCol(Chapter.BasicInfo::urlPathComponent, Chapter::basicInfo)
     val LinkText by col(Chapter.BasicInfo::linkText, Chapter::basicInfo, name = "linkText")
@@ -42,7 +41,6 @@ private object ChapterTable : Table<Chapter, Uuid>("chapters"), VersionedWithTim
     override fun idColumns(id: Uuid): Set<Pair<Column<Chapter, *>, *>> = setOf(Id of id)
 
     override fun create(value: Value<Chapter>): Chapter = Chapter(
-            id = value of Id,
             basicInfo = Chapter.BasicInfo(
                     id = value of Id,
                     courseId = value of CourseId,
@@ -82,17 +80,17 @@ private object BasicChapterInfoTable : Table<Chapter.BasicInfo, Uuid>("chapters"
 
 internal class ChapterDao(
         private val session: Session,
-        private val baseDao: Dao<Chapter, Uuid> = object : AbstractDao<Chapter, Uuid>(session, ChapterTable, Chapter::id) {}
+        private val baseDao: Dao<Chapter, Uuid> = object : AbstractDao<Chapter, Uuid>(session, ChapterTable, { it.basicInfo.id }) {}
 ) : Dao<Chapter, Uuid> by baseDao {
 
     private val tableName = ChapterTable.name
     private val courseIdColName = ChapterTable.CourseId.name
     private val sortIndexColName = ChapterTable.SortIndex.name
 
-    fun findBasicSortedBySortIndex(course: Course.BasicInfo): List<Chapter.BasicInfo> =
+    fun findBasicSortedBySortIndex(courseId: Uuid): List<Chapter.BasicInfo> =
             session.select(
                     sql = """SELECT id, "courseId", "urlPathComponent", "linkText" FROM $tableName WHERE "$courseIdColName" = :courseId ORDER BY "$sortIndexColName"""",
-                    parameters = mapOf("courseId" to course.id),
+                    parameters = mapOf("courseId" to courseId),
                     mapper = BasicChapterInfoTable.rowMapper()
             )
 
