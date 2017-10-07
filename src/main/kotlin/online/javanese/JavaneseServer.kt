@@ -4,14 +4,8 @@ import com.github.andrewoma.kwery.core.DefaultSession
 import com.github.andrewoma.kwery.core.dialect.PostgresDialect
 import nz.net.ultraq.thymeleaf.LayoutDialect
 import online.javanese.exception.NotFoundException
-import online.javanese.model.ChapterDao
-import online.javanese.model.CourseDao
-import online.javanese.model.LessonDao
-import online.javanese.model.PageDao
-import online.javanese.repository.ChapterRepository
-import online.javanese.repository.CourseRepository
-import online.javanese.repository.LessonRepository
-import online.javanese.repository.PageRepository
+import online.javanese.model.*
+import online.javanese.repository.*
 import online.javanese.route.createTopLevelRouteHandler
 import online.javanese.template.IndexPageBinding
 import online.javanese.template.TreePageBinding
@@ -69,9 +63,11 @@ object JavaneseServer {
         val courseDao = CourseDao(session)
         val chapterDao = ChapterDao(session)
         val lessonDao = LessonDao(session)
+        val taskDao = TaskDao(session)
 
         val pageRepo = PageRepository(pageDao)
-        val lessonRepo = LessonRepository(lessonDao)
+        val taskRepo = TaskRepository(taskDao)
+        val lessonRepo = LessonRepository(lessonDao, taskRepo)
         val chapterRepo = ChapterRepository(chapterDao, lessonRepo)
         val courseRepo = CourseRepository(courseDao, chapterRepo)
 

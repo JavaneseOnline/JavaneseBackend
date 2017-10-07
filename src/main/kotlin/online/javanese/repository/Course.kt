@@ -20,7 +20,7 @@ class CourseRepository internal constructor(
 
 }
 
-class CourseTree(
+class CourseTree internal constructor(
         val id: Uuid,
         val urlPathComponent: String,
         val linkText: String,

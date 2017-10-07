@@ -25,7 +25,7 @@ class Lesson(
 
 }
 
-private object LessonTable : Table<Lesson, Uuid>("lessons") {
+private object LessonTable : Table<Lesson, Uuid>("lessons"), VersionedWithTimestamp {
 
     val Id by idCol(Lesson.BasicInfo::id, Lesson::basicInfo)
     val ChapterId by uuidCol(Lesson.BasicInfo::chapterId, Lesson::basicInfo, name = "chapterId")
@@ -90,7 +90,7 @@ internal class LessonDao(
 
     private val tableName = LessonTable.name
 
-    internal fun findTreeSortedBySortIndex(chapterId: Uuid): List<Lesson.BasicInfo> =
+    internal fun findBasicSortedBySortIndex(chapterId: Uuid): List<Lesson.BasicInfo> =
             session.select(
                     sql = """SELECT "id", "chapterId", "urlPathComponent", "linkText" FROM "$tableName" WHERE "chapterId" = :chapterId ORDER BY "sortIndex"""",
                     parameters = mapOf("chapterId" to chapterId),

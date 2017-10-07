@@ -21,7 +21,7 @@ class ChapterRepository internal constructor(
 
 }
 
-class ChapterTree(
+class ChapterTree internal constructor(
         val id: Uuid,
         val courseId: Uuid,
         val urlPathComponent: String,

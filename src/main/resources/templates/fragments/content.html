@@ -70,7 +70,7 @@
     <li th:each="lesson, k : ${lessons}">
         <small>[[${lesson.linkText}]]</small>
 
-        <!-- TODO: <ul th:replace="fragments/content :: tasks(tasks = ${lesson.tasks})"></ul>-->
+        <ul th:replace="fragments/content :: tasks(tasks = ${lesson.tasks})"></ul>
     </li>
 </ul>
 
@@ -78,9 +78,9 @@
 
 <ul th:fragment="tasks" th:inline="text">
     <li th:each="task, l : ${tasks}">
-        <a th:href="@{/{course}/{chapter}/{lesson}/ (course=${lesson.chapter.course.url}, chapter=${lesson.chapter.url}, lesson=${lesson.url})}+'#'+${task.url}"
-           th:title="${task.title}">
-            <!--[[#{tree.task}]] [[${l.count}]]. -->[[${task.title}]]
+        <a th:href="@{~/{course}/{chapter}/{lesson}/ (course=${lesson.chapter.course.urlPathComponent}, chapter=${lesson.chapter.urlPathComponent}, lesson=${lesson.urlPathComponent})}+'#'+${task.urlPathComponent}"
+           th:title="${task.linkText}">
+            <!--[[#{tree.task}]] [[${l.count}]]. -->[[${task.linkText}]]
         </a>
     </li>
 </ul>
