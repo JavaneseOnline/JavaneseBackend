@@ -1,7 +1,5 @@
 package online.javanese
 
-import com.github.andrewoma.kwery.core.DefaultSession
-import com.github.andrewoma.kwery.core.dialect.PostgresDialect
 import nz.net.ultraq.thymeleaf.LayoutDialect
 import online.javanese.exception.NotFoundException
 import online.javanese.model.*
@@ -26,7 +24,6 @@ import org.thymeleaf.context.Context
 import org.thymeleaf.templatemode.TemplateMode
 import java.io.File
 import java.io.FileInputStream
-import java.sql.DriverManager
 import java.util.*
 
 object JavaneseServer {
@@ -34,25 +31,26 @@ object JavaneseServer {
     @JvmStatic
     fun main(args: Array<String>) {
 
-        val (dbName, dbProps, localStaticDir, exposedStaticDir) = Properties().let {
+        val (session, staticDirs) = Properties().let {
             it.load(FileInputStream("local.properties"))
 
-            Quadruple(
-                    it["database"] as String,
-                    Properties().also { db ->
-                        db["user"] = it["user"] as String
-                        db["password"] = it["password"] as String
-                    },
-                    it["localStaticDir"] as String?, // e. g. '/home/<user>/IdeaProjects/javanese/src/main/resources/static' for development
-                    it["exposedStaticDir"] as String // e. g. '/static' for development, 'http://static.javanese.online/' for production
+            Pair(
+                    PostgreSqlSession(
+                            dbName = it["database"] as String,
+                            user = it["user"] as String,
+                            password = it["password"] as String
+                    ),
+                    Pair(
+                            // e. g. '/home/<user>/IdeaProjects/javanese/src/main/resources/static' for development
+                            it["localStaticDir"] as String?,
+
+                            // e. g. '/static' for development, 'http://static.javanese.online/' for production
+                            it["exposedStaticDir"] as String
+                    )
             )
         }
 
-
-        org.postgresql.Driver::class.java
-        val connection = DriverManager.getConnection("jdbc:postgresql:$dbName", dbProps)
-
-        val session = DefaultSession(connection, PostgresDialect())
+        val (localStaticDir, exposedStaticDir) = staticDirs
 
         val templateEngine = TemplateEngine(
                 templateResolver = ClassLoaderTemplateResolver(
