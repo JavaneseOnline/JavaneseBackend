@@ -6,9 +6,10 @@ import nz.net.ultraq.thymeleaf.LayoutDialect
 import online.javanese.exception.NotFoundException
 import online.javanese.model.*
 import online.javanese.repository.*
-import online.javanese.route.createTopLevelRouteHandler
+import online.javanese.route.TopLevelRouteHandler
 import online.javanese.template.ArticlesPageBinding
 import online.javanese.template.IndexPageBinding
+import online.javanese.template.PageBinding
 import online.javanese.template.TreePageBinding
 import org.jetbrains.ktor.application.install
 import org.jetbrains.ktor.content.files
@@ -85,11 +86,13 @@ object JavaneseServer {
         val indexPageBinding = IndexPageBinding(exposedStaticDir, templateEngine, locale)
         val treePageBinding = TreePageBinding(exposedStaticDir, templateEngine, locale)
         val articlesPageBinding = ArticlesPageBinding(exposedStaticDir, templateEngine, locale)
+        val pageBinding = PageBinding(exposedStaticDir, templateEngine, locale)
 
         val topLevelRoute =
-                createTopLevelRouteHandler(
+                TopLevelRouteHandler(
                         pageRepo, courseRepo, articleRepo,
-                        indexPageBinding, treePageBinding, articlesPageBinding)
+                        indexPageBinding, treePageBinding, articlesPageBinding, pageBinding
+                )
 
         embeddedServer(Netty, 8080) {
             routing {

@@ -11,13 +11,14 @@ import org.jetbrains.ktor.application.ApplicationCall
 import org.jetbrains.ktor.http.ContentType
 import org.jetbrains.ktor.response.respondText
 
-fun createTopLevelRouteHandler(
+fun TopLevelRouteHandler(
         pageRepo: PageRepository,
         courseRepo: CourseRepository,
         articleRepo: ArticleRepository,
         indexPageBinding: (Page) -> String,
         treePageBinding: (Page, List<CourseTree>) -> String,
-        articlesPageBinding: (Page, List<Article.BasicInfo>) -> String
+        articlesPageBinding: (Page, List<Article.BasicInfo>) -> String,
+        pageBinding: (Page) -> String
 ) : suspend (ApplicationCall, String) -> Unit = { call, query ->
     val page = pageRepo.findByUrlPathComponent(query)
     if (page != null) {
@@ -26,7 +27,7 @@ fun createTopLevelRouteHandler(
                     Page.Magic.Index -> indexPageBinding(page)
                     Page.Magic.Tree -> treePageBinding(page, courseRepo.findTreeSortedBySortIndex())
                     Page.Magic.Articles -> articlesPageBinding(page, articleRepo.findAllBasicOrderBySortIndex())
-                    Page.Magic.CodeReview -> TODO() /* todo */
+                    Page.Magic.CodeReview -> pageBinding(page)
                 },
                 ContentType.Text.Html
         )
