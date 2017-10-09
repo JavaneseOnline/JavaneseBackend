@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org/"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="~{layout}"
+      th:with="title = ${course.meta.title}">
+<body>
+
+<th:block layout:fragment="head" th:replace="fragments/common :: meta(model = ${course})" />
+
+<th:block layout:fragment="content">
+
+    <div class="content card mdl-shadow--8dp">
+        <nav>
+            <a th:href="@{~/}" th:text="#{index.title}"></a> /
+            <a th:href="@{~/материалы/}" th:text="#{tree.header}"></a>
+        </nav>
+
+        <main>
+            <h1 class="content-padding-v" th:text="${course.h1}"></h1>
+
+            <th:block th:utext="${course.description}" />
+        </main>
+
+        <nav>
+            <ul th:replace="fragments/content :: chaptersTree(chapters = ${courseTree.chapters})"></ul>
+        </nav>
+
+        <nav th:replace="fragments/content :: prevNext(${previousCourse}, ${nextCourse}, #{course.previous}, #{course.next})"></nav>
+    </div>
+
+</th:block>
+
+</body>
+</html>

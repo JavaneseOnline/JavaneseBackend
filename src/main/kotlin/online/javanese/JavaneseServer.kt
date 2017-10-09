@@ -6,12 +6,10 @@ import nz.net.ultraq.thymeleaf.LayoutDialect
 import online.javanese.exception.NotFoundException
 import online.javanese.model.*
 import online.javanese.repository.*
+import online.javanese.route.CourseHandler
 import online.javanese.route.PageHandler
 import online.javanese.route.TopLevelRouteHandler
-import online.javanese.template.ArticlesPageBinding
-import online.javanese.template.IndexPageBinding
-import online.javanese.template.PageBinding
-import online.javanese.template.TreePageBinding
+import online.javanese.template.*
 import org.jetbrains.ktor.application.install
 import org.jetbrains.ktor.content.files
 import org.jetbrains.ktor.content.static
@@ -24,6 +22,7 @@ import org.jetbrains.ktor.netty.Netty
 import org.jetbrains.ktor.response.respondText
 import org.jetbrains.ktor.routing.get
 import org.jetbrains.ktor.routing.routing
+import org.thymeleaf.context.Context
 import org.thymeleaf.templatemode.TemplateMode
 import java.io.File
 import java.io.FileInputStream
@@ -84,17 +83,33 @@ object JavaneseServer {
         val articleRepo = ArticleRepository(articleDao)
 
         val locale = Locale.Builder().setLanguage("ru").setScript("Cyrl").build()
-        val indexPageBinding = IndexPageBinding(exposedStaticDir, templateEngine, locale)
-        val treePageBinding = TreePageBinding(exposedStaticDir, templateEngine, locale)
-        val articlesPageBinding = ArticlesPageBinding(exposedStaticDir, templateEngine, locale)
-        val pageBinding = PageBinding(exposedStaticDir, templateEngine, locale)
+        val staticDirPair = "static" to exposedStaticDir
+        val render = { templateName: String, parameters: Map<String, Any> ->
+            templateEngine.process(
+                    templateName,
+                    Context(
+                            locale,
+                            parameters + staticDirPair
+                    )
+            )
+        }
+        val indexPageTpl = IndexPageTemplate(render)
+        val treePageTpl = TreePageTemplate(render)
+        val articlesPageTpl = ArticlesPageTemplate(render)
+        val pageTpl = PageTemplate(render)
+        val coursePageTpl = CoursePageTemplate(render)
 
         val topLevelRoute =
                 TopLevelRouteHandler(
                         pageRepo,
+                        courseRepo,
                         PageHandler(
                                 courseRepo, articleRepo,
-                                indexPageBinding, treePageBinding, articlesPageBinding, pageBinding
+                                indexPageTpl, treePageTpl, articlesPageTpl, pageTpl
+                        ),
+                        CourseHandler(
+                                courseRepo,
+                                coursePageTpl
                         )
                 )
 

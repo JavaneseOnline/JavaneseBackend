@@ -1,6 +1,7 @@
 package online.javanese.repository
 
 import online.javanese.Uuid
+import online.javanese.model.Course
 import online.javanese.model.CourseDao
 
 class CourseRepository internal constructor(
@@ -11,12 +12,28 @@ class CourseRepository internal constructor(
     fun findTreeSortedBySortIndex(): List<CourseTree> =
             courseDao
                     .findAllBasicSortedBySortIndex()
-                    .map { CourseTree(
-                            id = it.id,
-                            urlPathComponent = it.urlPathComponent,
-                            linkText = it.linkText,
-                            chapters = chapterRepo::findTreeSortedBySortIndex
-                    ) }
+                    .map { mapToTree(it) }
+
+    fun findTree(courseId: Uuid): CourseTree? =
+            courseDao
+                    .findBasicById(courseId)
+                    ?.let { mapToTree(it) }
+
+    fun findByUrlComponent(component: String): Course? =
+            courseDao.findByUrlComponent(component)
+
+    fun findPrevious(course: Course): Course.BasicInfo? =
+            courseDao.findPrevious(course)
+
+    fun findNext(course: Course): Course.BasicInfo? =
+            courseDao.findNext(course)
+
+    private fun mapToTree(info: Course.BasicInfo): CourseTree = CourseTree(
+            id = info.id,
+            urlPathComponent = info.urlPathComponent,
+            linkText = info.linkText,
+            chapters = chapterRepo::findTreeSortedBySortIndex
+    )
 
 }
 

@@ -12,17 +12,17 @@ import org.jetbrains.ktor.response.respondText
 fun PageHandler(
         courseRepo: CourseRepository,
         articleRepo: ArticleRepository,
-        indexPageBinding: (Page) -> String,
-        treePageBinding: (Page, List<CourseTree>) -> String,
-        articlesPageBinding: (Page, List<Article.BasicInfo>) -> String,
-        pageBinding: (Page) -> String
+        indexPageTpl: (Page) -> String,
+        treePageTpl: (Page, List<CourseTree>) -> String,
+        articlesPageTpl: (Page, List<Article.BasicInfo>) -> String,
+        pageTpl: (Page) -> String
 ): suspend (ApplicationCall, Page) -> Unit = { call, page ->
     call.respondText(
             when (page.magic) {
-                Page.Magic.Index -> indexPageBinding(page)
-                Page.Magic.Tree -> treePageBinding(page, courseRepo.findTreeSortedBySortIndex())
-                Page.Magic.Articles -> articlesPageBinding(page, articleRepo.findAllBasicOrderBySortIndex())
-                Page.Magic.CodeReview -> pageBinding(page)
+                Page.Magic.Index -> indexPageTpl(page)
+                Page.Magic.Tree -> treePageTpl(page, courseRepo.findTreeSortedBySortIndex())
+                Page.Magic.Articles -> articlesPageTpl(page, articleRepo.findAllBasicOrderBySortIndex())
+                Page.Magic.CodeReview -> pageTpl(page)
             },
             ContentType.Text.Html
     )

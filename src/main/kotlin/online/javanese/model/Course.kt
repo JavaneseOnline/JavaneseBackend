@@ -1,7 +1,10 @@
 package online.javanese.model
 
 import com.github.andrewoma.kwery.core.Session
-import com.github.andrewoma.kwery.mapper.*
+import com.github.andrewoma.kwery.mapper.Column
+import com.github.andrewoma.kwery.mapper.Table
+import com.github.andrewoma.kwery.mapper.Value
+import com.github.andrewoma.kwery.mapper.VersionedWithTimestamp
 import online.javanese.Html
 import online.javanese.Uuid
 import java.time.LocalDateTime
@@ -74,31 +77,65 @@ private object BasicCourseInfoTable : Table<Course.BasicInfo, Uuid>("courses") {
 }
 
 internal class CourseDao(
-        private val session: Session,
-        private val baseDao: Dao<Course, Uuid> = object : AbstractDao<Course, Uuid>(session, CourseTable, { it.basicInfo.id }) {}
-): Dao<Course, Uuid> by baseDao {
+        private val session: Session
+) {
+
+//    private val baseDao: Dao<Course, Uuid> = object : AbstractDao<Course, Uuid>(session, CourseTable, { it.basicInfo.id }) {}
 
     private val tableName = CourseTable.name
-    private val sortIndexColName = CourseTable.SortIndex.name
 
-    override fun findById(id: Uuid, columns: Set<Column<Course, *>>): Course? =
+    private val idColName = CourseTable.Id.name
+    private val sortIndexColName = CourseTable.SortIndex.name
+    private val urlComponentColName = CourseTable.UrlPathComponent.name
+
+    private val basicInfoColumns = """ "id", "urlPathComponent", "linkText" """
+
+    /*fun findById(id: Uuid, columns: Set<Column<Course, *>>): Course? =
             session.select(
                     sql = """SELECT * FROM $tableName WHERE "id" = :id""",
                     parameters = mapOf("id" to id),
                     mapper = CourseTable.rowMapper()
-            ).firstOrNull()
+            ).firstOrNull()*/
 
     fun findAllBasicSortedBySortIndex(): List<Course.BasicInfo> =
             session.select(
-                    sql = """SELECT "id", "urlPathComponent", "linkText" FROM $tableName ORDER BY "$sortIndexColName" ASC""",
+                    sql = """SELECT $basicInfoColumns FROM $tableName ORDER BY "$sortIndexColName" ASC""",
                     mapper = BasicCourseInfoTable.rowMapper()
             )
 
-    fun findAllSortedBySortIndex() =
+    fun findBasicById(id: Uuid): Course.BasicInfo? =
+            session.select(
+                    sql = """SELECT $basicInfoColumns FROM $tableName WHERE "$idColName" = :id""",
+                    parameters = mapOf("id" to id),
+                    mapper = BasicCourseInfoTable.rowMapper()
+            ).firstOrNull()
+
+    /*fun findAllSortedBySortIndex() =
             session.select(
                     sql = """SELECT * FROM $tableName ORDER BY "$sortIndexColName" ASC""",
                     mapper = CourseTable.rowMapper()
-            )
+            )*/
+
+    fun findByUrlComponent(component: String): Course? =
+            session.select(
+                    sql = """SELECT * FROM $tableName WHERE "$urlComponentColName" = :component LIMIT 1""",
+                    parameters = mapOf("component" to component),
+                    mapper = CourseTable.rowMapper()
+            ).firstOrNull()
+
+    fun findPrevious(course: Course): Course.BasicInfo? =
+            session.select(
+                    sql = """SELECT $basicInfoColumns FROM courses WHERE "$sortIndexColName" < :index ORDER BY "$sortIndexColName" DESC""",
+                    parameters = mapOf("index" to course.sortIndex),
+                    mapper = BasicCourseInfoTable.rowMapper()
+            ).firstOrNull()
+
+    fun findNext(course: Course): Course.BasicInfo? =
+            session.select(
+                    sql = """SELECT $basicInfoColumns FROM courses WHERE "$sortIndexColName" > :index ORDER BY "$sortIndexColName" ASC""",
+                    parameters = mapOf("index" to course.sortIndex),
+                    mapper = BasicCourseInfoTable.rowMapper()
+            ).firstOrNull()
 
 }
 
