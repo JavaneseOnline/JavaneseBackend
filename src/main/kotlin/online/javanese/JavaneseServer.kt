@@ -6,6 +6,7 @@ import nz.net.ultraq.thymeleaf.LayoutDialect
 import online.javanese.exception.NotFoundException
 import online.javanese.model.*
 import online.javanese.repository.*
+import online.javanese.route.PageHandler
 import online.javanese.route.TopLevelRouteHandler
 import online.javanese.template.ArticlesPageBinding
 import online.javanese.template.IndexPageBinding
@@ -90,8 +91,11 @@ object JavaneseServer {
 
         val topLevelRoute =
                 TopLevelRouteHandler(
-                        pageRepo, courseRepo, articleRepo,
-                        indexPageBinding, treePageBinding, articlesPageBinding, pageBinding
+                        pageRepo,
+                        PageHandler(
+                                courseRepo, articleRepo,
+                                indexPageBinding, treePageBinding, articlesPageBinding, pageBinding
+                        )
                 )
 
         embeddedServer(Netty, 8080) {
