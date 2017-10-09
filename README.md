@@ -12,9 +12,10 @@ Java 8 + Kotlin, Spring, Hibernate, Thymeleaf, SCSS.
 * [Thymeleaf](https://github.com/thymeleaf/thymeleaf) с
   [layout dialect](https://github.com/ultraq/thymeleaf-layout-dialect) (временно)
 * SCSS (временно)
+* PostgreSQL
 
 Задачи:
-* Переписать сайт на этом стеке, чтобы он работал так же, как текущая версия;
+* Переписать сайт на этом стеке, чтобы он работал так же, как текущая версия, включая админку;
 * сделать новые фичи, в частности, кодревью;
 * вычистить код
   * отказаться от Thymeleaf и SCSS в пользу типобезопасных DSL (для HTML
