@@ -42,8 +42,8 @@ object JavaneseServer {
                         db["user"] = it["user"] as String
                         db["password"] = it["password"] as String
                     },
-                    it["localStaticDir"] as String?,
-                    it["exposedStaticDir"] as String
+                    it["localStaticDir"] as String?, // e. g. '/home/<user>/IdeaProjects/javanese/src/main/resources/static' for development
+                    it["exposedStaticDir"] as String // e. g. '/static' for development, 'http://static.javanese.online/' for production
             )
         }
 
