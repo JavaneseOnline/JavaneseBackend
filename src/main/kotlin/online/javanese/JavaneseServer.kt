@@ -33,13 +33,23 @@ object JavaneseServer {
     @JvmStatic
     fun main(args: Array<String>) {
 
-        org.postgresql.Driver::class.java
-        val localProps = Properties().apply {
-            load(FileInputStream("local.properties"))
-            /* Must contain 'database', 'user', 'password', 'localStaticDir', optional 'exposedStaticDir' */
+        val (dbName, dbProps, localStaticDir, exposedStaticDir) = Properties().let {
+            it.load(FileInputStream("local.properties"))
+
+            Quadruple(
+                    it["database"] as String,
+                    Properties().also { db ->
+                        db["user"] = it["user"] as String
+                        db["password"] = it["password"] as String
+                    },
+                    it["localStaticDir"] as String?,
+                    it["exposedStaticDir"] as String
+            )
         }
-        val database = localProps["database"]
-        val connection = DriverManager.getConnection("jdbc:postgresql:$database", localProps)
+
+
+        org.postgresql.Driver::class.java
+        val connection = DriverManager.getConnection("jdbc:postgresql:$dbName", dbProps)
 
         val session = DefaultSession(connection, PostgresDialect())
 
@@ -56,9 +66,6 @@ object JavaneseServer {
                 ),
                 dialects = *arrayOf(LayoutDialect())
         )
-
-        val localStaticDir = localProps["localStaticDir"] as String?
-        val exposedStaticDir = localProps["exposedStaticDir"] as String
 
         val pageDao = PageDao(session)
         val courseDao = CourseDao(session)
