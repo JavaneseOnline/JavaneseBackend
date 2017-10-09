@@ -19,6 +19,12 @@ internal fun <T : Any> Table<T, Uuid>.uuidCol(idProp: KProperty1<T, Uuid>, name:
 internal fun <T : Any, C> Table<T, Uuid>.uuidCol(idProp: KProperty1<C, Uuid>, path: (T) -> C, name: String) =
         col(idProp, path, name = name, default = DefaultUuid, converter = UuidConverter)
 
+internal fun <T : Any> Table<T, *>.linkTextCol(linkTextProp: KProperty1<T, String>) =
+        col(linkTextProp, name = "linkText")
+
+internal fun <T : Any, C> Table<T, *>.linkTextCol(linkTextProp: KProperty1<C, String>, path: (T) -> C) =
+        col(linkTextProp, path, name = "linkText")
+
 internal fun <T : Any> Table<T, *>.metaTitleCol(metaProp: KProperty1<T, Meta>) =
         col(Meta::title, metaProp, name = "metaTitle")
 

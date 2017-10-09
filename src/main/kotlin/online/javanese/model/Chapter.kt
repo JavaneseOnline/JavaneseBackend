@@ -29,7 +29,7 @@ private object ChapterTable : Table<Chapter, Uuid>("chapters"), VersionedWithTim
     val Id by idCol(Chapter.BasicInfo::id, Chapter::basicInfo)
     val CourseId by uuidCol(Chapter.BasicInfo::courseId, Chapter::basicInfo, name = "courseId")
     val UrlPathComponent by urlPathComponentCol(Chapter.BasicInfo::urlPathComponent, Chapter::basicInfo)
-    val LinkText by col(Chapter.BasicInfo::linkText, Chapter::basicInfo, name = "linkText")
+    val LinkText by linkTextCol(Chapter.BasicInfo::linkText, Chapter::basicInfo)
     val MetaTitle by metaTitleCol(Chapter::meta)
     val MetaDescription by metaDescriptionCol(Chapter::meta)
     val MetaKeywords by metaKeywordsCol(Chapter::meta)
@@ -65,7 +65,7 @@ private object BasicChapterInfoTable : Table<Chapter.BasicInfo, Uuid>("chapters"
     val Id by idCol(Chapter.BasicInfo::id)
     val CourseId by uuidCol(Chapter.BasicInfo::courseId, name = "courseId")
     val UrlPathComponent by urlPathComponentCol(Chapter.BasicInfo::urlPathComponent)
-    val LinkText by col(Chapter.BasicInfo::linkText, name = "linkText")
+    val LinkText by linkTextCol(Chapter.BasicInfo::linkText)
 
     override fun idColumns(id: Uuid): Set<Pair<Column<Chapter.BasicInfo, *>, *>> = setOf(Id of id)
 

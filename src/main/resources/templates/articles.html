@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org/"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="~{layout}"
+      th:with="title = ${page.meta.title}">
+<body>
+
+<th:block layout:fragment="head" th:replace="fragments/common :: meta(model = ${page})" />
+
+<th:block layout:fragment="content">
+
+    <div class="content card mdl-shadow--8dp">
+        <nav>
+            <a th:href="@{~/}" th:text="#{index.title}"></a>
+        </nav>
+
+        <main>
+            <h1 th:text="${page.h1}" class="content-padding-v"></h1>
+
+            <th:block th:utext="${page.bodyMarkup}" />
+        </main>
+
+        <nav>
+            <ul>
+                <li th:each="article : ${articles}">
+                    <a th:href="@{./{article}/ (article=${article.urlPathComponent})}" th:text="${article.linkText}" th:title="${article.linkText}"></a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+</th:block>
+
+</body>
+</html>

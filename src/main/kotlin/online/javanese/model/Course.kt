@@ -30,7 +30,7 @@ private object CourseTable : Table<Course, Uuid>("courses"), VersionedWithTimest
     val MetaTitle by metaTitleCol(Course::meta)
     val MetaDescription by metaDescriptionCol(Course::meta)
     val MetaKeywords by metaKeywordsCol(Course::meta)
-    val LinkText by col(Course.BasicInfo::linkText, Course::basicInfo, name = "linkText")
+    val LinkText by linkTextCol(Course.BasicInfo::linkText, Course::basicInfo)
     val H1 by col(Course::h1, name = "h1")
     val Description by col(Course::description, name = "description")
     val SortIndex by sortIndexCol(Course::sortIndex)
@@ -61,7 +61,7 @@ private object BasicCourseInfoTable : Table<Course.BasicInfo, Uuid>("courses") {
 
     val Id by idCol(Course.BasicInfo::id)
     val UrlPathComponent by urlPathComponentCol(Course.BasicInfo::urlPathComponent)
-    val LinkText by col(Course.BasicInfo::linkText, name = "linkText")
+    val LinkText by linkTextCol(Course.BasicInfo::linkText)
 
     override fun idColumns(id: Uuid): Set<Pair<Column<Course.BasicInfo, *>, *>> = setOf(Id of id)
 

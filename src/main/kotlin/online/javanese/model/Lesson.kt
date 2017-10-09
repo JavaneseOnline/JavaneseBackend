@@ -30,7 +30,7 @@ private object LessonTable : Table<Lesson, Uuid>("lessons"), VersionedWithTimest
     val Id by idCol(Lesson.BasicInfo::id, Lesson::basicInfo)
     val ChapterId by uuidCol(Lesson.BasicInfo::chapterId, Lesson::basicInfo, name = "chapterId")
     val UrlPathComponent by urlPathComponentCol(Lesson.BasicInfo::urlPathComponent, Lesson::basicInfo)
-    val LinkText by col(Lesson.BasicInfo::linkText, Lesson::basicInfo, name = "linkText")
+    val LinkText by linkTextCol(Lesson.BasicInfo::linkText, Lesson::basicInfo)
     val MetaTitle by metaTitleCol(Lesson::meta)
     val MetaDescription by metaDescriptionCol(Lesson::meta)
     val MetaKeywords by metaKeywordsCol(Lesson::meta)
@@ -55,8 +55,6 @@ private object LessonTable : Table<Lesson, Uuid>("lessons"), VersionedWithTimest
                     description = value of MetaDescription
             ),
             h1 = value of H1,
-
-
             bodyMarkup = value of BodyMarkup,
             sortIndex = value of SortIndex,
             lastModified = value of LastModified
@@ -69,7 +67,7 @@ private object BasicLessonInfoTable : Table<Lesson.BasicInfo, Uuid>("lessons") {
     val Id by idCol(Lesson.BasicInfo::id)
     val ChapterId by uuidCol(Lesson.BasicInfo::chapterId, name = "chapterId")
     val UrlPathComponent by urlPathComponentCol(Lesson.BasicInfo::urlPathComponent)
-    val LinkText by col(Lesson.BasicInfo::linkText, name = "linkText")
+    val LinkText by linkTextCol(Lesson.BasicInfo::linkText)
 
     override fun idColumns(id: Uuid): Set<Pair<Column<Lesson.BasicInfo, *>, *>> =
             setOf(Id of id)

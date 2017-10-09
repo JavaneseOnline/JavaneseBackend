@@ -7,6 +7,7 @@ import online.javanese.exception.NotFoundException
 import online.javanese.model.*
 import online.javanese.repository.*
 import online.javanese.route.createTopLevelRouteHandler
+import online.javanese.template.ArticlesPageBinding
 import online.javanese.template.IndexPageBinding
 import online.javanese.template.TreePageBinding
 import org.jetbrains.ktor.application.install
@@ -64,19 +65,24 @@ object JavaneseServer {
         val chapterDao = ChapterDao(session)
         val lessonDao = LessonDao(session)
         val taskDao = TaskDao(session)
+        val articleDao = ArticleDao(session)
 
         val pageRepo = PageRepository(pageDao)
         val taskRepo = TaskRepository(taskDao)
         val lessonRepo = LessonRepository(lessonDao, taskRepo)
         val chapterRepo = ChapterRepository(chapterDao, lessonRepo)
         val courseRepo = CourseRepository(courseDao, chapterRepo)
+        val articleRepo = ArticleRepository(articleDao)
 
         val locale = Locale.Builder().setLanguage("ru").setScript("Cyrl").build()
         val indexPageBinding = IndexPageBinding(exposedStaticDir, templateEngine, locale)
         val treePageBinding = TreePageBinding(exposedStaticDir, templateEngine, locale)
+        val articlesPageBinding = ArticlesPageBinding(exposedStaticDir, templateEngine, locale)
 
         val topLevelRoute =
-                createTopLevelRouteHandler(pageRepo, courseRepo, indexPageBinding, treePageBinding)
+                createTopLevelRouteHandler(
+                        pageRepo, courseRepo, articleRepo,
+                        indexPageBinding, treePageBinding, articlesPageBinding)
 
         embeddedServer(Netty, 8080) {
             routing {
@@ -104,3 +110,6 @@ object JavaneseServer {
     }
 
 }
+
+// todo: rename all 'h1's to 'heading'
+// todo: urlPathComponent -> urlComponent or what??

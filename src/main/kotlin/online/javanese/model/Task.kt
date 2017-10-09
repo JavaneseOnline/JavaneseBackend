@@ -44,7 +44,7 @@ private object TaskTable : Table<Task, Uuid>("tasks") {
 
     val Id by idCol(Task.BasicInfo::id, Task::basicInfo)
     val LessonId by uuidCol(Task.BasicInfo::lessonId, Task::basicInfo, name = "lessonId")
-    val LinkText by col(Task.BasicInfo::linkText, Task::basicInfo, name = "linkText")
+    val LinkText by linkTextCol(Task.BasicInfo::linkText, Task::basicInfo)
     val UrlPathComponent by urlPathComponentCol(Task.BasicInfo::urlPathComponent, Task::basicInfo)
 
     val Heading by col(Task::heading, name = "heading")
@@ -104,7 +104,7 @@ private object TaskBasicInfoTable : Table<Task.BasicInfo, Uuid>("tasks") {
 
     val Id by idCol(Task.BasicInfo::id)
     val LessonId by uuidCol(Task.BasicInfo::lessonId, name = "lessonId")
-    val LinkText by col(Task.BasicInfo::linkText, name = "linkText")
+    val LinkText by linkTextCol(Task.BasicInfo::linkText)
     val UrlPathComponent by urlPathComponentCol(Task.BasicInfo::urlPathComponent)
 
     override fun idColumns(id: Uuid): Set<Pair<Column<Task.BasicInfo, *>, *>> =

@@ -13,7 +13,7 @@ class Page(
         val meta: Meta,
         val headMarkup: Html,
         val h1: String,
-        val contentMarkup: Html, // todo: display as HTML in admin panel
+        val bodyMarkup: Html, // todo: display as HTML in admin panel
         val beforeBodyEndMarkup: Html,
         val lastModified: LocalDateTime
 ) {
@@ -32,7 +32,7 @@ private object PagesTable : Table<Page, Uuid>("pages"), VersionedWithTimestamp {
     val MetaKeywords by metaKeywordsCol(Page::meta)
     val HeadMarkup by col(Page::headMarkup, name = "headMarkup")
     val H1 by col(Page::h1, name = "h1")
-    val ContentMarkup by col(Page::contentMarkup, name = "contentMarkup")
+    val BodyMarkup by col(Page::bodyMarkup, name = "bodyMarkup")
     val BeforeBodyEndMarkup by col(Page::beforeBodyEndMarkup, name = "beforeBodyEndMarkup")
     val LastModified by lastModifiedCol(Page::lastModified)
 
@@ -48,7 +48,7 @@ private object PagesTable : Table<Page, Uuid>("pages"), VersionedWithTimestamp {
                     keywords = value of MetaKeywords
             ),
             h1 = value of H1,
-            contentMarkup = value of ContentMarkup,
+            bodyMarkup = value of BodyMarkup,
             headMarkup = value of HeadMarkup,
             beforeBodyEndMarkup = value of BeforeBodyEndMarkup,
             lastModified = value of LastModified
@@ -83,7 +83,7 @@ CREATE TABLE public.pages (
 	"metaKeywords" varchar(256) NOT NULL,
 	"headMarkup" text NOT NULL,
 	h1 varchar(256) NOT NULL,
-	"contentMarkup" text NOT NULL,
+	"bodyMarkup" text NOT NULL,
 	"beforeBodyEndMarkup" text NOT NULL,
 	"lastModified" timestamp NOT NULL,
 	CONSTRAINT pages_pk PRIMARY KEY (id)
