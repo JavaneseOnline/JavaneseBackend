@@ -34,25 +34,7 @@ object JavaneseServer {
     @JvmStatic
     fun main(args: Array<String>) {
 
-        val (session, staticDirs) = Properties().let {
-            it.load(FileInputStream("local.properties"))
-
-            Pair(
-                    PostgreSqlSession(
-                            dbName = it["database"] as String,
-                            user = it["user"] as String,
-                            password = it["password"] as String
-                    ),
-                    Pair(
-                            // e. g. '/home/<user>/IdeaProjects/javanese/src/main/resources/static' for development
-                            it["localStaticDir"] as String?,
-
-                            // e. g. '/static' for development, 'http://static.javanese.online/' for production
-                            it["exposedStaticDir"] as String
-                    )
-            )
-        }
-
+        val (session, staticDirs) = parseProperties()
         val (localStaticDir, exposedStaticDir) = staticDirs
 
         val templateEngine = TemplateEngine(
@@ -76,6 +58,7 @@ object JavaneseServer {
         val taskDao = TaskDao(session)
         val articleDao = ArticleDao(session)
 
+        // todo: repositories may be removed in favour of DAOs
         val pageRepo = PageRepository(pageDao)
         val taskRepo = TaskRepository(taskDao)
         val lessonRepo = LessonRepository(lessonDao, taskRepo)
@@ -95,7 +78,8 @@ object JavaneseServer {
             )
         }
 
-        val tree = courseRepo.findTreeSortedBySortIndex() // fixme
+        val tree = courseRepo.findTreeSortedBySortIndex() // fixme: may not fetch whole tree
+        // (after removing Thymeleaf this refactoring would be easy)
 
         val urlOfCourse = { c: Course.BasicInfo ->
             "/${c.urlPathComponent.encodeForUrl()}/"
@@ -158,6 +142,25 @@ object JavaneseServer {
                 }
             }
         }.start(wait = true)
+    }
+
+    private fun parseProperties() = Properties().let {
+        it.load(FileInputStream("local.properties"))
+
+        Pair(
+                PostgreSqlSession(
+                        dbName = it["database"] as String,
+                        user = it["user"] as String,
+                        password = it["password"] as String
+                ),
+                Pair(
+                        // e. g. '/home/<user>/IdeaProjects/javanese/src/main/resources/static' for development
+                        it["localStaticDir"] as String?,
+
+                        // e. g. '/static' for development, 'http://static.javanese.online/' for production
+                        it["exposedStaticDir"] as String
+                )
+        )
     }
 
 }
