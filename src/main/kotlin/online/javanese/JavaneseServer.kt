@@ -2,9 +2,14 @@ package online.javanese
 
 import nz.net.ultraq.thymeleaf.LayoutDialect
 import online.javanese.exception.NotFoundException
+import online.javanese.handler.ArticleHandler
+import online.javanese.handler.ChapterHandler
+import online.javanese.handler.CourseHandler
+import online.javanese.handler.PageHandler
 import online.javanese.model.*
 import online.javanese.repository.*
-import online.javanese.route.*
+import online.javanese.route.OnePartRoute
+import online.javanese.route.TwoPartsRoute
 import online.javanese.template.*
 import org.jetbrains.ktor.application.install
 import org.jetbrains.ktor.content.files
@@ -93,7 +98,7 @@ object JavaneseServer {
         val tree = courseRepo.findTreeSortedBySortIndex() // fixme
 
         val route1 =
-                OnePartRouteHandler(
+                OnePartRoute(
                         pageRepo,
                         courseRepo,
                         PageHandler(
@@ -114,7 +119,7 @@ object JavaneseServer {
         }
 
         val route2 =
-                TwoPartsHandler(
+                TwoPartsRoute(
                         pageRepo, articleRepo, courseRepo, chapterRepo,
                         ArticleHandler(
                                 ArticlePageTemplate(render)

@@ -1,4 +1,4 @@
-package online.javanese.route
+package online.javanese.handler
 
 import online.javanese.model.Article
 import online.javanese.model.Page

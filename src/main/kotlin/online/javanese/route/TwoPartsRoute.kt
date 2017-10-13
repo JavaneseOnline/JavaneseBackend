@@ -11,7 +11,7 @@ import online.javanese.repository.CourseRepository
 import online.javanese.repository.PageRepository
 import org.jetbrains.ktor.application.ApplicationCall
 
-fun TwoPartsHandler(
+fun TwoPartsRoute(
         pageRepo: PageRepository,
         articleRepo: ArticleRepository,
         courseRepo: CourseRepository,

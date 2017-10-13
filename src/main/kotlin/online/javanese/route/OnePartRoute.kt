@@ -7,7 +7,7 @@ import online.javanese.repository.CourseRepository
 import online.javanese.repository.PageRepository
 import org.jetbrains.ktor.application.ApplicationCall
 
-fun OnePartRouteHandler(
+fun OnePartRoute(
         pageRepo: PageRepository,
         courseRepo: CourseRepository,
         pageHandler: suspend (ApplicationCall, Page) -> Unit,

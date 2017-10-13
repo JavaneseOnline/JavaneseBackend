@@ -1,4 +1,4 @@
-package online.javanese.route
+package online.javanese.handler
 
 import online.javanese.model.Chapter
 import online.javanese.model.Course
