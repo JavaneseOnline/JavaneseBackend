@@ -105,10 +105,10 @@ internal class CourseDao(
 
     fun findBasicById(id: Uuid): Course.BasicInfo? =
             session.select(
-                    sql = """SELECT $basicInfoColumns FROM $tableName WHERE "$idColName" = :id""",
+                    sql = """SELECT $basicInfoColumns FROM $tableName WHERE "$idColName" = :id LIMIT 1""",
                     parameters = mapOf("id" to id),
                     mapper = BasicCourseInfoTable.rowMapper()
-            ).firstOrNull()
+            ).singleOrNull()
 
     /*fun findAllSortedBySortIndex() =
             session.select(
@@ -121,21 +121,21 @@ internal class CourseDao(
                     sql = """SELECT * FROM $tableName WHERE "$urlComponentColName" = :component LIMIT 1""",
                     parameters = mapOf("component" to component),
                     mapper = CourseTable.rowMapper()
-            ).firstOrNull()
+            ).singleOrNull()
 
     fun findPrevious(course: Course): Course.BasicInfo? =
             session.select(
-                    sql = """SELECT $basicInfoColumns FROM courses WHERE "$sortIndexColName" < :index ORDER BY "$sortIndexColName" DESC""",
+                    sql = """SELECT $basicInfoColumns FROM courses WHERE "$sortIndexColName" < :index ORDER BY "$sortIndexColName" DESC LIMIT 1""",
                     parameters = mapOf("index" to course.sortIndex),
                     mapper = BasicCourseInfoTable.rowMapper()
-            ).firstOrNull()
+            ).singleOrNull()
 
     fun findNext(course: Course): Course.BasicInfo? =
             session.select(
-                    sql = """SELECT $basicInfoColumns FROM courses WHERE "$sortIndexColName" > :index ORDER BY "$sortIndexColName" ASC""",
+                    sql = """SELECT $basicInfoColumns FROM courses WHERE "$sortIndexColName" > :index ORDER BY "$sortIndexColName" ASC LIMIT 1""",
                     parameters = mapOf("index" to course.sortIndex),
                     mapper = BasicCourseInfoTable.rowMapper()
-            ).firstOrNull()
+            ).singleOrNull()
 
 }
 

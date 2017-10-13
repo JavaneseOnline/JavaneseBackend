@@ -90,6 +90,8 @@ object JavaneseServer {
             )
         }
 
+        val tree = courseRepo.findTreeSortedBySortIndex() // fixme
+
         val route1 =
                 OnePartRouteHandler(
                         pageRepo,
@@ -107,12 +109,20 @@ object JavaneseServer {
                         )
                 )
 
+        val urlOfChapter = { ch: ChapterTree ->
+            "/${ch.course.urlPathComponent.encodeForUrl()}/${ch.urlPathComponent.encodeForUrl()}/"
+        }
+
         val route2 =
                 TwoPartsHandler(
                         pageRepo, articleRepo, courseRepo, chapterRepo,
                         ArticleHandler(
                                 ArticlePageTemplate(render)
-                        ), { _, _, _ -> TODO(/*todo*/) }
+                        ),
+                        ChapterHandler(
+                                tree,
+                                ChapterPageTemplate(urlOfChapter, render)
+                        )
                 )
 
         embeddedServer(Netty, 8080) {

@@ -84,23 +84,33 @@ internal class ChapterDao(
 ) : Dao<Chapter, Uuid> by baseDao {
 
     private val tableName = ChapterTable.name
+    private val idColName = ChapterTable.Id.name
     private val courseIdColName = ChapterTable.CourseId.name
     private val urlComponentColName = ChapterTable.UrlPathComponent.name
     private val sortIndexColName = ChapterTable.SortIndex.name
 
+    private val basicColumns = """id, "courseId", "urlPathComponent", "linkText""""
+
     fun findBasicSortedBySortIndex(courseId: Uuid): List<Chapter.BasicInfo> =
             session.select(
-                    sql = """SELECT id, "courseId", "urlPathComponent", "linkText" FROM $tableName WHERE "$courseIdColName" = :courseId ORDER BY "$sortIndexColName"""",
+                    sql = """SELECT $basicColumns FROM $tableName WHERE "$courseIdColName" = :courseId ORDER BY "$sortIndexColName"""",
                     parameters = mapOf("courseId" to courseId),
                     mapper = BasicChapterInfoTable.rowMapper()
             )
+
+    fun findBasicById(chapterId: Uuid): Chapter.BasicInfo? =
+            session.select(
+                    sql = """SELECT $basicColumns FROM $tableName WHERE "$idColName" = :id LIMIT 1""",
+                    parameters = mapOf("id" to chapterId),
+                    mapper = BasicChapterInfoTable.rowMapper()
+            ).singleOrNull()
 
     fun findByUrlComponent(component: String): Chapter? =
             session.select(
                     sql = """SELECT * FROM $tableName WHERE "$urlComponentColName" = :component LIMIT 1""",
                     parameters = mapOf("component" to component),
                     mapper = ChapterTable.rowMapper()
-            ).firstOrNull()
+            ).singleOrNull()
 
 }
 

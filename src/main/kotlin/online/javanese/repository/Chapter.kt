@@ -10,18 +10,26 @@ class ChapterRepository internal constructor(
 ) {
 
     fun findTreeSortedBySortIndex(course: CourseTree): List<ChapterTree> =
-            chapterDao.findBasicSortedBySortIndex(course.id)
-                    .map { ChapterTree(
-                            id = it.id,
-                            courseId = it.courseId,
-                            urlPathComponent = it.urlPathComponent,
-                            linkText = it.linkText,
-                            course = course,
-                            lessons = lessonRepo::findTreeSortedBySortIndex
-                    ) }
+            chapterDao
+                    .findBasicSortedBySortIndex(course.id)
+                    .map { it.toTree(course) }
+
+    /*fun findTreeById(chapter: Chapter): ChapterTree? =
+            chapterDao // ah, lol, it requires whole graph to be fetched
+                    .findBasicById(chapter.basicInfo.id)
+                    ?.toTree(chapter)*/
 
     fun findByUrlComponent(component: String): Chapter? =
             chapterDao.findByUrlComponent(component)
+
+    private fun Chapter.BasicInfo.toTree(course: CourseTree) = ChapterTree(
+            id = id,
+            courseId = courseId,
+            urlPathComponent = urlPathComponent,
+            linkText = linkText,
+            course = course,
+            lessons = lessonRepo::findTreeSortedBySortIndex
+    )
 
 }
 

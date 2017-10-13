@@ -87,22 +87,22 @@
 
 <!-- prev / next -->
 
-<nav th:fragment="prevNext(prev, next, prevText, nextText)" th:if="${prev} or ${next}" class="mdl-grid mdl-grid--no-spacing">
+<nav th:fragment="prevNext(urlOf, prev, next, prevText, nextText)" th:if="${prev} or ${next}" class="mdl-grid mdl-grid--no-spacing">
     <p class="mdl-cell mdl-cell--4-col mdl-cell--6-col-desktop">
         <th:block th:if="${prev}">
-            <a th:href="${prev.fullUrl}"
+            <a th:href="${urlOf.invoke(prev)}"
                th:text="${prevText}"></a>
         </th:block>
     </p>
     <p class="mdl-cell mdl-cell--4-col-tablet mdl-cell--6-col-desktop mdl-cell--hide-phone mdl-typography--text-right">
         <th:block th:if="${next}">
-            <a th:href="${next.fullUrl}"
+            <a th:href="${urlOf.invoke(next)}"
                th:text="${nextText}"></a>
         </th:block>
     </p>
     <p class="mdl-cell mdl-cell--4-col mdl-cell--hide-desktop mdl-cell--hide-tablet">
         <th:block th:if="${next}">
-            <a th:href="${next.fullUrl}"
+            <a th:href="${urlOf.invoke(next)}"
                th:text="${nextText}"></a>
         </th:block>
     </p>

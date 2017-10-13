@@ -12,12 +12,12 @@ class CourseRepository internal constructor(
     fun findTreeSortedBySortIndex(): List<CourseTree> =
             courseDao
                     .findAllBasicSortedBySortIndex()
-                    .map { mapToTree(it) }
+                    .map { toTree(it) }
 
     fun findTree(courseId: Uuid): CourseTree? =
             courseDao
                     .findBasicById(courseId)
-                    ?.let { mapToTree(it) }
+                    ?.let { toTree(it) }
 
     fun findByUrlComponent(component: String): Course? =
             courseDao.findByUrlComponent(component)
@@ -28,7 +28,7 @@ class CourseRepository internal constructor(
     fun findNext(course: Course): Course.BasicInfo? =
             courseDao.findNext(course)
 
-    private fun mapToTree(info: Course.BasicInfo): CourseTree = CourseTree(
+    private fun toTree(info: Course.BasicInfo): CourseTree = CourseTree(
             id = info.id,
             urlPathComponent = info.urlPathComponent,
             linkText = info.linkText,
