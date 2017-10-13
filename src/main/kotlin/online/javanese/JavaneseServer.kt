@@ -97,6 +97,14 @@ object JavaneseServer {
 
         val tree = courseRepo.findTreeSortedBySortIndex() // fixme
 
+        val urlOfCourse = { c: Course.BasicInfo ->
+            "/${c.urlPathComponent.encodeForUrl()}/"
+        }
+
+        val urlOfChapter = { ch: ChapterTree ->
+            "/${ch.course.urlPathComponent.encodeForUrl()}/${ch.urlPathComponent.encodeForUrl()}/"
+        }
+
         val route1 =
                 OnePartRoute(
                         pageRepo,
@@ -110,13 +118,9 @@ object JavaneseServer {
                         ),
                         CourseHandler(
                                 courseRepo,
-                                CoursePageTemplate(render)
+                                CoursePageTemplate(urlOfCourse, render)
                         )
                 )
-
-        val urlOfChapter = { ch: ChapterTree ->
-            "/${ch.course.urlPathComponent.encodeForUrl()}/${ch.urlPathComponent.encodeForUrl()}/"
-        }
 
         val route2 =
                 TwoPartsRoute(

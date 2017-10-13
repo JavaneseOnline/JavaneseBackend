@@ -26,7 +26,7 @@
             <ul th:replace="fragments/content :: chaptersTree(chapters = ${courseTree.chapters})"></ul>
         </nav>
 
-        <nav th:replace="fragments/content :: prevNext(${previousCourse}, ${nextCourse}, #{course.previous}, #{course.next})"></nav>
+        <nav th:replace="fragments/content :: prevNext(${urlOfCourse}, ${previousCourse}, ${nextCourse}, #{course.previous}, #{course.next})"></nav>
     </div>
 
 </th:block>
