@@ -4,9 +4,7 @@ import nz.net.ultraq.thymeleaf.LayoutDialect
 import online.javanese.exception.NotFoundException
 import online.javanese.model.*
 import online.javanese.repository.*
-import online.javanese.route.CourseHandler
-import online.javanese.route.PageHandler
-import online.javanese.route.TopLevelRouteHandler
+import online.javanese.route.*
 import online.javanese.template.*
 import org.jetbrains.ktor.application.install
 import org.jetbrains.ktor.content.files
@@ -91,24 +89,30 @@ object JavaneseServer {
                     )
             )
         }
-        val indexPageTpl = IndexPageTemplate(render)
-        val treePageTpl = TreePageTemplate(render)
-        val articlesPageTpl = ArticlesPageTemplate(render)
-        val pageTpl = PageTemplate(render)
-        val coursePageTpl = CoursePageTemplate(render)
 
-        val topLevelRoute =
-                TopLevelRouteHandler(
+        val route1 =
+                OnePartRouteHandler(
                         pageRepo,
                         courseRepo,
                         PageHandler(
                                 courseRepo, articleRepo,
-                                indexPageTpl, treePageTpl, articlesPageTpl, pageTpl
+                                IndexPageTemplate(render),
+                                TreePageTemplate(render),
+                                ArticlesPageTemplate(render),
+                                PageTemplate(render)
                         ),
                         CourseHandler(
                                 courseRepo,
-                                coursePageTpl
+                                CoursePageTemplate(render)
                         )
+                )
+
+        val route2 =
+                TwoPartsHandler(
+                        pageRepo, articleRepo, courseRepo, chapterRepo,
+                        ArticleHandler(
+                                ArticlePageTemplate(render)
+                        ), { _, _, _ -> TODO(/*todo*/) }
                 )
 
         embeddedServer(Netty, 8080) {
@@ -116,8 +120,9 @@ object JavaneseServer {
 
                 // todo: addresses as objects
 
-                get("/") { topLevelRoute(call, "") }
-                get("/{query}/") { topLevelRoute(call, call.parameters["query"]!!) }
+                get("/") { route1(call, "") }
+                get("/{query}/") { route1(call, call.parameters["query"]!!) }
+                get("/{first}/{second}/") { route2(call, call.parameters["first"]!!, call.parameters["second"]!!) }
 
                 install(StatusPages) {
                     exception<NotFoundException> {

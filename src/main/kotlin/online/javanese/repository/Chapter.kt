@@ -1,6 +1,7 @@
 package online.javanese.repository
 
 import online.javanese.Uuid
+import online.javanese.model.Chapter
 import online.javanese.model.ChapterDao
 
 class ChapterRepository internal constructor(
@@ -18,6 +19,9 @@ class ChapterRepository internal constructor(
                             course = course,
                             lessons = lessonRepo::findTreeSortedBySortIndex
                     ) }
+
+    fun findByUrlComponent(component: String): Chapter? =
+            chapterDao.findByUrlComponent(component)
 
 }
 

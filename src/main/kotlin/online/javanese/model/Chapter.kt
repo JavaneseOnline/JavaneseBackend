@@ -85,6 +85,7 @@ internal class ChapterDao(
 
     private val tableName = ChapterTable.name
     private val courseIdColName = ChapterTable.CourseId.name
+    private val urlComponentColName = ChapterTable.UrlPathComponent.name
     private val sortIndexColName = ChapterTable.SortIndex.name
 
     fun findBasicSortedBySortIndex(courseId: Uuid): List<Chapter.BasicInfo> =
@@ -93,6 +94,13 @@ internal class ChapterDao(
                     parameters = mapOf("courseId" to courseId),
                     mapper = BasicChapterInfoTable.rowMapper()
             )
+
+    fun findByUrlComponent(component: String): Chapter? =
+            session.select(
+                    sql = """SELECT * FROM $tableName WHERE "$urlComponentColName" = :component LIMIT 1""",
+                    parameters = mapOf("component" to component),
+                    mapper = ChapterTable.rowMapper()
+            ).firstOrNull()
 
 }
 

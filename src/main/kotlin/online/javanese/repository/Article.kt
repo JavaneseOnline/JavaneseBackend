@@ -10,4 +10,7 @@ class ArticleRepository internal constructor(
     fun findAllBasicOrderBySortIndex(): List<Article.BasicInfo> =
             articleDao.findAllBasicOrderBySortIndex()
 
+    fun findByUrlComponent(component: String): Article? =
+            articleDao.findByUrlComponent(component)
+
 }

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org/"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="~{layout}"
+      th:with="title = ${article.meta.title}">
+<body>
+
+<th:block layout:fragment="head">
+    <th:block th:replace="fragments/common :: meta(model = ${article.meta})" />
+</th:block>
+
+<th:block layout:fragment="content">
+
+    <main class="content card mdl-shadow--8dp">
+        <nav>
+            <a th:href="@{~/}" th:text="#{index.title}"></a> /
+            <a th:href="@{~/{articles}/ (articles=${articlesPage.urlpathComponent})}"
+               th:text="${articlesPage.meta.title}"
+               th:title="${articlesPage.meta.title}"></a> <!-- todo: should use page.linkText -->
+        </nav>
+
+        <h1 class="content-padding-v" th:text="${article.heading}"></h1>
+
+        <script src="//vk.com/js/api/openapi.js?136" id="vk_openapi_js" type="text/javascript"></script>
+
+        <article th:utext="${article.bodyMarkup}"></article>
+
+        <section th:if="${article.vkPostInfo != null}">
+            <div th:id="'vk_post_' + ${article.vkPostInfo.id}"></div>
+            <script type="text/javascript" th:inline="javascript">
+                var vkPostId = /*[[${article.vkPostInfo.id}]]*/ "th:inline не работает, сук(((";
+                var vkPostHash = /*[[${article.vkPostInfo.hash}]]*/ "th:inline не работает, сук(((";
+                var vkPostIdParts = vkPostId.split('_');
+                VK.Widgets.Post('vk_post_' + vkPostId, vkPostIdParts[0], vkPostIdParts[1], vkPostHash);
+            </script>
+
+        </section>
+    </main>
+
+    <section class="content container-margin-t">
+        <h4 th:text="#{article.comments}"></h4>
+        <div id="vk_comments" class="no-pad container-margin-t mdl-shadow--8dp"></div>
+        <script type="text/javascript" th:inline="javascript">
+            VK.init({apiId: 5748800, onlyWidgets: true});
+            VK.Widgets.Comments("vk_comments", {}, /*[[${article.basicInfo.id.toString()}]]*/ "th:inline отвалился");
+        </script>
+    </section>
+
+</th:block>
+
+</body>
+</html>

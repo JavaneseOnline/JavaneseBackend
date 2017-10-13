@@ -15,7 +15,7 @@ class Article(
         val bodyMarkup: Html,
         val sortIndex: Int,
         val published: Boolean,
-        val vkPostInfo: VkPostInfo,
+        val vkPostInfo: VkPostInfo?,
         val createdAt: LocalDateTime,
         val lastModified: LocalDateTime
 ) {
@@ -30,6 +30,9 @@ class Article(
             val id: String,
             val hash: String
     )
+
+    internal val vkPostIdOrNull get() = vkPostInfo?.id ?: ""
+    internal val vkPostHashOrNull get() = vkPostInfo?.hash ?: ""
 
 }
 
@@ -48,8 +51,8 @@ private object ArticleTable : Table<Article, Uuid>("articles") {
     val SortIndex by sortIndexCol(Article::sortIndex)
     val Published by col(Article::published, name = "published")
 
-    val VkPostId by col(Article.VkPostInfo::id, Article::vkPostInfo, name = "vkPostId")
-    val VkPostHash by col(Article.VkPostInfo::hash, Article::vkPostInfo, name = "vkPostHash")
+    val VkPostId by col(Article::vkPostIdOrNull, name = "vkPostId")
+    val VkPostHash by col(Article::vkPostHashOrNull, name = "vkPostHash")
 
     val CreatedAt by col(Article::createdAt, name = "createdAt")
     val LastModified by lastModifiedCol(Article::lastModified)
@@ -73,13 +76,23 @@ private object ArticleTable : Table<Article, Uuid>("articles") {
             bodyMarkup = value of BodyMarkup,
             sortIndex = value of SortIndex,
             published = value of Published,
-            vkPostInfo = Article.VkPostInfo(
-                    id = value of VkPostId,
-                    hash = value of VkPostHash
+            vkPostInfo = vkPostInfoOrNull(
+                    vkPostId = value of VkPostId,
+                    vkPostHash = value of VkPostHash
             ),
             createdAt = value of CreatedAt,
             lastModified = value of LastModified
     )
+
+    private fun vkPostInfoOrNull(vkPostId: String, vkPostHash: String): Article.VkPostInfo? {
+        if (vkPostId.isBlank()) return null
+        if (vkPostHash.isBlank()) return null
+        return Article.VkPostInfo(
+                id = vkPostId,
+                hash = vkPostHash
+        )
+    }
+
 
 }
 
@@ -104,11 +117,21 @@ internal class ArticleDao(
         private val session: Session
 ) {
 
+    private val tableName = ArticleTable.name
+    private val urlComponentColName = ArticleTable.UrlPathComponent.name
+
     fun findAllBasicOrderBySortIndex(): List<Article.BasicInfo> =
             session.select(
-                    sql = """SELECT "id", "linkText", "urlPathComponent" FROM articles ORDER BY "sortIndex" ASC""",
+                    sql = """SELECT "id", "linkText", "urlPathComponent" FROM "$tableName" ORDER BY "sortIndex" ASC""",
                     mapper = ArticleBasicInfoTable.rowMapper()
             )
+
+    fun findByUrlComponent(component: String): Article? =
+            session.select(
+                    sql = """SELECT * FROM "$tableName" WHERE "$urlComponentColName" = :component LIMIT 1""",
+                    parameters = mapOf("component" to component),
+                    mapper = ArticleTable.rowMapper()
+            ).firstOrNull()
 
 }
 
