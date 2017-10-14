@@ -143,12 +143,16 @@ object JavaneseServer {
 
                 // todo: addresses as objects
 
-                get("/") { route1(call, "") }
-                get("/{f}/") { route1(call, call.parameters["f"]!!) }
-                get("/{f}/{s}/") { route2(call, call.parameters["f"]!!, call.parameters["s"]!!) }
+                get("/") {
+                    route1(call, "")
+                }
+                get("/{f}/") {
+                    route1(call, call.parameters["f"]!!)
+                }
+                get("/{f}/{s}/") {
+                    route2(call, call.parameters["f"]!!, call.parameters["s"]!!)
+                }
                 get("/{f}/{s}/{t}/") {
-                    val call = call
-                    println(call)
                     route3(call, call.parameters["f"]!!, call.parameters["s"]!!, call.parameters["t"]!!)
                 }
 
