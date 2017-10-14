@@ -88,12 +88,21 @@ internal class LessonDao(
 
     private val tableName = LessonTable.name
 
+    private val idColName = LessonTable.Id.name
+
     internal fun findBasicSortedBySortIndex(chapterId: Uuid): List<Lesson.BasicInfo> =
             session.select(
                     sql = """SELECT "id", "chapterId", "urlPathComponent", "linkText" FROM "$tableName" WHERE "chapterId" = :chapterId ORDER BY "sortIndex"""",
                     parameters = mapOf("chapterId" to chapterId),
                     mapper = BasicLessonInfoTable.rowMapper()
             )
+
+    internal fun findById(id: Uuid): Lesson? =
+            session.select(
+                    sql = """SELECT * FROM "$tableName" WHERE "$idColName" = :id LIMIT 1""",
+                    parameters = mapOf("id" to id),
+                    mapper = LessonTable.rowMapper()
+            ).singleOrNull()
 
 }
 

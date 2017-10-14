@@ -1,6 +1,7 @@
 package online.javanese.repository
 
 import online.javanese.Uuid
+import online.javanese.model.Lesson
 import online.javanese.model.LessonDao
 
 class LessonRepository internal constructor(
@@ -17,6 +18,9 @@ class LessonRepository internal constructor(
                     chapter = chapter,
                     tasks = taskRepo::findTreeSortedBySortIndex
             ) }
+
+    fun findById(id: Uuid): Lesson? =
+            lessonDao.findById(id)
 
 }
 

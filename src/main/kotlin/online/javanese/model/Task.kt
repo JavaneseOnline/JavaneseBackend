@@ -5,7 +5,7 @@ import com.github.andrewoma.kwery.mapper.*
 import online.javanese.Html
 import online.javanese.Uuid
 
-internal class Task(
+class Task(
         val basicInfo: BasicInfo,
         val heading: String,
         val condition: Html,
@@ -124,12 +124,24 @@ internal class TaskDao(
         private val dao: Dao<Task, Uuid> = object : AbstractDao<Task, Uuid>(session, TaskTable, { it.basicInfo.id }) {}
 ) {
 
+    private val tableName = TaskTable.name
+    private val idColName = TaskTable.Id.name
+    private val lessonIdColName = TaskTable.LessonId.name
+    private val basicColNames = """"id", "lessonId", "linkText", "urlPathComponent""""
+
     fun findBasicSortedBySortIndex(lessonId: Uuid) =
             session.select(
-                    sql = """SELECT "id", "lessonId", "linkText", "urlPathComponent" FROM tasks WHERE "lessonId" = :lessonId""",
+                    sql = """SELECT $basicColNames FROM "$tableName" WHERE "$lessonIdColName" = :lessonId""",
                     parameters = mapOf("lessonId" to lessonId),
                     mapper = TaskBasicInfoTable.rowMapper()
             )
+
+    fun findById(taskId: Uuid) =
+            session.select(
+                    sql = """SELECT * FROM "$tableName" WHERE "$idColName" = :id LIMIT 1""",
+                    parameters = mapOf("id" to taskId),
+                    mapper = TaskTable.rowMapper()
+            ).singleOrNull()
 
 }
 

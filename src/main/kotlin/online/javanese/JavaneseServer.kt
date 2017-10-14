@@ -2,13 +2,11 @@ package online.javanese
 
 import nz.net.ultraq.thymeleaf.LayoutDialect
 import online.javanese.exception.NotFoundException
-import online.javanese.handler.ArticleHandler
-import online.javanese.handler.ChapterHandler
-import online.javanese.handler.CourseHandler
-import online.javanese.handler.PageHandler
+import online.javanese.handler.*
 import online.javanese.model.*
 import online.javanese.repository.*
 import online.javanese.route.OnePartRoute
+import online.javanese.route.ThreePartsRoute
 import online.javanese.route.TwoPartsRoute
 import online.javanese.template.*
 import org.jetbrains.ktor.application.install
@@ -89,6 +87,19 @@ object JavaneseServer {
             "/${ch.course.urlPathComponent.encodeForUrl()}/${ch.urlPathComponent.encodeForUrl()}/"
         }
 
+        val urlOfLesson = { l: LessonTree ->
+            val ch = l.chapter
+            val co = ch.course
+            "/${co.urlPathComponent.encodeForUrl()}/${ch.urlPathComponent.encodeForUrl()}/${l.urlPathComponent.encodeForUrl()}/"
+        }
+
+        val urlOfTask = { t: TaskTree ->
+            val l = t.lesson
+            val ch = l.chapter
+            val co = ch.course
+            "/${co.urlPathComponent.encodeForUrl()}/${ch.urlPathComponent.encodeForUrl()}/${l.urlPathComponent.encodeForUrl()}/#${t.urlPathComponent.encodeForUrl()}"
+        }
+
         val route1 =
                 OnePartRoute(
                         pageRepo,
@@ -118,14 +129,28 @@ object JavaneseServer {
                         )
                 )
 
+        val route3 =
+                ThreePartsRoute(
+                        tree,
+                        LessonHandler(
+                                lessonRepo,
+                                LessonPageTemplate(urlOfLesson, urlOfTask, render)
+                        )
+                )
+
         embeddedServer(Netty, 8080) {
             routing {
 
                 // todo: addresses as objects
 
                 get("/") { route1(call, "") }
-                get("/{query}/") { route1(call, call.parameters["query"]!!) }
-                get("/{first}/{second}/") { route2(call, call.parameters["first"]!!, call.parameters["second"]!!) }
+                get("/{f}/") { route1(call, call.parameters["f"]!!) }
+                get("/{f}/{s}/") { route2(call, call.parameters["f"]!!, call.parameters["s"]!!) }
+                get("/{f}/{s}/{t}/") {
+                    val call = call
+                    println(call)
+                    route3(call, call.parameters["f"]!!, call.parameters["s"]!!, call.parameters["t"]!!)
+                }
 
                 install(StatusPages) {
                     exception<NotFoundException> {

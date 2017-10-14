@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org/"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="layout"
+      th:with="title = ${lesson.meta.title}">
+<body>
+
+<th:block layout:fragment="head">
+    <th:block th:replace="fragments/common :: meta(model = ${lesson.meta})" />
+    <th:block th:replace="fragments/sandbox :: sandboxStyles(static = ${static})" />
+</th:block>
+
+<th:block layout:fragment="content">
+
+    <main class="content card mdl-shadow--8dp">
+        <nav>
+            <a th:href="@{~/}" th:text="#{index.title}"></a> /
+            <a th:href="@{~/материалы/}" th:text="#{tree.header}"></a> /
+            <a th:replace="fragments/content :: linkToCourse(course = ${lessonTree.chapter.course})"></a> /
+            <a th:replace="fragments/content :: linkToChapter(chapter = ${lessonTree.chapter})"></a>
+        </nav>
+
+        <h1 class="content-padding-v" th:text="${lesson.h1}"></h1>
+
+        <article th:utext="${lesson.bodyMarkup}"></article>
+
+        <section class="content-padding-v">
+            <script type="text/javascript" src="https://vk.com/js/api/openapi.js?136"></script>
+            <script type="text/javascript" src="https://vk.com/js/api/share.js?94" charset="windows-1251"></script>
+            <div id="vk_like" style="display: inline-block"></div>
+
+            <!-- Put this script tag to the place, where the Share button will be -->
+            <div style="display: inline-block">
+                <script type="text/javascript" th:inline="javascript">
+                    VK.init({apiId: 5748800, onlyWidgets: true});
+                    VK.Widgets.Like("vk_like", {type: "button"}, /*[[${lesson.basicInfo.id.toString()}]]*/ "th:inline отвалился");
+                    document.write(VK.Share.button(false,{type: "round", text: "Сохранить"}));
+                </script>
+            </div>
+        </section>
+
+        <nav th:replace="fragments/content :: prevNext(${urlOfLesson}, ${previousLesson}, ${nextLesson}, #{lesson.previous}, #{lesson.next})"></nav>
+    </main>
+
+    <div class="content card mdl-shadow--8dp mdl-tabs mdl-js-tabs mdl-js-ripple-effect container-margin-t">
+        <menu class="mdl-tabs__tab-bar mdl-color-text--grey-600">
+            <a th:if="${!lessonTree.tasks.isEmpty()}"
+               href="#tasks" class="mdl-tabs__tab is-active" th:text="#{lesson.tasks}">Уроки</a>
+            <a th:classappend="${lessonTree.tasks.isEmpty() ? 'is-active' : ''}"
+               href="#comments" class="mdl-tabs__tab" th:text="#{lesson.comments}">Задачи</a>
+        </menu>
+
+        <div th:if="${!lessonTree.tasks.isEmpty()}" id="tasks" class="mdl-tabs__panel is-active no-pad">
+            <section th:each="task : ${lessonTree.tasks}" class="content">
+                <h3 class="no-pad-top" th:id="${urlOfTask.invoke(task)}" th:text="${task.task.heading}"></h3>
+
+                <th:block th:utext="${task.task.condition}" />
+
+                <th:block th:replace="fragments/sandbox :: sandbox(task = ${task.task})" />
+
+                <hr class="no-pad"/>
+            </section>
+        </div>
+
+        <section class="mdl-tabs__panel no-pad content-padding-v" th:classappend="${lessonTree.tasks.isEmpty() ? 'is-active' : ''}" id="comments">
+            <div id="vk_comments"></div>
+            <script type="text/javascript" th:inline="javascript">
+                VK.Widgets.Comments("vk_comments", {}, /*[[${lesson.basicInfo.id.toString()}]]*/ "th:inline отвалился");
+            </script>
+        </section>
+
+
+        <nav class="content-padding-t"
+             th:replace="fragments/content :: prevNext(${urlOfLesson}, ${previousLesson}, ${nextLesson}, #{lesson.previous}, #{lesson.next})"></nav>
+    </div>
+
+</th:block>
+
+<th:block layout:fragment="scripts">
+
+    <th:block th:replace="fragments/sandbox :: sandboxScripts(static = ${static})" />
+
+</th:block>
+
+</body>
+</html>
