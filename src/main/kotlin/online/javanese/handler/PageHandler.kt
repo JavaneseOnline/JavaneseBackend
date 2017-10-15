@@ -21,7 +21,7 @@ fun PageHandler(
             when (page.magic) {
                 Page.Magic.Index -> indexPageTpl(page)
                 Page.Magic.Tree -> treePageTpl(page, courseRepo.findTreeSortedBySortIndex())
-                Page.Magic.Articles -> articlesPageTpl(page, articleRepo.findAllBasicOrderBySortIndex())
+                Page.Magic.Articles -> articlesPageTpl(page, articleRepo.findAllBasicPublishedOrderBySortIndex())
                 Page.Magic.CodeReview -> pageTpl(page)
             },
             ContentType.Text.Html
