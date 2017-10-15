@@ -23,7 +23,7 @@ fun ClassLoaderTemplateResolver(
     it.characterEncoding = charset.name()
 }
 
-fun MessageResolver(stream: InputStream) = StandardMessageResolver().also {
+fun MessageResolver(stream: InputStream): IMessageResolver = StandardMessageResolver().also {
     it.defaultMessages.load(stream.bufferedReader())
 }
 
