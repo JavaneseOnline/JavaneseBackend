@@ -1,9 +1,13 @@
 package online.javanese.model
 
 import com.github.andrewoma.kwery.core.Session
-import com.github.andrewoma.kwery.mapper.*
+import com.github.andrewoma.kwery.mapper.Column
+import com.github.andrewoma.kwery.mapper.Table
+import com.github.andrewoma.kwery.mapper.Value
+import com.github.andrewoma.kwery.mapper.VersionedWithTimestamp
 import online.javanese.Html
 import online.javanese.Uuid
+import online.javanese.repository.CourseTree
 import java.time.LocalDateTime
 
 class Chapter(
@@ -22,6 +26,17 @@ class Chapter(
             val linkText: String
     )
 
+}
+
+class ChapterTree internal constructor(
+        val id: Uuid,
+        val courseId: Uuid,
+        val urlPathComponent: String,
+        val linkText: String,
+        val course: CourseTree,
+        lessons: (ChapterTree) -> List<LessonTree>
+) {
+    val lessons = lessons(this)
 }
 
 private object ChapterTable : Table<Chapter, Uuid>("chapters"), VersionedWithTimestamp {
@@ -78,10 +93,10 @@ private object BasicChapterInfoTable : Table<Chapter.BasicInfo, Uuid>("chapters"
 
 }
 
-internal class ChapterDao(
+class ChapterDao(
         private val session: Session,
-        private val baseDao: Dao<Chapter, Uuid> = object : AbstractDao<Chapter, Uuid>(session, ChapterTable, { it.basicInfo.id }) {}
-) : Dao<Chapter, Uuid> by baseDao {
+        private val lessonDao: LessonDao
+) {
 
     private val tableName = ChapterTable.name
     private val idColName = ChapterTable.Id.name
@@ -98,6 +113,9 @@ internal class ChapterDao(
                     mapper = BasicChapterInfoTable.rowMapper()
             )
 
+    fun findTreeSortedBySortIndex(course: CourseTree): List<ChapterTree> =
+            findBasicSortedBySortIndex(course.id).map { it.toTree(course) }
+
     fun findBasicById(chapterId: Uuid): Chapter.BasicInfo? =
             session.select(
                     sql = """SELECT $basicColumns FROM $tableName WHERE "$idColName" = :id LIMIT 1""",
@@ -111,6 +129,15 @@ internal class ChapterDao(
                     parameters = mapOf("component" to component),
                     mapper = ChapterTable.rowMapper()
             ).singleOrNull()
+
+    private fun Chapter.BasicInfo.toTree(course: CourseTree) = ChapterTree(
+            id = id,
+            courseId = courseId,
+            urlPathComponent = urlPathComponent,
+            linkText = linkText,
+            course = course,
+            lessons = lessonDao::findTreeSortedBySortIndex
+    )
 
 }
 

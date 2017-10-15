@@ -7,7 +7,6 @@ import com.github.andrewoma.kwery.mapper.Value
 import com.github.andrewoma.kwery.mapper.VersionedWithTimestamp
 import online.javanese.Html
 import online.javanese.Uuid
-import online.javanese.repository.ChapterTree
 import java.time.LocalDateTime
 
 class Lesson(

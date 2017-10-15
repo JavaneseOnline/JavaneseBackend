@@ -1,8 +1,8 @@
 package online.javanese.template
 
 import online.javanese.model.Chapter
+import online.javanese.model.ChapterTree
 import online.javanese.model.Course
-import online.javanese.repository.ChapterTree
 
 class ChapterPageTemplate(
         private val urlOfChapter: (ChapterTree) -> String,

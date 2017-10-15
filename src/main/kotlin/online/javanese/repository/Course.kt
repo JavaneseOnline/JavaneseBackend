@@ -1,12 +1,14 @@
 package online.javanese.repository
 
 import online.javanese.Uuid
+import online.javanese.model.ChapterDao
+import online.javanese.model.ChapterTree
 import online.javanese.model.Course
 import online.javanese.model.CourseDao
 
 class CourseRepository internal constructor(
         private val courseDao: CourseDao,
-        private val chapterRepo: ChapterRepository
+        private val chapterDao: ChapterDao
 ) {
 
     fun findTreeSortedBySortIndex(): List<CourseTree> =
@@ -32,7 +34,7 @@ class CourseRepository internal constructor(
             id = info.id,
             urlPathComponent = info.urlPathComponent,
             linkText = info.linkText,
-            chapters = chapterRepo::findTreeSortedBySortIndex
+            chapters = chapterDao::findTreeSortedBySortIndex
     )
 
 }

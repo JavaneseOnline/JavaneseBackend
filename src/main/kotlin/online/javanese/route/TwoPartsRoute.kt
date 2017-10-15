@@ -2,7 +2,6 @@ package online.javanese.route
 
 import online.javanese.exception.NotFoundException
 import online.javanese.model.*
-import online.javanese.repository.ChapterRepository
 import online.javanese.repository.CourseRepository
 import org.jetbrains.ktor.application.ApplicationCall
 
@@ -10,7 +9,7 @@ fun TwoPartsRoute(
         pageDao: PageDao,
         articleDao: ArticleDao,
         courseRepo: CourseRepository,
-        chapterRepo: ChapterRepository,
+        chapterDao: ChapterDao,
         articleHandler: suspend (articlesPage: Page, article: Article, call: ApplicationCall) -> Unit,
         chapterHandler: suspend (Course, Chapter, ApplicationCall) -> Unit
 ): suspend (ApplicationCall, String, String) -> Unit = f@ { call, first, second ->
@@ -24,7 +23,7 @@ fun TwoPartsRoute(
     }
 
     courseRepo.findByUrlComponent(first)?.let { course -> // todo: this lookup may be optimized
-        chapterRepo.findByUrlComponent(second)?.let { chapter ->
+        chapterDao.findByUrlComponent(second)?.let { chapter ->
             return@f chapterHandler(course, chapter, call)
         }
     }

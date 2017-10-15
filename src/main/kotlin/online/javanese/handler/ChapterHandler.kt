@@ -1,8 +1,8 @@
 package online.javanese.handler
 
 import online.javanese.model.Chapter
+import online.javanese.model.ChapterTree
 import online.javanese.model.Course
-import online.javanese.repository.ChapterTree
 import online.javanese.repository.CourseTree
 import org.jetbrains.ktor.application.ApplicationCall
 import org.jetbrains.ktor.http.ContentType
