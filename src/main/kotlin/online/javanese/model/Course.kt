@@ -26,6 +26,15 @@ class Course(
 
 }
 
+class CourseTree internal constructor(
+        val id: Uuid,
+        val urlPathComponent: String,
+        val linkText: String,
+        chapters: (CourseTree) -> List<ChapterTree>
+) {
+    val chapters = chapters(this)
+}
+
 private object CourseTable : Table<Course, Uuid>("courses"), VersionedWithTimestamp {
 
     val Id by idCol(Course.BasicInfo::id, Course::basicInfo)
@@ -76,8 +85,9 @@ private object BasicCourseInfoTable : Table<Course.BasicInfo, Uuid>("courses") {
 
 }
 
-internal class CourseDao(
-        private val session: Session
+class CourseDao(
+        private val session: Session,
+        private val chapterDao: ChapterDao
 ) {
 
 //    private val baseDao: Dao<Course, Uuid> = object : AbstractDao<Course, Uuid>(session, CourseTable, { it.basicInfo.id }) {}
@@ -103,12 +113,20 @@ internal class CourseDao(
                     mapper = BasicCourseInfoTable.rowMapper()
             )
 
+    fun findTreeSortedBySortIndex(): List<CourseTree> =
+            findAllBasicSortedBySortIndex()
+                    .map { toTree(it) }
+
     fun findBasicById(id: Uuid): Course.BasicInfo? =
             session.select(
                     sql = """SELECT $basicInfoColumns FROM $tableName WHERE "$idColName" = :id LIMIT 1""",
                     parameters = mapOf("id" to id),
                     mapper = BasicCourseInfoTable.rowMapper()
             ).singleOrNull()
+
+    fun findTree(courseId: Uuid): CourseTree? =
+            findBasicById(courseId)
+                    ?.let { toTree(it) }
 
     /*fun findAllSortedBySortIndex() =
             session.select(
@@ -136,6 +154,13 @@ internal class CourseDao(
                     parameters = mapOf("index" to course.sortIndex),
                     mapper = BasicCourseInfoTable.rowMapper()
             ).singleOrNull()
+
+    private fun toTree(info: Course.BasicInfo): CourseTree = CourseTree(
+            id = info.id,
+            urlPathComponent = info.urlPathComponent,
+            linkText = info.linkText,
+            chapters = chapterDao::findTreeSortedBySortIndex
+    )
 
 }
 

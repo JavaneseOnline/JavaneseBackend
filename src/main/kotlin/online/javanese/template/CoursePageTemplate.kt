@@ -1,7 +1,7 @@
 package online.javanese.template
 
 import online.javanese.model.Course
-import online.javanese.repository.CourseTree
+import online.javanese.model.CourseTree
 
 class CoursePageTemplate(
         private val urlOfCourse: (Course.BasicInfo) -> String,

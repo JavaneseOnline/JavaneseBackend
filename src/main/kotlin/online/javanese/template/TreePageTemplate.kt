@@ -1,7 +1,7 @@
 package online.javanese.template
 
+import online.javanese.model.CourseTree
 import online.javanese.model.Page
-import online.javanese.repository.CourseTree
 
 class TreePageTemplate(
         private val render: (String, Map<String, Any>) -> String

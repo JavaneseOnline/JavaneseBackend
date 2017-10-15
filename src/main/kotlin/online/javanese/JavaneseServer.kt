@@ -4,7 +4,6 @@ import nz.net.ultraq.thymeleaf.LayoutDialect
 import online.javanese.exception.NotFoundException
 import online.javanese.handler.*
 import online.javanese.model.*
-import online.javanese.repository.CourseRepository
 import online.javanese.route.OnePartRoute
 import online.javanese.route.ThreePartsRoute
 import online.javanese.route.TwoPartsRoute
@@ -61,13 +60,13 @@ object JavaneseServer {
         }
 
         val pageDao = PageDao(session)
-        val courseDao = CourseDao(session)
+
+        val articleDao = ArticleDao(session)
+
         val taskDao = TaskDao(session)
         val lessonDao = LessonDao(session, taskDao)
         val chapterDao = ChapterDao(session, lessonDao)
-        val articleDao = ArticleDao(session)
-
-        val courseRepo = CourseRepository(courseDao, chapterDao)
+        val courseDao = CourseDao(session, chapterDao)
 
         val locale = Locale.Builder().setLanguage("ru").setScript("Cyrl").build()
         val staticDirPair = "static" to config.exposedStaticDir
@@ -81,7 +80,7 @@ object JavaneseServer {
             )
         }
 
-        val tree = courseRepo.findTreeSortedBySortIndex() // fixme: may not fetch whole tree
+        val tree = courseDao.findTreeSortedBySortIndex() // fixme: may not fetch whole tree
         // (after removing Thymeleaf this refactoring would be easy)
 
         val urlOfCourse = { c: Course.BasicInfo ->
@@ -108,23 +107,23 @@ object JavaneseServer {
         val route1 =
                 OnePartRoute(
                         pageDao,
-                        courseRepo,
+                        courseDao,
                         PageHandler(
-                                courseRepo, articleDao,
+                                courseDao, articleDao,
                                 IndexPageTemplate(render),
                                 TreePageTemplate(render),
                                 ArticlesPageTemplate(render),
                                 PageTemplate(render)
                         ),
                         CourseHandler(
-                                courseRepo,
+                                courseDao,
                                 CoursePageTemplate(urlOfCourse, render)
                         )
                 )
 
         val route2 =
                 TwoPartsRoute(
-                        pageDao, articleDao, courseRepo, chapterDao,
+                        pageDao, articleDao, courseDao, chapterDao,
                         ArticleHandler(
                                 ArticlePageTemplate(render)
                         ),

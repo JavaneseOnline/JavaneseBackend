@@ -1,8 +1,8 @@
 package online.javanese.route
 
 import online.javanese.exception.NotFoundException
+import online.javanese.model.CourseTree
 import online.javanese.model.LessonTree
-import online.javanese.repository.CourseTree
 import org.jetbrains.ktor.application.ApplicationCall
 
 fun ThreePartsRoute(
