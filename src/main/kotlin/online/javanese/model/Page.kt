@@ -1,7 +1,10 @@
 package online.javanese.model
 
 import com.github.andrewoma.kwery.core.Session
-import com.github.andrewoma.kwery.mapper.*
+import com.github.andrewoma.kwery.mapper.Column
+import com.github.andrewoma.kwery.mapper.Table
+import com.github.andrewoma.kwery.mapper.Value
+import com.github.andrewoma.kwery.mapper.VersionedWithTimestamp
 import online.javanese.Html
 import online.javanese.Uuid
 import java.time.LocalDateTime
@@ -56,17 +59,18 @@ private object PagesTable : Table<Page, Uuid>("pages"), VersionedWithTimestamp {
 
 }
 
-internal class PageDao(
-        private val session: Session,
-        private val baseDao: Dao<Page, Uuid> = object : AbstractDao<Page, Uuid>(session, PagesTable, Page::id) {}
-) : Dao<Page, Uuid> by baseDao {
+class PageDao(
+        private val session: Session
+) {
 
     private val tableName = PagesTable.name
     private val urlPathComponentColName = PagesTable.UrlPathComponent.name
 
     fun findByUrlPathComponent(component: String) =
             session.select(
-                    sql = """SELECT * FROM $tableName WHERE "$urlPathComponentColName" = :component""",
+                    sql = """SELECT *
+                        |FROM $tableName
+                        |WHERE "$urlPathComponentColName" = :component""".trimMargin(),
                     parameters = mapOf("component" to component),
                     mapper = PagesTable.rowMapper()
             ).singleOrNull()

@@ -67,8 +67,6 @@ object JavaneseServer {
         val taskDao = TaskDao(session)
         val articleDao = ArticleDao(session)
 
-        // todo: repositories may be removed in favour of DAOs
-        val pageRepo = PageRepository(pageDao)
         val taskRepo = TaskRepository(taskDao)
         val lessonRepo = LessonRepository(lessonDao, taskRepo)
         val chapterRepo = ChapterRepository(chapterDao, lessonRepo)
@@ -112,7 +110,7 @@ object JavaneseServer {
 
         val route1 =
                 OnePartRoute(
-                        pageRepo,
+                        pageDao,
                         courseRepo,
                         PageHandler(
                                 courseRepo, articleDao,
@@ -129,7 +127,7 @@ object JavaneseServer {
 
         val route2 =
                 TwoPartsRoute(
-                        pageRepo, articleDao, courseRepo, chapterRepo,
+                        pageDao, articleDao, courseRepo, chapterRepo,
                         ArticleHandler(
                                 ArticlePageTemplate(render)
                         ),

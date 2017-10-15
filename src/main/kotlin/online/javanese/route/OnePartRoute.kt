@@ -3,18 +3,18 @@ package online.javanese.route
 import online.javanese.exception.NotFoundException
 import online.javanese.model.Course
 import online.javanese.model.Page
+import online.javanese.model.PageDao
 import online.javanese.repository.CourseRepository
-import online.javanese.repository.PageRepository
 import org.jetbrains.ktor.application.ApplicationCall
 
 fun OnePartRoute(
-        pageRepo: PageRepository,
+        pageDao: PageDao,
         courseRepo: CourseRepository,
         pageHandler: suspend (ApplicationCall, Page) -> Unit,
         courseHandler: suspend (ApplicationCall, Course) -> Unit
 ) : suspend (ApplicationCall, String) -> Unit = func@ { call, query ->
 
-    pageRepo.findByUrlPathComponent(query)?.let {
+    pageDao.findByUrlPathComponent(query)?.let {
         return@func pageHandler(call, it)
     }
 
