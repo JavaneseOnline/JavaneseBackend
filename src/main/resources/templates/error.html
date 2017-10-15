@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org/"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="layout"
+      th:with="title = ${reason}">
+<body>
+
+<th:block layout:fragment="content">
+
+    <div class="content card mdl-shadow--8dp">
+        <nav>
+            <a th:href="@{~/}" th:text="#{index.title}"></a>
+        </nav>
+
+        <main>
+            <h1 class="content-padding-v" th:text="#{error} + ' ' + ${statusCode}"></h1>
+
+            <p th:text="${reason}"></p>
+        </main>
+    </div>
+
+</th:block>
+
+</body>
+</html>

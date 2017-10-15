@@ -15,10 +15,8 @@ import org.jetbrains.ktor.content.static
 import org.jetbrains.ktor.content.staticRootFolder
 import org.jetbrains.ktor.features.StatusPages
 import org.jetbrains.ktor.host.embeddedServer
-import org.jetbrains.ktor.http.ContentType
 import org.jetbrains.ktor.http.HttpStatusCode
 import org.jetbrains.ktor.netty.Netty
-import org.jetbrains.ktor.response.respondText
 import org.jetbrains.ktor.routing.get
 import org.jetbrains.ktor.routing.routing
 import org.thymeleaf.context.Context
@@ -48,6 +46,9 @@ object JavaneseServer {
                 ),
                 dialects = *arrayOf(LayoutDialect())
         )
+        val messages = Properties().apply {
+            load(JavaneseServer::class.java.getResourceAsStream("/locale/messages_ru.properties").bufferedReader())
+        }
 
         val pageDao = PageDao(session)
         val courseDao = CourseDao(session)
@@ -138,7 +139,25 @@ object JavaneseServer {
                         )
                 )
 
+        val errorHandler = ErrorHandler(
+                ErrorPageTemplate(
+                        { key, default -> messages.getProperty(key) ?: default },
+                        render
+                )
+        )
+
         embeddedServer(Netty, 8080) {
+            install(StatusPages) {
+                exception<NotFoundException> {
+                    call.response.status(HttpStatusCode.NotFound)
+                    errorHandler(call)
+                }
+                status(HttpStatusCode.NotFound) {
+                    call.response.status(HttpStatusCode.NotFound)
+                    errorHandler(call)
+                }
+            }
+
             routing {
 
                 // todo: addresses as objects
@@ -154,12 +173,6 @@ object JavaneseServer {
                 }
                 get("/{f}/{s}/{t}/") {
                     route3(call, call.parameters["f"]!!, call.parameters["s"]!!, call.parameters["t"]!!)
-                }
-
-                install(StatusPages) {
-                    exception<NotFoundException> {
-                        call.respondText(it.message, ContentType.Text.Plain, HttpStatusCode.NotFound) // todo: error pages
-                    }
                 }
 
                 if (localStaticDir != null) {
@@ -178,16 +191,16 @@ object JavaneseServer {
 
         Pair(
                 PostgreSqlSession(
-                        dbName = it["database"] as String,
-                        user = it["user"] as String,
-                        password = it["password"] as String
+                        dbName = it.getProperty("database")!!,
+                        user = it.getProperty("user")!!,
+                        password = it.getProperty("password")!!
                 ),
                 Pair(
                         // e. g. '/home/<user>/IdeaProjects/javanese/src/main/resources/static' for development
-                        it["localStaticDir"] as String?,
+                        it.getProperty("localStaticDir"),
 
                         // e. g. '/static' for development, 'http://static.javanese.online/' for production
-                        it["exposedStaticDir"] as String
+                        it.getProperty("exposedStaticDir")!!
                 )
         )
     }
