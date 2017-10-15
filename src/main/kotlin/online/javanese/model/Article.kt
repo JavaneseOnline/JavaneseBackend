@@ -113,7 +113,7 @@ private object ArticleBasicInfoTable : Table<Article.BasicInfo, Uuid>("articles"
 
 }
 
-internal class ArticleDao(
+class ArticleDao(
         private val session: Session
 ) {
 

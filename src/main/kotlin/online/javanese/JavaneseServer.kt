@@ -73,7 +73,6 @@ object JavaneseServer {
         val lessonRepo = LessonRepository(lessonDao, taskRepo)
         val chapterRepo = ChapterRepository(chapterDao, lessonRepo)
         val courseRepo = CourseRepository(courseDao, chapterRepo)
-        val articleRepo = ArticleRepository(articleDao)
 
         val locale = Locale.Builder().setLanguage("ru").setScript("Cyrl").build()
         val staticDirPair = "static" to config.exposedStaticDir
@@ -116,7 +115,7 @@ object JavaneseServer {
                         pageRepo,
                         courseRepo,
                         PageHandler(
-                                courseRepo, articleRepo,
+                                courseRepo, articleDao,
                                 IndexPageTemplate(render),
                                 TreePageTemplate(render),
                                 ArticlesPageTemplate(render),
@@ -130,7 +129,7 @@ object JavaneseServer {
 
         val route2 =
                 TwoPartsRoute(
-                        pageRepo, articleRepo, courseRepo, chapterRepo,
+                        pageRepo, articleDao, courseRepo, chapterRepo,
                         ArticleHandler(
                                 ArticlePageTemplate(render)
                         ),

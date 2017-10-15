@@ -1,8 +1,8 @@
 package online.javanese.handler
 
 import online.javanese.model.Article
+import online.javanese.model.ArticleDao
 import online.javanese.model.Page
-import online.javanese.repository.ArticleRepository
 import online.javanese.repository.CourseRepository
 import online.javanese.repository.CourseTree
 import org.jetbrains.ktor.application.ApplicationCall
@@ -11,7 +11,7 @@ import org.jetbrains.ktor.response.respondText
 
 fun PageHandler(
         courseRepo: CourseRepository,
-        articleRepo: ArticleRepository,
+        articleDao: ArticleDao,
         indexPageTpl: (Page) -> String,
         treePageTpl: (Page, List<CourseTree>) -> String,
         articlesPageTpl: (Page, List<Article.BasicInfo>) -> String,
@@ -21,7 +21,7 @@ fun PageHandler(
             when (page.magic) {
                 Page.Magic.Index -> indexPageTpl(page)
                 Page.Magic.Tree -> treePageTpl(page, courseRepo.findTreeSortedBySortIndex())
-                Page.Magic.Articles -> articlesPageTpl(page, articleRepo.findAllBasicPublishedOrderBySortIndex())
+                Page.Magic.Articles -> articlesPageTpl(page, articleDao.findAllBasicPublishedOrderBySortIndex())
                 Page.Magic.CodeReview -> pageTpl(page)
             },
             ContentType.Text.Html
