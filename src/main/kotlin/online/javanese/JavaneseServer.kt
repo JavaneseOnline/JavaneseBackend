@@ -30,8 +30,17 @@ object JavaneseServer {
     @JvmStatic
     fun main(args: Array<String>) {
 
-        val (session, staticDirs) = parseProperties()
-        val (localStaticDir, exposedStaticDir) = staticDirs
+        val config = Config(
+                Properties().also {
+                    it.load(FileInputStream("local.properties").bufferedReader())
+                }
+        )
+
+        val session = PostgreSqlSession(
+                dbName = config.dbName,
+                user = config.dbUser,
+                password = config.dbPassword
+        )
 
         val templateEngine = TemplateEngine(
                 templateResolver = ClassLoaderTemplateResolver(
@@ -46,6 +55,7 @@ object JavaneseServer {
                 ),
                 dialects = *arrayOf(LayoutDialect())
         )
+
         val messages = Properties().apply {
             load(JavaneseServer::class.java.getResourceAsStream("/locale/messages_ru.properties").bufferedReader())
         }
@@ -66,7 +76,7 @@ object JavaneseServer {
         val articleRepo = ArticleRepository(articleDao)
 
         val locale = Locale.Builder().setLanguage("ru").setScript("Cyrl").build()
-        val staticDirPair = "static" to exposedStaticDir
+        val staticDirPair = "static" to config.exposedStaticDir
         val render = { templateName: String, parameters: Map<String, Any> ->
             templateEngine.process(
                     templateName,
@@ -175,34 +185,15 @@ object JavaneseServer {
                     route3(call, call.parameters["f"]!!, call.parameters["s"]!!, call.parameters["t"]!!)
                 }
 
-                if (localStaticDir != null) {
-                    static(exposedStaticDir) {
-                        val localStaticDirFile = File(localStaticDir)
+                if (config.localStaticDir != null) {
+                    static(config.exposedStaticDir) {
+                        val localStaticDirFile = File(config.localStaticDir)
                         staticRootFolder = localStaticDirFile.parentFile
                         files(localStaticDirFile.name)
                     }
                 }
             }
         }.start(wait = true)
-    }
-
-    private fun parseProperties() = Properties().let {
-        it.load(FileInputStream("local.properties"))
-
-        Pair(
-                PostgreSqlSession(
-                        dbName = it.getProperty("database")!!,
-                        user = it.getProperty("user")!!,
-                        password = it.getProperty("password")!!
-                ),
-                Pair(
-                        // e. g. '/home/<user>/IdeaProjects/javanese/src/main/resources/static' for development
-                        it.getProperty("localStaticDir"),
-
-                        // e. g. '/static' for development, 'http://static.javanese.online/' for production
-                        it.getProperty("exposedStaticDir")!!
-                )
-        )
     }
 
 }
