@@ -4,6 +4,7 @@ import com.github.andrewoma.kwery.core.Session
 import com.github.andrewoma.kwery.mapper.*
 import online.javanese.Html
 import online.javanese.Uuid
+import online.javanese.repository.LessonTree
 
 class Task(
         val basicInfo: BasicInfo,
@@ -38,6 +39,17 @@ class Task(
         WholeClass  // ... whole class code, including imports
     }
 
+}
+
+class TaskTree internal constructor(
+        val id: Uuid,
+        val lessonId: Uuid,
+        val lesson: LessonTree,
+        val linkText: String,
+        val urlPathComponent: String,
+        task: (Uuid) -> Task
+) {
+    val task by lazy { task(id) }
 }
 
 private object TaskTable : Table<Task, Uuid>("tasks") {
@@ -131,10 +143,24 @@ internal class TaskDao(
 
     fun findBasicSortedBySortIndex(lessonId: Uuid) =
             session.select(
-                    sql = """SELECT $basicColNames FROM "$tableName" WHERE "$lessonIdColName" = :lessonId""",
+                    sql = """SELECT $basicColNames
+                        |FROM "$tableName"
+                        |WHERE "$lessonIdColName" = :lessonId""".trimMargin(),
                     parameters = mapOf("lessonId" to lessonId),
                     mapper = TaskBasicInfoTable.rowMapper()
             )
+
+    fun findTreeSortedBySortIndex(lesson: LessonTree) =
+            findBasicSortedBySortIndex(lesson.id).map {
+                TaskTree(
+                        id = it.id,
+                        lessonId = it.lessonId,
+                        lesson = lesson,
+                        linkText = it.linkText,
+                        urlPathComponent = it.urlPathComponent,
+                        task = { findById(it)!! }
+                )
+            }
 
     fun findById(taskId: Uuid) =
             session.select(

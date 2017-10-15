@@ -67,8 +67,7 @@ object JavaneseServer {
         val taskDao = TaskDao(session)
         val articleDao = ArticleDao(session)
 
-        val taskRepo = TaskRepository(taskDao)
-        val lessonRepo = LessonRepository(lessonDao, taskRepo)
+        val lessonRepo = LessonRepository(lessonDao, taskDao)
         val chapterRepo = ChapterRepository(chapterDao, lessonRepo)
         val courseRepo = CourseRepository(courseDao, chapterRepo)
 

@@ -1,8 +1,8 @@
 package online.javanese.template
 
 import online.javanese.model.Lesson
+import online.javanese.model.TaskTree
 import online.javanese.repository.LessonTree
-import online.javanese.repository.TaskTree
 
 class LessonPageTemplate(
         private val urlOfLesson: (LessonTree) -> String,
