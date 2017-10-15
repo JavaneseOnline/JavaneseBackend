@@ -4,7 +4,9 @@ import nz.net.ultraq.thymeleaf.LayoutDialect
 import online.javanese.exception.NotFoundException
 import online.javanese.handler.*
 import online.javanese.model.*
-import online.javanese.repository.*
+import online.javanese.repository.ChapterRepository
+import online.javanese.repository.ChapterTree
+import online.javanese.repository.CourseRepository
 import online.javanese.route.OnePartRoute
 import online.javanese.route.ThreePartsRoute
 import online.javanese.route.TwoPartsRoute
@@ -63,12 +65,11 @@ object JavaneseServer {
         val pageDao = PageDao(session)
         val courseDao = CourseDao(session)
         val chapterDao = ChapterDao(session)
-        val lessonDao = LessonDao(session)
         val taskDao = TaskDao(session)
+        val lessonDao = LessonDao(session, taskDao)
         val articleDao = ArticleDao(session)
 
-        val lessonRepo = LessonRepository(lessonDao, taskDao)
-        val chapterRepo = ChapterRepository(chapterDao, lessonRepo)
+        val chapterRepo = ChapterRepository(chapterDao, lessonDao)
         val courseRepo = CourseRepository(courseDao, chapterRepo)
 
         val locale = Locale.Builder().setLanguage("ru").setScript("Cyrl").build()
@@ -140,7 +141,7 @@ object JavaneseServer {
                 ThreePartsRoute(
                         tree,
                         LessonHandler(
-                                lessonRepo,
+                                lessonDao,
                                 LessonPageTemplate(urlOfLesson, urlOfTask, render)
                         )
                 )

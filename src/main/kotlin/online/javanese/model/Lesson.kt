@@ -1,9 +1,13 @@
 package online.javanese.model
 
 import com.github.andrewoma.kwery.core.Session
-import com.github.andrewoma.kwery.mapper.*
+import com.github.andrewoma.kwery.mapper.Column
+import com.github.andrewoma.kwery.mapper.Table
+import com.github.andrewoma.kwery.mapper.Value
+import com.github.andrewoma.kwery.mapper.VersionedWithTimestamp
 import online.javanese.Html
 import online.javanese.Uuid
+import online.javanese.repository.ChapterTree
 import java.time.LocalDateTime
 
 class Lesson(
@@ -23,6 +27,17 @@ class Lesson(
             val linkText: String
     )
 
+}
+
+class LessonTree internal constructor(
+        val id: Uuid,
+        val chapterId: Uuid,
+        val urlPathComponent: String,
+        val linkText: String,
+        val chapter: ChapterTree,
+        tasks: (LessonTree) -> List<TaskTree>
+) {
+    val tasks = tasks(this)
 }
 
 private object LessonTable : Table<Lesson, Uuid>("lessons"), VersionedWithTimestamp {
@@ -81,21 +96,32 @@ private object BasicLessonInfoTable : Table<Lesson.BasicInfo, Uuid>("lessons") {
 
 }
 
-internal class LessonDao(
+class LessonDao(
         private val session: Session,
-        private val baseDao: Dao<Lesson, Uuid> = object : AbstractDao<Lesson, Uuid>(session, LessonTable, { it.basicInfo.id }) {}
+        private val taskDao: TaskDao
 ) {
 
     private val tableName = LessonTable.name
 
+    private val basicCols = """"id", "chapterId", "urlPathComponent", "linkText""""
     private val idColName = LessonTable.Id.name
 
     internal fun findBasicSortedBySortIndex(chapterId: Uuid): List<Lesson.BasicInfo> =
             session.select(
-                    sql = """SELECT "id", "chapterId", "urlPathComponent", "linkText" FROM "$tableName" WHERE "chapterId" = :chapterId ORDER BY "sortIndex"""",
+                    sql = """SELECT $basicCols FROM "$tableName" WHERE "chapterId" = :chapterId ORDER BY "sortIndex"""",
                     parameters = mapOf("chapterId" to chapterId),
                     mapper = BasicLessonInfoTable.rowMapper()
             )
+
+    fun findTreeSortedBySortIndex(chapter: ChapterTree): List<LessonTree> =
+            findBasicSortedBySortIndex(chapter.id).map { LessonTree(
+                    id = it.id,
+                    chapterId = it.chapterId,
+                    urlPathComponent = it.urlPathComponent,
+                    linkText = it.linkText,
+                    chapter = chapter,
+                    tasks = taskDao::findTreeSortedBySortIndex
+            ) }
 
     internal fun findById(id: Uuid): Lesson? =
             session.select(

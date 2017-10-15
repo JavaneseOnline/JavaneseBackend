@@ -1,10 +1,11 @@
 package online.javanese.model
 
 import com.github.andrewoma.kwery.core.Session
-import com.github.andrewoma.kwery.mapper.*
+import com.github.andrewoma.kwery.mapper.Column
+import com.github.andrewoma.kwery.mapper.Table
+import com.github.andrewoma.kwery.mapper.Value
 import online.javanese.Html
 import online.javanese.Uuid
-import online.javanese.repository.LessonTree
 
 class Task(
         val basicInfo: BasicInfo,
@@ -131,9 +132,8 @@ private object TaskBasicInfoTable : Table<Task.BasicInfo, Uuid>("tasks") {
 
 }
 
-internal class TaskDao(
-        private val session: Session,
-        private val dao: Dao<Task, Uuid> = object : AbstractDao<Task, Uuid>(session, TaskTable, { it.basicInfo.id }) {}
+class TaskDao(
+        private val session: Session
 ) {
 
     private val tableName = TaskTable.name
