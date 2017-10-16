@@ -15,6 +15,8 @@
     <!-- mdl, dialog polyfill, highlight darkula, custom styles, sandbox, trace -->
     <link th:href="${static + '/css/main.min.css'}" rel="stylesheet" />
 
+    <link rel="alternate" type="application/rss+xml" title="Статьи" href="/articles.rss" />
+
     <th:block th:if="${head}" th:utext="${head}" />
 
     <th:block layout:fragment="head" />

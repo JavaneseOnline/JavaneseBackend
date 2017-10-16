@@ -149,6 +149,11 @@ object JavaneseServer {
                 )
         )
 
+        val articleRssHandler = ArticleRssHandler(
+                config.siteUrl,
+                articleDao,
+                RssFeedTemplate(render))
+
         embeddedServer(Netty, 8080) {
             install(StatusPages) {
                 exception<NotFoundException> {
@@ -178,6 +183,10 @@ object JavaneseServer {
                     route3(call, call.parameters["f"]!!, call.parameters["s"]!!, call.parameters["t"]!!)
                 }
 
+                get("/articles.rss") {
+                    articleRssHandler(call)
+                }
+
                 if (config.localStaticDir != null) {
                     static(config.exposedStaticDir) {
                         val localStaticDirFile = File(config.localStaticDir)
@@ -193,3 +202,4 @@ object JavaneseServer {
 
 // todo: rename all 'h1's to 'heading'
 // todo: urlPathComponent -> urlComponent or what??
+// todo: make DAO functions suspend

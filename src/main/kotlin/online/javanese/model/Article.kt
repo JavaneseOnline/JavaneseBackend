@@ -118,17 +118,29 @@ class ArticleDao(
 ) {
 
     private val tableName = ArticleTable.name
+    private val basicCols = """"id", "linkText", "urlPathComponent""""
     private val urlComponentColName = ArticleTable.UrlPathComponent.name
     private val publishedColName = ArticleTable.Published.name
+    private val sortIndexColName = ArticleTable.SortIndex.name
 
     fun findAllBasicPublishedOrderBySortIndex(): List<Article.BasicInfo> =
             session.select(
-                    sql = """SELECT "id", "linkText", "urlPathComponent"
+                    sql = """SELECT $basicCols
                         |FROM "$tableName"
                         |WHERE "$publishedColName" = true
-                        |ORDER BY "sortIndex" ASC""".trimMargin(),
+                        |ORDER BY "$sortIndexColName" ASC""".trimMargin(),
 
                     mapper = ArticleBasicInfoTable.rowMapper()
+            )
+
+    fun findAllPublishedOrderBySortIndex(): List<Article> =
+            session.select(
+                    sql = """SELECT *
+                        |FROM "$tableName"
+                        |WHERE "$publishedColName" = true
+                        |ORDER BY "$sortIndexColName" ASC""".trimMargin(),
+
+                    mapper = ArticleTable.rowMapper()
             )
 
     fun findByUrlComponent(component: String): Article? =
