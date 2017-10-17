@@ -14,12 +14,22 @@ $('.sandbox').each(function() {
     var textarea = $sandbox.find('.editor')[0];
     var editor = CodeMirror(function(elt) {
         textarea.parentNode.replaceChild(elt, textarea);
-    }, {value: textarea.value,
+    }, {
+        value: textarea.value,
         lineNumbers: true,
         matchBrackets: true,
         indentUnit: 4,
         mode: "text/x-java",
-        theme: "ambiance"});
+        theme: "ambiance"
+    });
+
+    var dialog = document.getElementById('sandbox_reportError');
+    if (!dialog.showModal) {
+        dialogPolyfill.registerDialog(dialog);
+    }
+    dialog.querySelector('.close').addEventListener('click', function() {
+        dialog.close();
+    });
 
     /*var sandbox = */new Vue({
         el: $sandbox[0],
