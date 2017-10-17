@@ -17,6 +17,7 @@ import org.jetbrains.ktor.host.embeddedServer
 import org.jetbrains.ktor.http.HttpStatusCode
 import org.jetbrains.ktor.netty.Netty
 import org.jetbrains.ktor.routing.get
+import org.jetbrains.ktor.routing.post
 import org.jetbrains.ktor.routing.routing
 import org.thymeleaf.context.Context
 import org.thymeleaf.templatemode.TemplateMode
@@ -154,6 +155,8 @@ object JavaneseServer {
                 articleDao,
                 RssFeedTemplate(render))
 
+        val leaveTaskErrorReportHandler = LeaveTaskErrorReportHandler(TaskErrorReportDao(session))
+
         embeddedServer(Netty, 8080) {
             install(StatusPages) {
                 exception<NotFoundException> {
@@ -187,6 +190,10 @@ object JavaneseServer {
                     articleRssHandler(call)
                 }
 
+                post("/task/report") {
+                    leaveTaskErrorReportHandler(call)
+                }
+
                 if (config.localStaticDir != null) {
                     static(config.exposedStaticDir) {
                         val localStaticDirFile = File(config.localStaticDir)
@@ -195,6 +202,8 @@ object JavaneseServer {
                     }
                 }
             }
+
+            Unit
         }.start(wait = true)
     }
 

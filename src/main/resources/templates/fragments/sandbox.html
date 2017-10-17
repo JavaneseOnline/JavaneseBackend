@@ -46,26 +46,28 @@
                   th:attr="data-success-message=#{sandbox.errorReport.successMessage},
                             data-error-message=#{sandbox.errorReport.errorMessage}">
                 <div class="mdl-dialog__content">
+                    <!-- TODO: form validation -->
                     <label class="mdl-radio mdl-js-radio">
-                        <input type="radio" name="errorKind" value="RIGHT_SOLUTION_NOT_ACCEPTED"
+                        <input type="radio" name="errorKind" value="RightSolutionNotAccepted"
                                class="mdl-radio__button" /> [[#{sandbox.errorKind.rightSolutionNotAccepted}]]
                     </label>
                     <label class="mdl-radio mdl-js-radio">
-                        <input type="radio" name="errorKind" value="BAD_CONDITION"
+                        <input type="radio" name="errorKind" value="BadCondition"
                                class="mdl-radio__button" /> [[#{sandbox.errorKind.badCondition}]]
                     </label>
                     <label class="mdl-radio mdl-js-radio">
-                        <input type="radio" name="errorKind" value="INSUFFICIENT_MATERIAL"
+                        <input type="radio" name="errorKind" value="InsufficientMaterial"
                                class="mdl-radio__button" /> [[#{sandbox.errorKind.insufficientMaterial}]]
                     </label>
                     <label class="mdl-radio mdl-js-radio">
-                        <input type="radio" name="errorKind" value="OTHER"
+                        <input type="radio" name="errorKind" value="Other"
                                class="mdl-radio__button" /> [[#{sandbox.errorKind.other}]]
                     </label>
                     <div class="mdl-textfield mdl-js-textfield">
                         <textarea id="sandbox_errorReport_text" name="text" class="mdl-textfield__input"></textarea>
                         <label class="mdl-textfield__label" for="sandbox_errorReport_text">[[#{sandbox.errorReport.text.placeholder}]]</label>
                     </div>
+                    <input type="hidden" name="code" />
                     <input type="hidden" name="taskId" />
                 </div>
                 <div class="mdl-dialog__actions">

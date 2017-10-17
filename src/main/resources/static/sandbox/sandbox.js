@@ -88,14 +88,9 @@ $('.sandbox').each(function() {
                 }
             },
             reportError: function() {
-                var dialog = document.getElementById('sandbox_reportError');
-                if (!dialog.showModal) {
-                    dialogPolyfill.registerDialog(dialog);
-                    dialog.querySelector('.close').addEventListener('click', function() {
-                        dialog.close();
-                    });
-                }
-                dialog.getElementsByTagName('form')[0].taskId.value = $sandbox.data('task');
+                var form = dialog.getElementsByTagName('form')[0]
+                form.taskId.value = $sandbox.data('task');
+                form.code.value = editor.getValue();
                 dialog.showModal();
             },
             send: function(e) {
