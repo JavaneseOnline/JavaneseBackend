@@ -8,18 +8,18 @@ import org.jetbrains.ktor.http.ContentType
 import org.jetbrains.ktor.request.receiveParameters
 import org.jetbrains.ktor.response.respondText
 
-fun LeaveTaskErrorReportHandler(
+fun SubmitTaskErrorReportHandler(
         taskErrorReportDao: TaskErrorReportDao
 ): suspend (ApplicationCall) -> Unit {
 
-    val valuesMapToTaskErrorReport =
+    val valuesToTaskErrorReport =
             ValuesMapToKweryEntityMapper(TaskErrorReportTable)
 
     // todo: validate input data
 
     return { call ->
         val valuesMap = call.receiveParameters()
-        val report = valuesMapToTaskErrorReport(valuesMap)
+        val report = valuesToTaskErrorReport(valuesMap)
         taskErrorReportDao.insert(report)
         call.respondText("ok", ContentType.Text.Plain)
     }
