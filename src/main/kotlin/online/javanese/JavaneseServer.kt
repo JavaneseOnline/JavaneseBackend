@@ -17,7 +17,6 @@ import org.jetbrains.ktor.host.embeddedServer
 import org.jetbrains.ktor.http.HttpStatusCode
 import org.jetbrains.ktor.netty.Netty
 import org.jetbrains.ktor.routing.get
-import org.jetbrains.ktor.routing.post
 import org.jetbrains.ktor.routing.routing
 import org.thymeleaf.context.Context
 import org.thymeleaf.templatemode.TemplateMode
@@ -155,7 +154,11 @@ object JavaneseServer {
                 articleDao,
                 RssFeedTemplate(render))
 
-        val leaveTaskErrorReportHandler = LeaveTaskErrorReportHandler(TaskErrorReportDao(session))
+        val submitTaskErrorReport =
+                SubmitTaskErrorReportHandler(TaskErrorReportDao(session))
+
+        val submitCodeReviewCandidate =
+                SubmitCodeReviewCandidateHandler(CodeReviewCandidateDao(session))
 
         embeddedServer(Netty, 8080) {
             install(StatusPages) {
@@ -173,26 +176,15 @@ object JavaneseServer {
 
                 // todo: addresses as objects
 
-                get("/") {
-                    route1(call, "")
-                }
-                get("/{f}/") {
-                    route1(call, call.parameters["f"]!!)
-                }
-                get("/{f}/{s}/") {
-                    route2(call, call.parameters["f"]!!, call.parameters["s"]!!)
-                }
-                get("/{f}/{s}/{t}/") {
-                    route3(call, call.parameters["f"]!!, call.parameters["s"]!!, call.parameters["t"]!!)
-                }
+                get("/") { route1(call, "") }
+                get1(route1)
+                get2(route2)
+                get3(route3)
 
-                get("/articles.rss") {
-                    articleRssHandler(call)
-                }
+                get("/articles.rss", articleRssHandler)
 
-                post("/task/report") {
-                    leaveTaskErrorReportHandler(call)
-                }
+                post("/task/report", submitTaskErrorReport)
+                post("/codeReview/add", submitCodeReviewCandidate)
 
                 if (config.localStaticDir != null) {
                     static(config.exposedStaticDir) {
