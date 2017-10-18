@@ -57,23 +57,10 @@ class TaskErrorReportDao(
 ) {
 
     private val table = TaskErrorReportTable
+    private val insertSql = insertSql(TaskErrorReportTable)
 
-    private val insertSql = """INSERT INTO "${table.name}"
-        |(${table.allColumns.joinToString { "\"${it.name}\"" }})
-        |VALUES (${table.allColumns.joinToString { ":${it.name}" }})""".trimMargin()
-
-    fun insert(value: TaskErrorReport): TaskErrorReport {
-        val columns = table.dataColumns
-
-        val id = Uuid.randomUUID()
-        val parameters = table.objectMap(session, value, columns) + (table.Id.name to id)
-        val new = table.copy(value, mapOf(table.Id to id))
-
-        val count = session.update(insertSql, parameters)
-        check(count == 1) { "failed to insert any rows" }
-
-        return new
-    }
+    fun insert(value: TaskErrorReport): TaskErrorReport =
+            insert(table, session, insertSql, value)
 
 }
 
