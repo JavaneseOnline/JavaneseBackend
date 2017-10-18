@@ -1,24 +1,12 @@
-package online.javanese
+package online.javanese.kweryEntityMapping
 
 import com.github.andrewoma.kwery.mapper.*
-import org.jetbrains.ktor.util.ValuesMap
+import online.javanese.Uuid
+import online.javanese.UuidConverter
 import java.math.BigDecimal
 import java.util.*
 
-class ValuesMapToKweryEntityMapper<out T : Any, ID>(
-        private val table: Table<T, ID>
-) : (ValuesMap) -> T {
-
-    // TODO validation: return an instance of a sealed class ( success | error )
-
-    private val valueFactory = ValueFactory(table)
-
-    override fun invoke(map: ValuesMap): T =
-            table.create(valueFactory.from(map))
-
-}
-
-private class ValueFactory<T : Any>(
+class ValueFactory<T : Any>(
         table: Table<T, *>
 ) {
 
@@ -45,14 +33,19 @@ private class ValueFactory<T : Any>(
         }
     }
 
-    fun from(map: ValuesMap): Value<T> =
+    fun from(source: Source): Value<T> =
             object : Value<T> {
                 override fun <R> of(column: Column<T, R>): R {
                     val name = column.name
-                    return if (name in map) converters[name]!!(map[name]!!) as R
+                    return if (name in source) converters[name]!!(source[name]) as R
                     else column.defaultValue
                 }
             }
+
+    interface Source {
+        operator fun contains(key: String): Boolean
+        operator fun get(key: String): String
+    }
 
     private companion object {
         private val kweryConverterToType: Map<Converter<*>, Class<*>>
