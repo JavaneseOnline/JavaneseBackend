@@ -212,3 +212,5 @@ object JavaneseServer {
 // todo: rename all 'h1's to 'heading'
 // todo: urlPathComponent -> urlComponent or what??
 // todo: make DAO functions suspend
+// todo: in Admin page, make API which will allow showing not only DB tables, but any data (e. g. number of sandbox connections)
+// todo: in Admin page, connect with WebSockets and show entities stats in real-time
