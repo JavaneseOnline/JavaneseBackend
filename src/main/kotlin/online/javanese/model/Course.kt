@@ -134,6 +134,13 @@ class CourseDao(
                     mapper = CourseTable.rowMapper()
             )*/
 
+    fun findById(id: Uuid): Course? =
+            session.select(
+                    sql = """SELECT * FROM $tableName WHERE "$idColName" = :id LIMIT 1""",
+                    parameters = mapOf("id" to id),
+                    mapper = CourseTable.rowMapper()
+            ).singleOrNull()
+
     fun findByUrlComponent(component: String): Course? =
             session.select(
                     sql = """SELECT * FROM $tableName WHERE "$urlComponentColName" = :component LIMIT 1""",

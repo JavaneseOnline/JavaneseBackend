@@ -66,6 +66,12 @@ class PageDao(
     private val tableName = PagesTable.name
     private val urlPathComponentColName = PagesTable.UrlPathComponent.name
 
+    fun findAll(): List<Page> =
+            session.select(
+                    sql = """SELECT * FROM $tableName""",
+                    mapper = PagesTable.rowMapper()
+            )
+
     fun findByUrlPathComponent(component: String) =
             session.select(
                     sql = """SELECT *

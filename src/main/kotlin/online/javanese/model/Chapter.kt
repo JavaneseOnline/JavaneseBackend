@@ -122,6 +122,13 @@ class ChapterDao(
                     mapper = BasicChapterInfoTable.rowMapper()
             ).singleOrNull()
 
+    fun findById(chapterId: Uuid): Chapter? =
+            session.select(
+                    sql = """SELECT * FROM $tableName WHERE "$idColName" = :id LIMIT 1""",
+                    parameters = mapOf("id" to chapterId),
+                    mapper = ChapterTable.rowMapper()
+            ).singleOrNull()
+
     fun findByUrlComponent(component: String): Chapter? =
             session.select(
                     sql = """SELECT * FROM $tableName WHERE "$urlComponentColName" = :component LIMIT 1""",

@@ -83,7 +83,14 @@ object JavaneseServer {
         val tree = courseDao.findTreeSortedBySortIndex() // fixme: may not fetch whole tree
         // (after removing Thymeleaf this refactoring would be easy)
 
+        val urlOfPage = { p: Page ->
+            "/${p.urlPathComponent.encodeForUrl()}/"
+        }
+
         val urlOfCourse = { c: Course.BasicInfo ->
+            "/${c.urlPathComponent.encodeForUrl()}/"
+        }
+        val urlOfCourseTree = { c: CourseTree ->
             "/${c.urlPathComponent.encodeForUrl()}/"
         }
 
@@ -102,6 +109,10 @@ object JavaneseServer {
             val ch = l.chapter
             val co = ch.course
             "/${co.urlPathComponent.encodeForUrl()}/${ch.urlPathComponent.encodeForUrl()}/${l.urlPathComponent.encodeForUrl()}/#${t.urlPathComponent.encodeForUrl()}"
+        }
+
+        val urlOfArticle = { p: Page, a: Article.BasicInfo ->
+            "/${p.urlPathComponent.encodeForUrl()}/${a.urlPathComponent.encodeForUrl()}/"
         }
 
         val route1 =
@@ -160,6 +171,11 @@ object JavaneseServer {
         val submitCodeReviewCandidate =
                 SubmitCodeReviewCandidateHandler(CodeReviewCandidateDao(session))
 
+        val sitemap =
+                SitemapHandler(config.siteUrl,
+                        urlOfPage, urlOfCourseTree, urlOfChapter, urlOfLesson, urlOfArticle,
+                        tree, pageDao, courseDao, chapterDao, lessonDao, articleDao)
+
         embeddedServer(Netty, 8080) {
             install(StatusPages) {
                 exception<NotFoundException> {
@@ -185,6 +201,8 @@ object JavaneseServer {
 
                 post("/task/report", submitTaskErrorReport)
                 post("/codeReview/add", submitCodeReviewCandidate)
+
+                get("/sitemap.xml", sitemap)
 
                 if (config.localStaticDir != null) {
                     static(config.exposedStaticDir) {

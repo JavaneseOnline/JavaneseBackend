@@ -23,7 +23,8 @@ class Article(
     class BasicInfo(
             val id: Uuid,
             val linkText: String,
-            val urlPathComponent: String
+            val urlPathComponent: String,
+            val lastModified: LocalDateTime
     )
 
     class VkPostInfo(
@@ -65,7 +66,8 @@ private object ArticleTable : Table<Article, Uuid>("articles") {
             basicInfo = Article.BasicInfo(
                     id = value of Id,
                     linkText = value of LinkText,
-                    urlPathComponent = value of UrlPathComponent
+                    urlPathComponent = value of UrlPathComponent,
+                    lastModified = value of LastModified
             ),
             meta = Meta(
                     title = value of MetaTitle,
@@ -101,6 +103,7 @@ private object ArticleBasicInfoTable : Table<Article.BasicInfo, Uuid>("articles"
     val Id by idCol(Article.BasicInfo::id)
     val LinkText by linkTextCol(Article.BasicInfo::linkText)
     val UrlPathComponent by urlPathComponentCol(Article.BasicInfo::urlPathComponent)
+    val LastModified by lastModifiedCol(Article.BasicInfo::lastModified)
 
     override fun idColumns(id: Uuid): Set<Pair<Column<Article.BasicInfo, *>, *>> =
             setOf(Id of id)
@@ -108,7 +111,8 @@ private object ArticleBasicInfoTable : Table<Article.BasicInfo, Uuid>("articles"
     override fun create(value: Value<Article.BasicInfo>): Article.BasicInfo = Article.BasicInfo(
             id = value of Id,
             linkText = value of LinkText,
-            urlPathComponent = value of UrlPathComponent
+            urlPathComponent = value of UrlPathComponent,
+            lastModified = value of LastModified
     )
 
 }
@@ -118,7 +122,7 @@ class ArticleDao(
 ) {
 
     private val tableName = ArticleTable.name
-    private val basicCols = """"id", "linkText", "urlPathComponent""""
+    private val basicCols = """"id", "linkText", "urlPathComponent", "lastModified""""
     private val urlComponentColName = ArticleTable.UrlPathComponent.name
     private val publishedColName = ArticleTable.Published.name
     private val sortIndexColName = ArticleTable.SortIndex.name
