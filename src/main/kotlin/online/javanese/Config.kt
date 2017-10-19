@@ -17,6 +17,9 @@ class Config(
     val exposedStaticDir: String = props.getProperty("exposedStaticDir")
 
     // http://javanese.online
-    val siteUrl = props.getProperty("siteUrl")
+    val siteScheme: String = props.getProperty("siteScheme")
+    val siteHost: String = props.getProperty("siteHost")
+    val sitePort: Int = props.getProperty("sitePort").toInt()
+    val siteUrl = "$siteScheme://$siteHost${if (sitePort != 80) ":$sitePort" else ""}"
 
 }
