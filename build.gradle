@@ -1,5 +1,5 @@
 buildscript {
-    ext.kotlin_version = '1.2.0-beta-31'
+    ext.kotlin_version = '1.2.0-beta-88'
     ext.ktor_version = '0.4.0-alpha-15'
     ext.kwery_version = '0.17'
 
@@ -28,6 +28,7 @@ repositories {
 }
 
 dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
     compile "org.jetbrains.kotlin:kotlin-stdlib-jre8:$kotlin_version"
     compile "org.jetbrains.ktor:ktor-core:$ktor_version"
     compile "org.jetbrains.ktor:ktor-netty:$ktor_version"
