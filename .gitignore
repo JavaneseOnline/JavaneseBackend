@@ -43,3 +43,5 @@ atlassian-ide-plugin.xml
 .idea/replstate.xml
 
 local.properties
+.gradle/
+build/
