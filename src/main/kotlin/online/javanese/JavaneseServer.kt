@@ -176,6 +176,9 @@ object JavaneseServer {
                         urlOfPage, urlOfCourseTree, urlOfChapter, urlOfLesson, urlOfArticle,
                         tree, pageDao, courseDao, chapterDao, lessonDao, articleDao)
 
+        val robots =
+                RobotsHandler(config)
+
         embeddedServer(Netty, 8080) {
             install(StatusPages) {
                 exception<NotFoundException> {
@@ -203,6 +206,7 @@ object JavaneseServer {
                 post("/codeReview/add", submitCodeReviewCandidate)
 
                 get("/sitemap.xml", sitemap)
+                get("/robots.txt", robots)
 
                 if (config.localStaticDir != null) {
                     static(config.exposedStaticDir) {
