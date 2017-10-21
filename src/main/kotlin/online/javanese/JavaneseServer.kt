@@ -18,6 +18,8 @@ import org.jetbrains.ktor.http.HttpStatusCode
 import org.jetbrains.ktor.netty.Netty
 import org.jetbrains.ktor.routing.get
 import org.jetbrains.ktor.routing.routing
+import org.jetbrains.ktor.websocket.WebSockets
+import org.jetbrains.ktor.websocket.webSocket
 import org.thymeleaf.context.Context
 import org.thymeleaf.templatemode.TemplateMode
 import java.io.File
@@ -179,6 +181,9 @@ object JavaneseServer {
         val robots =
                 RobotsHandler(config)
 
+        val sandboxWebSocketHandler =
+                SandboxWebSocketHandler(config, taskDao)
+
         embeddedServer(Netty, 8080) {
             install(StatusPages) {
                 exception<NotFoundException> {
@@ -190,6 +195,8 @@ object JavaneseServer {
                     errorHandler(call)
                 }
             }
+
+            install(WebSockets)
 
             routing {
 
@@ -207,6 +214,8 @@ object JavaneseServer {
 
                 get("/sitemap.xml", sitemap)
                 get("/robots.txt", robots)
+
+                webSocket(path = "/sandbox/ws", handler = sandboxWebSocketHandler)
 
                 if (config.localStaticDir != null) {
                     static(config.exposedStaticDir) {

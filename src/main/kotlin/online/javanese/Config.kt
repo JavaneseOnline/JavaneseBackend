@@ -22,4 +22,8 @@ class Config(
     val sitePort: Int = props.getProperty("sitePort").toInt()
     val siteUrl = "$siteScheme://$siteHost${if (sitePort != 80) ":$sitePort" else ""}"
 
+    val sandboxJavaLocation: String = props.getProperty("sandbox.javaLocation")
+    val sandboxLocation: String = props.getProperty("sandbox.location")
+    val sandboxCommonsCli: String = props.getProperty("sandbox.commons.cli")
+
 }
