@@ -36,6 +36,19 @@ $('.sandbox').each(function() {
         data: {
             /**/code: null,
             systemIn: null,
+
+            /**
+             * enum class MessageType {
+             *     STATUS, IN, OUT, ERR, EXIT, DEADLINE, CORRECT_SOLUTION
+             * }
+             * {@see .runtime-status, .runtime-in, .runtime-out, and so on in sandbox.scss}
+             *
+             * message format:
+             * {
+             *     "type": MessageType,
+             *     "data": String,
+             * }
+             */
             messages: [],
 
             running: false,
@@ -85,6 +98,7 @@ $('.sandbox').each(function() {
                 };
                 this.connection.onerror = function(e) {
                     console.error(e);
+                    app.messages.push({type: "ERR", data: sandboxLocale.webSocketError});
                 }
             },
             reportError: function() {
