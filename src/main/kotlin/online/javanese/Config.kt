@@ -22,8 +22,11 @@ class Config(
     val sitePort: Int = props.getProperty("sitePort").toInt()
     val siteUrl = "$siteScheme://$siteHost${if (sitePort != 80) ":$sitePort" else ""}"
 
+    // /usr/lib/jvm/java-9-oracle/bin/java
     val sandboxJavaLocation: String = props.getProperty("sandbox.javaLocation")
+    // /home/<user>/IdeaProjects/javanese/etc/sandbox
     val sandboxLocation: String = props.getProperty("sandbox.location")
+    // /home/miha/IdeaProjects/javanese/etc/commons-cli-1.3.1.jar FIXME: may write zero-dependency CLI parser
     val sandboxCommonsCli: String = props.getProperty("sandbox.commons.cli")
 
 }
