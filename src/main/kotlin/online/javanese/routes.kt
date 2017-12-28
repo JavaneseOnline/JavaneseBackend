@@ -1,9 +1,11 @@
 package online.javanese
 
-import org.jetbrains.ktor.application.ApplicationCall
-import org.jetbrains.ktor.routing.Route
-import org.jetbrains.ktor.routing.get
-import org.jetbrains.ktor.routing.post
+import io.ktor.application.ApplicationCall
+import io.ktor.application.call
+import io.ktor.routing.Route
+import io.ktor.routing.get
+import io.ktor.routing.post
+
 
 fun Route.get(path: String, handler: suspend (ApplicationCall) -> Unit) =
         get(path) { handler(call) }

@@ -29,4 +29,8 @@ class Config(
     // /home/miha/IdeaProjects/javanese/etc/commons-cli-1.3.1.jar FIXME: may write zero-dependency CLI parser
     val sandboxCommonsCli: String = props.getProperty("sandbox.commons.cli")
 
+    val adminRoute: String = props.getProperty("admin.route")
+    val adminUsername: String = props.getProperty("admin.username")
+    val adminPassword: String = props.getProperty("admin.password")
+
 }

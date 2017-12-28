@@ -1,12 +1,9 @@
 package online.javanese.model
 
 import com.github.andrewoma.kwery.core.Session
-import com.github.andrewoma.kwery.mapper.Column
-import com.github.andrewoma.kwery.mapper.Table
-import com.github.andrewoma.kwery.mapper.Value
-import com.github.andrewoma.kwery.mapper.VersionedWithTimestamp
+import com.github.andrewoma.kwery.mapper.*
 import online.javanese.Html
-import online.javanese.Uuid
+import online.javanese.krud.kwery.Uuid
 import java.time.LocalDateTime
 
 class Lesson(
@@ -39,7 +36,7 @@ class LessonTree internal constructor(
     val tasks = tasks(this)
 }
 
-private object LessonTable : Table<Lesson, Uuid>("lessons"), VersionedWithTimestamp {
+object LessonTable : Table<Lesson, Uuid>("lessons"), VersionedWithTimestamp {
 
     val Id by idCol(Lesson.BasicInfo::id, Lesson::basicInfo)
     val ChapterId by uuidCol(Lesson.BasicInfo::chapterId, Lesson::basicInfo, name = "chapterId")
@@ -96,14 +93,17 @@ private object BasicLessonInfoTable : Table<Lesson.BasicInfo, Uuid>("lessons") {
 }
 
 class LessonDao(
-        private val session: Session,
+        session: Session,
         private val taskDao: TaskDao
-) {
+) : AbstractDao<Lesson, Uuid>(session, LessonTable, { it.basicInfo.id }) {
 
     private val tableName = LessonTable.name
 
     private val basicCols = """"id", "chapterId", "urlPathComponent", "linkText""""
     private val idColName = LessonTable.Id.name
+
+    override val defaultOrder: Map<Column<Lesson, *>, OrderByDirection> =
+            mapOf(LessonTable.SortIndex to OrderByDirection.ASC)
 
     internal fun findBasicSortedBySortIndex(chapterId: Uuid): List<Lesson.BasicInfo> =
             session.select(

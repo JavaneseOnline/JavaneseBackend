@@ -1,8 +1,9 @@
 package online.javanese.route
 
+import io.ktor.application.ApplicationCall
 import online.javanese.exception.NotFoundException
 import online.javanese.model.*
-import org.jetbrains.ktor.application.ApplicationCall
+
 
 fun TwoPartsRoute(
         pageDao: PageDao,

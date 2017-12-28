@@ -1,11 +1,9 @@
 package online.javanese.model
 
 import com.github.andrewoma.kwery.core.Session
-import com.github.andrewoma.kwery.mapper.Column
-import com.github.andrewoma.kwery.mapper.Table
-import com.github.andrewoma.kwery.mapper.Value
+import com.github.andrewoma.kwery.mapper.*
 import online.javanese.Html
-import online.javanese.Uuid
+import online.javanese.krud.kwery.Uuid
 
 class Task(
         val basicInfo: BasicInfo,
@@ -53,7 +51,7 @@ class TaskTree internal constructor(
     val task by lazy { task(id) }
 }
 
-private object TaskTable : Table<Task, Uuid>("tasks") {
+object TaskTable : Table<Task, Uuid>("tasks") {
 
     val Id by idCol(Task.BasicInfo::id, Task::basicInfo)
     val LessonId by uuidCol(Task.BasicInfo::lessonId, Task::basicInfo, name = "lessonId")
@@ -73,7 +71,7 @@ private object TaskTable : Table<Task, Uuid>("tasks") {
             name = "codeToAppend")
     val AllowSystemIn by col(Task.TechnicalInfo::allowSystemIn, Task::technicalInfo,
             name = "allowSystemIn")
-    val CheckRequirements by col(Task.TechnicalInfo::checkRules, Task::technicalInfo,
+    val CheckRules by col(Task.TechnicalInfo::checkRules, Task::technicalInfo,
             name = "checkRules")
     val ExpectedOutput by col(Task.TechnicalInfo::expectedOutput, Task::technicalInfo,
             name = "expectedOutput")
@@ -103,7 +101,7 @@ private object TaskTable : Table<Task, Uuid>("tasks") {
                     initialCode = value of InitialCode,
                     codeToAppend = value of CodeToAppend,
                     allowSystemIn = value of AllowSystemIn,
-                    checkRules = value of CheckRequirements,
+                    checkRules = value of CheckRules,
                     expectedOutput = value of ExpectedOutput,
                     timeLimit = value of TimeLimit,
                     memoryLimit = value of MemoryLimit
@@ -133,13 +131,16 @@ private object TaskBasicInfoTable : Table<Task.BasicInfo, Uuid>("tasks") {
 }
 
 class TaskDao(
-        private val session: Session
-) {
+        session: Session
+) : AbstractDao<Task, Uuid>(session, TaskTable, { it.basicInfo.id }) {
 
     private val tableName = TaskTable.name
     private val idColName = TaskTable.Id.name
     private val lessonIdColName = TaskTable.LessonId.name
     private val basicColNames = """"id", "lessonId", "linkText", "urlPathComponent""""
+
+    override val defaultOrder: Map<Column<Task, *>, OrderByDirection> =
+            mapOf(TaskTable.SortIndex to OrderByDirection.ASC)
 
     fun findBasicSortedBySortIndex(lessonId: Uuid) =
             session.select(

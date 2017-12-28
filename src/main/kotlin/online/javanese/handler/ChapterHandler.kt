@@ -1,12 +1,13 @@
 package online.javanese.handler
 
+import io.ktor.application.ApplicationCall
+import io.ktor.http.ContentType
+import io.ktor.response.respondText
 import online.javanese.model.Chapter
 import online.javanese.model.ChapterTree
 import online.javanese.model.Course
 import online.javanese.model.CourseTree
-import org.jetbrains.ktor.application.ApplicationCall
-import org.jetbrains.ktor.http.ContentType
-import org.jetbrains.ktor.response.respondText
+
 
 fun ChapterHandler(
         tree: List<CourseTree>,

@@ -1,8 +1,9 @@
 package online.javanese.handler
 
+import io.ktor.application.ApplicationCall
+import io.ktor.response.respondText
 import online.javanese.Config
-import org.jetbrains.ktor.application.ApplicationCall
-import org.jetbrains.ktor.response.respondText
+
 
 fun RobotsHandler(config: Config): suspend (ApplicationCall) -> Unit = { call ->
     call.respondText(

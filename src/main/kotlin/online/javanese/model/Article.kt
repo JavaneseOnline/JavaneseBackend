@@ -1,11 +1,9 @@
 package online.javanese.model
 
 import com.github.andrewoma.kwery.core.Session
-import com.github.andrewoma.kwery.mapper.Column
-import com.github.andrewoma.kwery.mapper.Table
-import com.github.andrewoma.kwery.mapper.Value
+import com.github.andrewoma.kwery.mapper.*
 import online.javanese.Html
-import online.javanese.Uuid
+import online.javanese.krud.kwery.Uuid
 import java.time.LocalDateTime
 
 class Article(
@@ -37,7 +35,7 @@ class Article(
 
 }
 
-private object ArticleTable : Table<Article, Uuid>("articles") {
+object ArticleTable : Table<Article, Uuid>("articles") {
 
     val Id by idCol(Article.BasicInfo::id, Article::basicInfo)
     val LinkText by linkTextCol(Article.BasicInfo::linkText, Article::basicInfo)
@@ -118,14 +116,17 @@ private object ArticleBasicInfoTable : Table<Article.BasicInfo, Uuid>("articles"
 }
 
 class ArticleDao(
-        private val session: Session
-) {
+        session: Session
+) : AbstractDao<Article, Uuid>(session, ArticleTable, ArticleTable.Id.property) {
 
     private val tableName = ArticleTable.name
     private val basicCols = """"id", "linkText", "urlPathComponent", "lastModified""""
     private val urlComponentColName = ArticleTable.UrlPathComponent.name
     private val publishedColName = ArticleTable.Published.name
     private val sortIndexColName = ArticleTable.SortIndex.name
+
+    override val defaultOrder: Map<Column<Article, *>, OrderByDirection> =
+            mapOf(ArticleTable.SortIndex to OrderByDirection.ASC) // todo: pinned articles
 
     fun findAllBasicPublishedOrderBySortIndex(): List<Article.BasicInfo> =
             session.select(

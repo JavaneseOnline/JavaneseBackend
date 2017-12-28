@@ -1,19 +1,21 @@
 package online.javanese.handler
 
-import online.javanese.kweryEntityMapping.ValuesMapToKweryEntityMapper
+import io.ktor.application.ApplicationCall
+import io.ktor.http.ContentType
+import io.ktor.request.receiveParameters
+import io.ktor.response.respondText
+import online.javanese.krud.kwery.kweryEntityMapping.MapToKweryEntityMapper
+import online.javanese.krud.toStringMap
 import online.javanese.model.CodeReviewCandidateDao
 import online.javanese.model.CodeReviewCandidateTable
-import org.jetbrains.ktor.application.ApplicationCall
-import org.jetbrains.ktor.http.ContentType
-import org.jetbrains.ktor.request.receiveParameters
-import org.jetbrains.ktor.response.respondText
+
 
 fun SubmitCodeReviewCandidateHandler(
         reviewCandidateDao: CodeReviewCandidateDao
 ): suspend (ApplicationCall) -> Unit {
 
     val valuesToTaskErrorReport =
-            ValuesMapToKweryEntityMapper(CodeReviewCandidateTable) {
+            MapToKweryEntityMapper(CodeReviewCandidateTable) {
                 when (it) {
                     "id" -> "id"
                     "senderName" -> "name"
@@ -26,7 +28,7 @@ fun SubmitCodeReviewCandidateHandler(
 
     return { call ->
         val valuesMap = call.receiveParameters()
-        val reviewCandidate = valuesToTaskErrorReport(valuesMap)
+        val reviewCandidate = valuesToTaskErrorReport(valuesMap.toStringMap())
         reviewCandidateDao.insert(reviewCandidate)
         call.respondText("ok", ContentType.Text.Plain)
     }

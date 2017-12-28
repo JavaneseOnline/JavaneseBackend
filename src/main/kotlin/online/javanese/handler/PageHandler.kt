@@ -1,9 +1,12 @@
 package online.javanese.handler
 
+import io.ktor.application.ApplicationCall
+import io.ktor.html.respondHtml
+import io.ktor.http.ContentType
+import io.ktor.response.respondText
+import kotlinx.html.HTML
 import online.javanese.model.*
-import org.jetbrains.ktor.application.ApplicationCall
-import org.jetbrains.ktor.http.ContentType
-import org.jetbrains.ktor.response.respondText
+
 
 fun PageHandler(
         courseDao: CourseDao,
@@ -11,15 +14,12 @@ fun PageHandler(
         indexPageTpl: (Page) -> String,
         treePageTpl: (Page, List<CourseTree>) -> String,
         articlesPageTpl: (Page, List<Article.BasicInfo>) -> String,
-        pageTpl: (Page) -> String
+        codeReviewTpl: HTML.(Page) -> Unit
 ): suspend (ApplicationCall, Page) -> Unit = { call, page ->
-    call.respondText(
-            when (page.magic) {
-                Page.Magic.Index -> indexPageTpl(page)
-                Page.Magic.Tree -> treePageTpl(page, courseDao.findTreeSortedBySortIndex())
-                Page.Magic.Articles -> articlesPageTpl(page, articleDao.findAllBasicPublishedOrderBySortIndex())
-                Page.Magic.CodeReview -> pageTpl(page)
-            },
-            ContentType.Text.Html
-    )
+        when (page.magic) {
+            Page.Magic.Index -> call.respondText(indexPageTpl(page), ContentType.Text.Html)
+            Page.Magic.Tree -> call.respondText(treePageTpl(page, courseDao.findTreeSortedBySortIndex()), ContentType.Text.Html)
+            Page.Magic.Articles -> call.respondText(articlesPageTpl(page, articleDao.findAllBasicPublishedOrderBySortIndex()), ContentType.Text.Html)
+            Page.Magic.CodeReview -> call.respondHtml { codeReviewTpl(page) }
+        }
 }

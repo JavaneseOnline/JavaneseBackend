@@ -2,7 +2,7 @@ package online.javanese.model
 
 import com.github.andrewoma.kwery.core.Session
 import com.github.andrewoma.kwery.mapper.Table
-import online.javanese.Uuid
+import online.javanese.krud.kwery.Uuid
 
 fun insertSql(table: Table<*, *>) = """INSERT INTO "${table.name}"
         |(${table.allColumns.joinToString { "\"${it.name}\"" }})

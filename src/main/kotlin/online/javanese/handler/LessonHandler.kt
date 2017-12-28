@@ -1,11 +1,12 @@
 package online.javanese.handler
 
+import io.ktor.application.ApplicationCall
+import io.ktor.http.ContentType
+import io.ktor.response.respondText
 import online.javanese.model.Lesson
 import online.javanese.model.LessonDao
 import online.javanese.model.LessonTree
-import org.jetbrains.ktor.application.ApplicationCall
-import org.jetbrains.ktor.http.ContentType
-import org.jetbrains.ktor.response.respondText
+
 
 fun LessonHandler(
         lessonDao: LessonDao,

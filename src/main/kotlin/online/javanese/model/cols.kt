@@ -1,9 +1,9 @@
 package online.javanese.model
 
 import com.github.andrewoma.kwery.mapper.Table
-import online.javanese.DefaultUuid
-import online.javanese.Uuid
-import online.javanese.UuidConverter
+import online.javanese.krud.kwery.DefaultUuid
+import online.javanese.krud.kwery.Uuid
+import online.javanese.krud.kwery.UuidConverter
 import java.time.LocalDateTime
 import kotlin.reflect.KProperty1
 

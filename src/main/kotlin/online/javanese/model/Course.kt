@@ -1,12 +1,9 @@
 package online.javanese.model
 
 import com.github.andrewoma.kwery.core.Session
-import com.github.andrewoma.kwery.mapper.Column
-import com.github.andrewoma.kwery.mapper.Table
-import com.github.andrewoma.kwery.mapper.Value
-import com.github.andrewoma.kwery.mapper.VersionedWithTimestamp
+import com.github.andrewoma.kwery.mapper.*
 import online.javanese.Html
-import online.javanese.Uuid
+import online.javanese.krud.kwery.Uuid
 import java.time.LocalDateTime
 
 class Course(
@@ -35,7 +32,7 @@ class CourseTree internal constructor(
     val chapters = chapters(this)
 }
 
-private object CourseTable : Table<Course, Uuid>("courses"), VersionedWithTimestamp {
+object CourseTable : Table<Course, Uuid>("courses"), VersionedWithTimestamp {
 
     val Id by idCol(Course.BasicInfo::id, Course::basicInfo)
     val UrlPathComponent by urlPathComponentCol(Course.BasicInfo::urlPathComponent, Course::basicInfo)
@@ -86,9 +83,9 @@ private object BasicCourseInfoTable : Table<Course.BasicInfo, Uuid>("courses") {
 }
 
 class CourseDao(
-        private val session: Session,
+        session: Session,
         private val chapterDao: ChapterDao
-) {
+) : AbstractDao<Course, Uuid>(session, CourseTable, CourseTable.Id.property) {
 
 //    private val baseDao: Dao<Course, Uuid> = object : AbstractDao<Course, Uuid>(session, CourseTable, { it.basicInfo.id }) {}
 
@@ -99,6 +96,9 @@ class CourseDao(
     private val urlComponentColName = CourseTable.UrlPathComponent.name
 
     private val basicInfoColumns = """ "id", "urlPathComponent", "linkText" """
+
+    override val defaultOrder: Map<Column<Course, *>, OrderByDirection> =
+            mapOf(CourseTable.SortIndex to OrderByDirection.ASC)
 
     /*fun findById(id: Uuid, columns: Set<Column<Course, *>>): Course? =
             session.select(

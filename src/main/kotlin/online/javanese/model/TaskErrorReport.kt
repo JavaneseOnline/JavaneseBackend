@@ -1,10 +1,11 @@
 package online.javanese.model
 
 import com.github.andrewoma.kwery.core.Session
+import com.github.andrewoma.kwery.mapper.AbstractDao
 import com.github.andrewoma.kwery.mapper.Column
 import com.github.andrewoma.kwery.mapper.Table
 import com.github.andrewoma.kwery.mapper.Value
-import online.javanese.Uuid
+import online.javanese.krud.kwery.Uuid
 
 class TaskErrorReport(
         val id: Uuid,
@@ -53,10 +54,9 @@ internal object TaskErrorReportTable : Table<TaskErrorReport, Uuid>("taskErrorRe
 }
 
 class TaskErrorReportDao(
-        private val session: Session
-) {
+        session: Session
+) : AbstractDao<TaskErrorReport, Uuid>(session, TaskErrorReportTable, TaskErrorReportTable.Id.property) {
 
-    private val table = TaskErrorReportTable
     private val insertSql = insertSql(TaskErrorReportTable)
 
     fun insert(value: TaskErrorReport): TaskErrorReport =

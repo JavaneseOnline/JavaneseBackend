@@ -1,5 +1,18 @@
 package online.javanese
 
+import io.ktor.application.call
+import io.ktor.application.install
+import io.ktor.content.files
+import io.ktor.content.static
+import io.ktor.content.staticRootFolder
+import io.ktor.features.StatusPages
+import io.ktor.http.HttpStatusCode
+import io.ktor.routing.get
+import io.ktor.routing.routing
+import io.ktor.server.engine.embeddedServer
+import io.ktor.server.netty.Netty
+import io.ktor.websocket.WebSockets
+import io.ktor.websocket.webSocket
 import nz.net.ultraq.thymeleaf.LayoutDialect
 import online.javanese.exception.NotFoundException
 import online.javanese.handler.*
@@ -8,23 +21,12 @@ import online.javanese.route.OnePartRoute
 import online.javanese.route.ThreePartsRoute
 import online.javanese.route.TwoPartsRoute
 import online.javanese.template.*
-import org.jetbrains.ktor.application.install
-import org.jetbrains.ktor.content.files
-import org.jetbrains.ktor.content.static
-import org.jetbrains.ktor.content.staticRootFolder
-import org.jetbrains.ktor.features.StatusPages
-import org.jetbrains.ktor.host.embeddedServer
-import org.jetbrains.ktor.http.HttpStatusCode
-import org.jetbrains.ktor.netty.Netty
-import org.jetbrains.ktor.routing.get
-import org.jetbrains.ktor.routing.routing
-import org.jetbrains.ktor.websocket.WebSockets
-import org.jetbrains.ktor.websocket.webSocket
 import org.thymeleaf.context.Context
 import org.thymeleaf.templatemode.TemplateMode
 import java.io.File
 import java.io.FileInputStream
 import java.util.*
+
 
 object JavaneseServer {
 
@@ -117,6 +119,8 @@ object JavaneseServer {
             "/${p.urlPathComponent.encodeForUrl()}/${a.urlPathComponent.encodeForUrl()}/"
         }
 
+        val layout = Layout(config.exposedStaticDir, messages)
+
         val route1 =
                 OnePartRoute(
                         pageDao,
@@ -126,7 +130,7 @@ object JavaneseServer {
                                 IndexPageTemplate(render),
                                 TreePageTemplate(render),
                                 ArticlesPageTemplate(render),
-                                PageTemplate(render)
+                                { layout(this, CodeReviewPage(it, messages)) }
                         ),
                         CourseHandler(
                                 courseDao,
@@ -167,11 +171,15 @@ object JavaneseServer {
                 articleDao,
                 RssFeedTemplate(render))
 
+        val taskErrorReportDao = TaskErrorReportDao(session)
+
         val submitTaskErrorReport =
-                SubmitTaskErrorReportHandler(TaskErrorReportDao(session))
+                SubmitTaskErrorReportHandler(taskErrorReportDao)
+
+        val codeReviewCandidateDao = CodeReviewCandidateDao(session)
 
         val submitCodeReviewCandidate =
-                SubmitCodeReviewCandidateHandler(CodeReviewCandidateDao(session))
+                SubmitCodeReviewCandidateHandler(codeReviewCandidateDao)
 
         val sitemap =
                 SitemapHandler(config.siteUrl,
@@ -232,8 +240,9 @@ object JavaneseServer {
 
 }
 
-// todo: rename all 'h1's to 'heading'
-// todo: urlPathComponent -> urlComponent or what??
+// todo: rename all 'h1's to 'heading' or 'title', remove linkText and metaTitle if unused
+// todo: urlPathComponent -> urlSegment or what??
 // todo: make DAO functions suspend
-// todo: in Admin page, make API which will allow showing not only DB tables, but any data (e. g. number of sandbox connections)
-// todo: in Admin page, connect with WebSockets and show entities stats in real-time
+// todo: link to TG chat & channel
+// todo: two links to GitHub
+// todo: '200 Ok' with 'ok' body should be replaced with 'No content'

@@ -1,12 +1,9 @@
 package online.javanese.model
 
 import com.github.andrewoma.kwery.core.Session
-import com.github.andrewoma.kwery.mapper.Column
-import com.github.andrewoma.kwery.mapper.Table
-import com.github.andrewoma.kwery.mapper.Value
-import com.github.andrewoma.kwery.mapper.VersionedWithTimestamp
+import com.github.andrewoma.kwery.mapper.*
 import online.javanese.Html
-import online.javanese.Uuid
+import online.javanese.krud.kwery.Uuid
 import java.time.LocalDateTime
 
 class Page(
@@ -25,7 +22,7 @@ class Page(
     }
 }
 
-private object PagesTable : Table<Page, Uuid>("pages"), VersionedWithTimestamp {
+object PageTable : Table<Page, Uuid>("pages"), VersionedWithTimestamp {
 
     val Id by idCol(Page::id)
     val UrlPathComponent by urlPathComponentCol(Page::urlPathComponent)
@@ -60,16 +57,16 @@ private object PagesTable : Table<Page, Uuid>("pages"), VersionedWithTimestamp {
 }
 
 class PageDao(
-        private val session: Session
-) {
+        session: Session
+) : AbstractDao<Page, Uuid>(session, PageTable, PageTable.Id.property) {
 
-    private val tableName = PagesTable.name
-    private val urlPathComponentColName = PagesTable.UrlPathComponent.name
+    private val tableName = PageTable.name
+    private val urlPathComponentColName = PageTable.UrlPathComponent.name
 
     fun findAll(): List<Page> =
             session.select(
                     sql = """SELECT * FROM $tableName""",
-                    mapper = PagesTable.rowMapper()
+                    mapper = PageTable.rowMapper()
             )
 
     fun findByUrlPathComponent(component: String) =
@@ -78,7 +75,7 @@ class PageDao(
                         |FROM $tableName
                         |WHERE "$urlPathComponentColName" = :component""".trimMargin(),
                     parameters = mapOf("component" to component),
-                    mapper = PagesTable.rowMapper()
+                    mapper = PageTable.rowMapper()
             ).singleOrNull()
 
 }
