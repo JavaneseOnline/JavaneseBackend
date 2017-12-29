@@ -3,10 +3,11 @@ import java.io.OutputStreamWriter
 import java.net.URL
 
 val main = "js/vue_zepto_mdl_dialog_highlight_trace_scroll_unfocus_tabs_form"
+val sandbox = "sandbox/codemirror_clike_sandbox"
 val nl = charArrayOf('\n')
 
 
-jsFile(main).also { check(!it.exists()) }.writer().use {
+jsFile(main).assertNotExists().writer().use {
     appendFrom(URL("https://cdnjs.cloudflare.com/ajax/libs/vue/1.0.25/vue.min.js"), it) //todo: upgrade
     appendFrom(URL("http://zeptojs.com/zepto.min.js"), it)
     appendFrom(URL("https://raw.githubusercontent.com/madrobby/zepto/master/src/fx.js"), it)
@@ -29,8 +30,18 @@ jsFile(main).also { check(!it.exists()) }.writer().use {
 minify(main)
 
 
+jsFile(sandbox).assertNotExists().writer().use {
+    appendFrom(URL("https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.33.0/codemirror.min.js"), it)
+    appendFrom(URL("https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.33.0/mode/clike/clike.min.js"), it)
+    appendFrom(File("sandbox/sandbox.js"), it)
+}
+minify(sandbox)
+
+
 fun jsFile(name: String) = File("$name.js")
 fun minJsFile(name: String) = File("$name.min.js")
+
+fun File.assertNotExists() = apply { check(!exists()) }
 
 fun appendFrom(address: URL, output: OutputStreamWriter) {
     print("Downloading from $address...")
