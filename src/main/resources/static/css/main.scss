@@ -88,6 +88,17 @@ textarea {
   background: #2b2b2b;
 }
 
+/** pretty lists */
+ul.pretty-list {
+    list-style: none;
+}
+ul.pretty-list li:before {
+    content:  "—";
+    position: relative;
+    left:     -5px;
+}
+
+
 @import "indents";
 @import "sandbox";
 @import "trace";

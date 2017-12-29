@@ -199,7 +199,7 @@ p {
 /* a{color:rgb(238,255,65);font-weight:500} нет у нас нигде нет ссылок этого цвета */
 blockquote {
   position: relative;
-  font-size: 24px;
+  font-size: 16px;
   font-weight: 300;
   font-style: italic;
   line-height: 1.35;
@@ -6206,6 +6206,15 @@ textarea {
 /** screenshots from IDEA */
 .ide-bg {
   background: #2b2b2b; }
+
+/** pretty lists */
+ul.pretty-list {
+  list-style: none; }
+
+ul.pretty-list li:before {
+  content: "—";
+  position: relative;
+  left: -5px; }
 
 /*.float-left {
   float: left;
