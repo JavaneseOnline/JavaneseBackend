@@ -16,7 +16,7 @@ combined.writer().use {
     it.write(
             URL("https://raw.githubusercontent.com/suprMax/ZeptoScroll/master/static/zepto.scroll.js")
                     .openConnection().getInputStream().reader().readText()
-                    .replace("$.os.android ? 1 : 0", "0") // we're not using detect
+                    .replace("$.os.android ? 1 : 0", "0") // we're not using Zepto.detect
     )
     it.write(nl)
 
