@@ -5,12 +5,13 @@
 Java 8 + Kotlin, Spring, Hibernate, Thymeleaf, SCSS.
 
 Стек новой версии:
-* JVM 9
+* JVM/JDK 9
 * [Kotlin](https://github.com/JetBrains/kotlin)
 * [Ktor — каноничный веб-фреймворк от JetBrains](https://github.com/kotlin/ktor)
 * [kwery — обёртка над JDBC для Kotlin](https://github.com/andrewoma/kwery/)
 * [Thymeleaf](https://github.com/thymeleaf/thymeleaf) с
   [layout dialect](https://github.com/ultraq/thymeleaf-layout-dialect) (временно)
+* [kotlinx.html](https://github.com/Kotlin/kotlinx.html) в качестве быстрого и гибкого шаблонизатора
 * SCSS (временно)
 * PostgreSQL
 
