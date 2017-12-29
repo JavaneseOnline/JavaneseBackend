@@ -1,10 +1,12 @@
 package online.javanese.handler
 
+import com.github.andrewoma.kwery.mapper.Dao
 import com.redfin.sitemapgenerator.WebSitemapGenerator
 import com.redfin.sitemapgenerator.WebSitemapUrl
 import io.ktor.application.ApplicationCall
 import io.ktor.http.ContentType
 import io.ktor.response.respondText
+import online.javanese.krud.kwery.Uuid
 import online.javanese.model.*
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -18,13 +20,17 @@ fun SitemapHandler(
         urlOfChapterTree: (ChapterTree) -> String,
         urlOfLessonTree: (LessonTree) -> String,
         urlOfArticle: (Page, Article.BasicInfo) -> String,
+        urlOfCodeReview: (Page, CodeReview) -> String,
         tree: List<CourseTree>,
         pageDao: PageDao,
         courseDao: CourseDao,
         chapterDao: ChapterDao,
         lessonDao: LessonDao,
-        articleDao: ArticleDao
+        articleDao: ArticleDao,
+        codeReviewDao: Dao<CodeReview, Uuid>
 ): suspend (ApplicationCall) -> Unit = { call ->
+
+    // fixme: move [lastModified] to [BasicInfo]s
 
     val wsg = WebSitemapGenerator(siteUrl)
 
@@ -32,24 +38,27 @@ fun SitemapHandler(
 
     val pages = pageDao.findAll()
 
-    addAll(wsg, sb, pages, urlOfPage, Page::lastModified)
+    wsg.addAll(sb, pages, urlOfPage, PageTable.LastModified.property)
 
-    addAll(wsg, sb, tree, urlOfCourseTree, { courseDao.findById(it.id)!!.lastModified }) { course ->
-        addAll(wsg, sb, course.chapters, urlOfChapterTree, { chapterDao.findById(it.id)!!.lastModified }) { chapter ->
-            addAll(wsg, sb, chapter.lessons, urlOfLessonTree, { lessonDao.findById(it.id)!!.lastModified })
+    wsg.addAll(sb, tree, urlOfCourseTree, { courseDao.findById(it.id)!!.lastModified }) { course ->
+        wsg.addAll(sb, course.chapters, urlOfChapterTree, { chapterDao.findById(it.id)!!.lastModified }) { chapter ->
+            wsg.addAll(sb, chapter.lessons, urlOfLessonTree, { lessonDao.findById(it.id)!!.lastModified })
         }
     }
 
     val articlesPage = pages.first { it.magic == Page.Magic.Articles }
-    addAll(wsg, sb, articleDao.findAllBasicPublishedOrderBySortIndex(),
+    wsg.addAll(sb, articleDao.findAllBasicPublishedOrderBySortIndex(),
             { urlOfArticle(articlesPage, it) }, Article.BasicInfo::lastModified)
+
+    val codeReviewsPage = pages.first { it.magic == Page.Magic.Articles }
+    wsg.addAll(sb, codeReviewDao.findAll(),
+            { urlOfCodeReview(codeReviewsPage, it) }, CodeReviewTable.LastModified.property)
 
     val strs = wsg.writeAsStrings()
     call.respondText(strs.joinToString("\n"), ContentType.Text.Xml)
 }
 
-private inline fun <T> addAll(
-        wsg: WebSitemapGenerator,
+private inline fun <T> WebSitemapGenerator.addAll(
         sb: StringBuilder,
         items: List<T>,
         urlOfT: (T) -> String,
@@ -60,7 +69,7 @@ private inline fun <T> addAll(
         val len = sb.length
         sb.append(urlOfT(item))
         val lastMod = lastModOfT(item)
-        wsg.addUrl(sb.toString(), lastMod)
+        addUrl(sb.toString(), lastMod)
         sb.setLength(len)
 
         onEach(item)

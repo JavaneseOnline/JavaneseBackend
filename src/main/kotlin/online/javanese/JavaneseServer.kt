@@ -6,6 +6,7 @@ import io.ktor.content.files
 import io.ktor.content.static
 import io.ktor.content.staticRootFolder
 import io.ktor.features.StatusPages
+import io.ktor.html.respondHtml
 import io.ktor.http.HttpStatusCode
 import io.ktor.routing.get
 import io.ktor.routing.routing
@@ -15,6 +16,7 @@ import io.ktor.websocket.WebSockets
 import io.ktor.websocket.webSocket
 import nz.net.ultraq.thymeleaf.LayoutDialect
 import online.javanese.exception.NotFoundException
+import online.javanese.extensions.encodeForUrl
 import online.javanese.handler.*
 import online.javanese.model.*
 import online.javanese.route.OnePartRoute
@@ -71,6 +73,7 @@ object JavaneseServer {
         val lessonDao = LessonDao(session, taskDao)
         val chapterDao = ChapterDao(session, lessonDao)
         val courseDao = CourseDao(session, chapterDao)
+        val codeReviewDao = CodeReviewDao(session)
 
         val locale = Locale.Builder().setLanguage("ru").setScript("Cyrl").build()
         val staticDirPair = "static" to config.exposedStaticDir
@@ -119,6 +122,10 @@ object JavaneseServer {
             "/${p.urlPathComponent.encodeForUrl()}/${a.urlPathComponent.encodeForUrl()}/"
         }
 
+        val urlOfCodeReview = { p: Page, r: CodeReview ->
+            "/${p.urlPathComponent.encodeForUrl()}/${r.urlSegment.encodeForUrl()}/"
+        }
+
         val layout = Layout(config.exposedStaticDir, messages)
 
         val route1 =
@@ -130,7 +137,7 @@ object JavaneseServer {
                                 IndexPageTemplate(render),
                                 TreePageTemplate(render),
                                 ArticlesPageTemplate(render),
-                                { layout(this, CodeReviewPage(it, messages)) }
+                                { layout(this, CodeReviewPage(it, messages, codeReviewDao.findAll())) }
                         ),
                         CourseHandler(
                                 courseDao,
@@ -140,14 +147,15 @@ object JavaneseServer {
 
         val route2 =
                 TwoPartsRoute(
-                        pageDao, articleDao, courseDao, chapterDao,
+                        pageDao, articleDao, courseDao, chapterDao, codeReviewDao,
                         ArticleHandler(
                                 ArticlePageTemplate(render)
                         ),
                         ChapterHandler(
                                 tree,
                                 ChapterPageTemplate(urlOfChapter, render)
-                        )
+                        ),
+                        { page, review, call -> call.respondHtml { layout(this, CodeReviewDetailsPage(page, review, messages, urlOfPage)) } }
                 )
 
         val route3 =
@@ -183,8 +191,9 @@ object JavaneseServer {
 
         val sitemap =
                 SitemapHandler(config.siteUrl,
-                        urlOfPage, urlOfCourseTree, urlOfChapter, urlOfLesson, urlOfArticle,
-                        tree, pageDao, courseDao, chapterDao, lessonDao, articleDao)
+                        urlOfPage, urlOfCourseTree, urlOfChapter, urlOfLesson, urlOfArticle, urlOfCodeReview,
+                        tree, pageDao, courseDao, chapterDao, lessonDao, articleDao, codeReviewDao
+                )
 
         val robots =
                 RobotsHandler(config)

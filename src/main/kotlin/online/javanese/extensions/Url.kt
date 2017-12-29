@@ -1,4 +1,4 @@
-package online.javanese
+package online.javanese.extensions
 
 import java.net.URLDecoder
 import java.net.URLEncoder
