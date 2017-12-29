@@ -14,7 +14,7 @@ fun ArticleRssHandler(
 ): suspend (ApplicationCall) -> Unit = { call ->
 
     val items = articleDao
-            .findAllPublishedOrderBySortIndex()
+            .findAllPublished()
             .map {
                 RssItem(
                         title = it.basicInfo.linkText,

@@ -47,7 +47,7 @@ fun SitemapHandler(
     }
 
     val articlesPage = pages.first { it.magic == Page.Magic.Articles }
-    wsg.addAll(sb, articleDao.findAllBasicPublishedOrderBySortIndex(),
+    wsg.addAll(sb, articleDao.findAllBasicPublished(),
             { urlOfArticle(articlesPage, it) }, Article.BasicInfo::lastModified)
 
     val codeReviewsPage = pages.first { it.magic == Page.Magic.Articles }

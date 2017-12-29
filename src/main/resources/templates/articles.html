@@ -24,7 +24,12 @@
         <nav>
             <ul>
                 <li th:each="article : ${articles}">
-                    <a th:href="@{./{article}/ (article=${article.urlPathComponent})}" th:text="${article.linkText}" th:title="${article.linkText}"></a>
+                    <img th:if="${article.pinned}" th:src="${static + '/pin.png'}" />
+                    <a
+                            th:href="@{./{article}/ (article=${article.urlPathComponent})}"
+                            th:title="${article.linkText}"
+                            th:text="${article.linkText}"
+                    ></a>
                 </li>
             </ul>
         </nav>

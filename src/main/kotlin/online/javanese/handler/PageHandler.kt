@@ -19,7 +19,7 @@ fun PageHandler(
         when (page.magic) {
             Page.Magic.Index -> call.respondText(indexPageTpl(page), ContentType.Text.Html)
             Page.Magic.Tree -> call.respondText(treePageTpl(page, courseDao.findTreeSortedBySortIndex()), ContentType.Text.Html)
-            Page.Magic.Articles -> call.respondText(articlesPageTpl(page, articleDao.findAllBasicPublishedOrderBySortIndex()), ContentType.Text.Html)
+            Page.Magic.Articles -> call.respondText(articlesPageTpl(page, articleDao.findAllBasicPublished()), ContentType.Text.Html)
             Page.Magic.CodeReview -> call.respondHtml { codeReviewTpl(page) }
         }
 }

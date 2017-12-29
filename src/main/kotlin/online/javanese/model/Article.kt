@@ -11,6 +11,7 @@ class Article(
         val meta: Meta,
         val heading: String,
         val bodyMarkup: Html,
+        @Deprecated(message = "natural order changed")
         val sortIndex: Int,
         val published: Boolean,
         val vkPostInfo: VkPostInfo?,
@@ -22,7 +23,8 @@ class Article(
             val id: Uuid,
             val linkText: String,
             val urlPathComponent: String,
-            val lastModified: LocalDateTime
+            val lastModified: LocalDateTime,
+            val pinned: Boolean
     )
 
     class VkPostInfo(
@@ -55,6 +57,7 @@ object ArticleTable : Table<Article, Uuid>("articles") {
 
     val CreatedAt by col(Article::createdAt, name = "createdAt")
     val LastModified by lastModifiedCol(Article::lastModified)
+    val Pinned by col(Article.BasicInfo::pinned, Article::basicInfo, name = "pinned")
 
 
     override fun idColumns(id: Uuid): Set<Pair<Column<Article, *>, *>> =
@@ -65,7 +68,8 @@ object ArticleTable : Table<Article, Uuid>("articles") {
                     id = value of Id,
                     linkText = value of LinkText,
                     urlPathComponent = value of UrlPathComponent,
-                    lastModified = value of LastModified
+                    lastModified = value of LastModified,
+                    pinned = value of Pinned
             ),
             meta = Meta(
                     title = value of MetaTitle,
@@ -102,6 +106,7 @@ private object ArticleBasicInfoTable : Table<Article.BasicInfo, Uuid>("articles"
     val LinkText by linkTextCol(Article.BasicInfo::linkText)
     val UrlPathComponent by urlPathComponentCol(Article.BasicInfo::urlPathComponent)
     val LastModified by lastModifiedCol(Article.BasicInfo::lastModified)
+    val Pinned by col(Article.BasicInfo::pinned, name = "pinned")
 
     override fun idColumns(id: Uuid): Set<Pair<Column<Article.BasicInfo, *>, *>> =
             setOf(Id of id)
@@ -110,7 +115,8 @@ private object ArticleBasicInfoTable : Table<Article.BasicInfo, Uuid>("articles"
             id = value of Id,
             linkText = value of LinkText,
             urlPathComponent = value of UrlPathComponent,
-            lastModified = value of LastModified
+            lastModified = value of LastModified,
+            pinned = value of Pinned
     )
 
 }
@@ -120,31 +126,32 @@ class ArticleDao(
 ) : AbstractDao<Article, Uuid>(session, ArticleTable, ArticleTable.Id.property) {
 
     private val tableName = ArticleTable.name
-    private val basicCols = """"id", "linkText", "urlPathComponent", "lastModified""""
+    private val basicCols = """"id", "linkText", "urlPathComponent", "lastModified", "pinned" """
     private val urlComponentColName = ArticleTable.UrlPathComponent.name
     private val publishedColName = ArticleTable.Published.name
-    private val sortIndexColName = ArticleTable.SortIndex.name
+    private val createdAtColName = ArticleTable.CreatedAt.name
+    private val pinnedColName = ArticleTable.Pinned.name
 
     override val defaultOrder: Map<Column<Article, *>, OrderByDirection> =
-            mapOf(ArticleTable.SortIndex to OrderByDirection.ASC) // todo: pinned articles
+            mapOf(ArticleTable.Pinned to OrderByDirection.DESC, ArticleTable.CreatedAt to OrderByDirection.DESC)
 
-    fun findAllBasicPublishedOrderBySortIndex(): List<Article.BasicInfo> =
+    private val naturalOrder = """ ORDER BY "$pinnedColName" DESC, "$createdAtColName" DESC """
+
+    fun findAllBasicPublished(): List<Article.BasicInfo> =
             session.select(
                     sql = """SELECT $basicCols
                         |FROM "$tableName"
                         |WHERE "$publishedColName" = true
-                        |ORDER BY "$sortIndexColName" ASC""".trimMargin(),
-
+                        |$naturalOrder""".trimMargin(),
                     mapper = ArticleBasicInfoTable.rowMapper()
             )
 
-    fun findAllPublishedOrderBySortIndex(): List<Article> =
+    fun findAllPublished(): List<Article> =
             session.select(
                     sql = """SELECT *
                         |FROM "$tableName"
                         |WHERE "$publishedColName" = true
-                        |ORDER BY "$sortIndexColName" ASC""".trimMargin(),
-
+                        |$naturalOrder""".trimMargin(),
                     mapper = ArticleTable.rowMapper()
             )
 
@@ -154,7 +161,6 @@ class ArticleDao(
                         |FROM "$tableName"
                         |WHERE "$urlComponentColName" = :component
                         |LIMIT 1""".trimMargin(),
-
                     parameters = mapOf("component" to component),
                     mapper = ArticleTable.rowMapper()
             ).firstOrNull()
@@ -169,14 +175,15 @@ CREATE TABLE public.articles (
 	"metaTitle" varchar(256) NOT NULL,
 	"metaDescription" varchar(256) NOT NULL,
 	"metaKeywords" varchar(256) NOT NULL,
-	heading varchar(256) NOT NULL,
+	"heading" varchar(256) NOT NULL,
 	"bodyMarkup" text NOT NULL,
 	"sortIndex" int4 NOT NULL,
-	published bool NOT NULL,
+	"published" bool NOT NULL,
 	"vkPostId" varchar(64) NOT NULL,
 	"vkPostHash" varchar(64) NOT NULL,
 	"createdAt" timestamp NOT NULL,
 	"lastModified" timestamp NOT NULL,
+	"pinned" bool NOT NULL,
 	CONSTRAINT articles_pk PRIMARY KEY (id)
 )
 WITH (
