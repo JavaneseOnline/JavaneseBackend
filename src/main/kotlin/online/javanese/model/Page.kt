@@ -13,7 +13,7 @@ class Page(
         val meta: Meta,
         val headMarkup: Html,
         val h1: String,
-        val bodyMarkup: Html, // todo: display as HTML in admin panel
+        val bodyMarkup: Html,
         val beforeBodyEndMarkup: Html,
         val lastModified: LocalDateTime
 ) {
@@ -25,7 +25,7 @@ class Page(
 object PageTable : Table<Page, Uuid>("pages"), VersionedWithTimestamp {
 
     val Id by idCol(Page::id)
-    val UrlPathComponent by urlPathComponentCol(Page::urlPathComponent)
+    val UrlPathComponent by urlSegmentCol(Page::urlPathComponent)
     val Magic by col(Page::magic, name = "magic", default = Page.Magic.Index)
     val MetaTitle by metaTitleCol(Page::meta)
     val MetaDescription by metaDescriptionCol(Page::meta)
@@ -82,14 +82,14 @@ class PageDao(
 
 /*
 CREATE TABLE public.pages (
-	id uuid NOT NULL,
-	"urlPathComponent" varchar(64) NOT NULL,
-	magic varchar(64) NOT NULL,
+	"id" uuid NOT NULL,
+	"urlSegment" varchar(64) NOT NULL,
+	"magic" varchar(64) NOT NULL,
 	"metaTitle" varchar(256) NOT NULL,
 	"metaDescription" varchar(256) NOT NULL,
 	"metaKeywords" varchar(256) NOT NULL,
 	"headMarkup" text NOT NULL,
-	h1 varchar(256) NOT NULL,
+	"h1" varchar(256) NOT NULL,
 	"bodyMarkup" text NOT NULL,
 	"beforeBodyEndMarkup" text NOT NULL,
 	"lastModified" timestamp NOT NULL,

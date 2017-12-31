@@ -250,8 +250,5 @@ object JavaneseServer {
 }
 
 // todo: rename all 'h1's to 'heading' or 'title', remove linkText and metaTitle if unused
-// todo: urlPathComponent -> urlSegment or what??
 // todo: make DAO functions suspend
-// todo: link to TG chat & channel
-// todo: two links to GitHub
 // todo: '200 Ok' with 'ok' body should be replaced with 'No content'

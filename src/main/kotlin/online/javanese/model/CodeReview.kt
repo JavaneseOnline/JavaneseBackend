@@ -27,7 +27,7 @@ object CodeReviewTable : Table<CodeReview, Uuid>("codeReviews") {
             by idCol(CodeReview::id)
 
     val UrlSegment
-            by col(CodeReview::urlSegment, name = "urlSegment") // todo: replace with common func after renaming all 'urlPathComponent's
+            by urlSegmentCol(CodeReview::urlSegment)
 
     val MetaTitle
             by metaTitleCol(CodeReview::meta)

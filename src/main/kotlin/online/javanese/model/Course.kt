@@ -10,8 +10,8 @@ class Course(
         val basicInfo: BasicInfo,
         val meta: Meta,
         val h1: String,
-        val description: Html, // todo: edit as HTML
-        val sortIndex: Int, // todo: use this index in admin panel
+        val description: Html,
+        val sortIndex: Int,
         val lastModified: LocalDateTime
 ) {
 
@@ -35,7 +35,7 @@ class CourseTree internal constructor(
 object CourseTable : Table<Course, Uuid>("courses"), VersionedWithTimestamp {
 
     val Id by idCol(Course.BasicInfo::id, Course::basicInfo)
-    val UrlPathComponent by urlPathComponentCol(Course.BasicInfo::urlPathComponent, Course::basicInfo)
+    val UrlPathComponent by urlSegmentCol(Course.BasicInfo::urlPathComponent, Course::basicInfo)
     val MetaTitle by metaTitleCol(Course::meta)
     val MetaDescription by metaDescriptionCol(Course::meta)
     val MetaKeywords by metaKeywordsCol(Course::meta)
@@ -69,7 +69,7 @@ object CourseTable : Table<Course, Uuid>("courses"), VersionedWithTimestamp {
 private object BasicCourseInfoTable : Table<Course.BasicInfo, Uuid>("courses") {
 
     val Id by idCol(Course.BasicInfo::id)
-    val UrlPathComponent by urlPathComponentCol(Course.BasicInfo::urlPathComponent)
+    val UrlPathComponent by urlSegmentCol(Course.BasicInfo::urlPathComponent)
     val LinkText by linkTextCol(Course.BasicInfo::linkText)
 
     override fun idColumns(id: Uuid): Set<Pair<Column<Course.BasicInfo, *>, *>> = setOf(Id of id)
@@ -95,7 +95,7 @@ class CourseDao(
     private val sortIndexColName = CourseTable.SortIndex.name
     private val urlComponentColName = CourseTable.UrlPathComponent.name
 
-    private val basicInfoColumns = """ "id", "urlPathComponent", "linkText" """
+    private val basicInfoColumns = """ "id", "urlSegment", "linkText" """
 
     override val defaultOrder: Map<Column<Course, *>, OrderByDirection> =
             mapOf(CourseTable.SortIndex to OrderByDirection.ASC)
@@ -173,14 +173,14 @@ class CourseDao(
 
 /*
 CREATE TABLE public.courses (
-	id uuid NOT NULL,
-	"urlPathComponent" varchar(64) NOT NULL,
+	"id" uuid NOT NULL,
+	"urlSegment" varchar(64) NOT NULL,
 	"linkText" varchar(256) NOT NULL,
 	"metaTitle" varchar(256) NOT NULL,
 	"metaDescription" varchar(256) NOT NULL,
 	"metaKeywords" varchar(256) NOT NULL,
-	h1 varchar(256) NOT NULL,
-	description text NOT NULL,
+	"h1" varchar(256) NOT NULL,
+	"description" text NOT NULL,
 	"sortIndex" int4 NOT NULL,
 	"lastModified" timestamp NOT NULL,
 	CONSTRAINT courses_pk PRIMARY KEY (id)

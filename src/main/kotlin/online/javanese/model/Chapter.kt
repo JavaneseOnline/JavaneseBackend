@@ -10,8 +10,8 @@ class Chapter(
         val basicInfo: BasicInfo,
         val meta: Meta,
         val h1: String,
-        val description: Html, // todo: edit as HTML
-        val sortIndex: Int, // todo: use it
+        val description: Html,
+        val sortIndex: Int,
         val lastModified: LocalDateTime
 ) {
 
@@ -39,7 +39,7 @@ object ChapterTable : Table<Chapter, Uuid>("chapters"), VersionedWithTimestamp {
 
     val Id by idCol(Chapter.BasicInfo::id, Chapter::basicInfo)
     val CourseId by uuidCol(Chapter.BasicInfo::courseId, Chapter::basicInfo, name = "courseId")
-    val UrlPathComponent by urlPathComponentCol(Chapter.BasicInfo::urlPathComponent, Chapter::basicInfo)
+    val UrlPathComponent by urlSegmentCol(Chapter.BasicInfo::urlPathComponent, Chapter::basicInfo)
     val LinkText by linkTextCol(Chapter.BasicInfo::linkText, Chapter::basicInfo)
     val MetaTitle by metaTitleCol(Chapter::meta)
     val MetaDescription by metaDescriptionCol(Chapter::meta)
@@ -75,7 +75,7 @@ private object BasicChapterInfoTable : Table<Chapter.BasicInfo, Uuid>("chapters"
 
     val Id by idCol(Chapter.BasicInfo::id)
     val CourseId by uuidCol(Chapter.BasicInfo::courseId, name = "courseId")
-    val UrlPathComponent by urlPathComponentCol(Chapter.BasicInfo::urlPathComponent)
+    val UrlPathComponent by urlSegmentCol(Chapter.BasicInfo::urlPathComponent)
     val LinkText by linkTextCol(Chapter.BasicInfo::linkText)
 
     override fun idColumns(id: Uuid): Set<Pair<Column<Chapter.BasicInfo, *>, *>> = setOf(Id of id)
@@ -100,7 +100,7 @@ class ChapterDao(
     private val urlComponentColName = ChapterTable.UrlPathComponent.name
     private val sortIndexColName = ChapterTable.SortIndex.name
 
-    private val basicColumns = """id, "courseId", "urlPathComponent", "linkText""""
+    private val basicColumns = """id, "courseId", "urlSegment", "linkText""""
 
     override val defaultOrder: Map<Column<Chapter, *>, OrderByDirection> =
             mapOf(ChapterTable.SortIndex to OrderByDirection.ASC)
@@ -149,15 +149,15 @@ class ChapterDao(
 
 /*
 CREATE TABLE public.chapters (
-	id uuid NOT NULL,
+	"id" uuid NOT NULL,
 	"courseId" uuid NOT NULL,
-	"urlPathComponent" varchar(64) NOT NULL,
+	"urlSegment" varchar(64) NOT NULL,
 	"linkText" varchar(256) NOT NULL,
 	"metaTitle" varchar(256) NOT NULL,
 	"metaDescription" varchar(256) NOT NULL,
 	"metaKeywords" varchar(256) NOT NULL,
-	h1 varchar(256) NOT NULL,
-	description text NOT NULL,
+	"h1" varchar(256) NOT NULL,
+	"description" text NOT NULL,
 	"sortIndex" int4 NOT NULL,
 	"lastModified" timestamp NOT NULL,
 	CONSTRAINT chapters_pk PRIMARY KEY (id),

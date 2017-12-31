@@ -56,7 +56,7 @@ object TaskTable : Table<Task, Uuid>("tasks") {
     val Id by idCol(Task.BasicInfo::id, Task::basicInfo)
     val LessonId by uuidCol(Task.BasicInfo::lessonId, Task::basicInfo, name = "lessonId")
     val LinkText by linkTextCol(Task.BasicInfo::linkText, Task::basicInfo)
-    val UrlPathComponent by urlPathComponentCol(Task.BasicInfo::urlPathComponent, Task::basicInfo)
+    val UrlPathComponent by urlSegmentCol(Task.BasicInfo::urlPathComponent, Task::basicInfo)
 
     val Heading by col(Task::heading, name = "heading")
     val Condition by col(Task::condition, name = "condition")
@@ -116,7 +116,7 @@ private object TaskBasicInfoTable : Table<Task.BasicInfo, Uuid>("tasks") {
     val Id by idCol(Task.BasicInfo::id)
     val LessonId by uuidCol(Task.BasicInfo::lessonId, name = "lessonId")
     val LinkText by linkTextCol(Task.BasicInfo::linkText)
-    val UrlPathComponent by urlPathComponentCol(Task.BasicInfo::urlPathComponent)
+    val UrlPathComponent by urlSegmentCol(Task.BasicInfo::urlPathComponent)
 
     override fun idColumns(id: Uuid): Set<Pair<Column<Task.BasicInfo, *>, *>> =
             setOf(Id of id)
@@ -137,7 +137,7 @@ class TaskDao(
     private val tableName = TaskTable.name
     private val idColName = TaskTable.Id.name
     private val lessonIdColName = TaskTable.LessonId.name
-    private val basicColNames = """"id", "lessonId", "linkText", "urlPathComponent""""
+    private val basicColNames = """"id", "lessonId", "linkText", "urlSegment""""
 
     override val defaultOrder: Map<Column<Task, *>, OrderByDirection> =
             mapOf(TaskTable.SortIndex to OrderByDirection.ASC)
@@ -174,11 +174,11 @@ class TaskDao(
 
 /*
 CREATE TABLE public.tasks (
-	id uuid NOT NULL,
+	"id" uuid NOT NULL,
 	"lessonId" uuid NOT NULL,
 	"linkText" varchar(256) NOT NULL,
-	"urlPathComponent" varchar(64) NOT NULL,
-	heading varchar(256) NOT NULL,
+	"urlSegment" varchar(64) NOT NULL,
+	"heading" varchar(256) NOT NULL,
 	"condition" text NOT NULL,
 	"compiledClassName" varchar(64) NOT NULL,
 	"inputMethod" varchar(64) NOT NULL,

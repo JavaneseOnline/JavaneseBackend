@@ -40,7 +40,7 @@ object LessonTable : Table<Lesson, Uuid>("lessons"), VersionedWithTimestamp {
 
     val Id by idCol(Lesson.BasicInfo::id, Lesson::basicInfo)
     val ChapterId by uuidCol(Lesson.BasicInfo::chapterId, Lesson::basicInfo, name = "chapterId")
-    val UrlPathComponent by urlPathComponentCol(Lesson.BasicInfo::urlPathComponent, Lesson::basicInfo)
+    val UrlPathComponent by urlSegmentCol(Lesson.BasicInfo::urlPathComponent, Lesson::basicInfo)
     val LinkText by linkTextCol(Lesson.BasicInfo::linkText, Lesson::basicInfo)
     val MetaTitle by metaTitleCol(Lesson::meta)
     val MetaDescription by metaDescriptionCol(Lesson::meta)
@@ -77,7 +77,7 @@ private object BasicLessonInfoTable : Table<Lesson.BasicInfo, Uuid>("lessons") {
 
     val Id by idCol(Lesson.BasicInfo::id)
     val ChapterId by uuidCol(Lesson.BasicInfo::chapterId, name = "chapterId")
-    val UrlPathComponent by urlPathComponentCol(Lesson.BasicInfo::urlPathComponent)
+    val UrlPathComponent by urlSegmentCol(Lesson.BasicInfo::urlPathComponent)
     val LinkText by linkTextCol(Lesson.BasicInfo::linkText)
 
     override fun idColumns(id: Uuid): Set<Pair<Column<Lesson.BasicInfo, *>, *>> =
@@ -99,7 +99,7 @@ class LessonDao(
 
     private val tableName = LessonTable.name
 
-    private val basicCols = """"id", "chapterId", "urlPathComponent", "linkText""""
+    private val basicCols = """"id", "chapterId", "urlSegment", "linkText""""
     private val idColName = LessonTable.Id.name
 
     override val defaultOrder: Map<Column<Lesson, *>, OrderByDirection> =
@@ -133,14 +133,14 @@ class LessonDao(
 
 /*
 CREATE TABLE public.lessons (
-	id uuid NOT NULL,
+	"id" uuid NOT NULL,
 	"chapterId" uuid NOT NULL,
-	"urlPathComponent" varchar(64) NOT NULL,
+	"urlSegment" varchar(64) NOT NULL,
 	"linkText" varchar(256) NOT NULL,
 	"metaTitle" varchar(256) NOT NULL,
 	"metaDescription" varchar(256) NOT NULL,
 	"metaKeywords" varchar(256) NOT NULL,
-	h1 varchar(256) NOT NULL,
+	"h1" varchar(256) NOT NULL,
 	"bodyMarkup" text NOT NULL,
 	"sortIndex" int4 NOT NULL,
 	"lastModified" timestamp NOT NULL,

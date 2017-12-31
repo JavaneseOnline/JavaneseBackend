@@ -34,11 +34,11 @@ internal fun <T : Any> Table<T, *>.metaDescriptionCol(metaProp: KProperty1<T, Me
 internal fun <T : Any> Table<T, *>.metaKeywordsCol(metaProp: KProperty1<T, Meta>) =
         col(Meta::keywords, metaProp, name = "metaKeywords")
 
-internal fun <T : Any> Table<T, *>.urlPathComponentCol(urlPathComponentProp: KProperty1<T, String>) =
-        col(urlPathComponentProp, name = "urlPathComponent")
+internal fun <T : Any> Table<T, *>.urlSegmentCol(urlPathComponentProp: KProperty1<T, String>) =
+        col(urlPathComponentProp, name = "urlSegment")
 
-internal fun <T : Any, C> Table<T, *>.urlPathComponentCol(urlPathComponentProp: KProperty1<C, String>, path: (T) -> C) =
-        col(urlPathComponentProp, path, name = "urlPathComponent")
+internal fun <T : Any, C> Table<T, *>.urlSegmentCol(urlPathComponentProp: KProperty1<C, String>, path: (T) -> C) =
+        col(urlPathComponentProp, path, name = "urlSegment")
 
 internal fun <T : Any> Table<T, *>.lastModifiedCol(lastModifiedProp: KProperty1<T, LocalDateTime>) =
         col(lastModifiedProp, name = "lastModified", version = true)

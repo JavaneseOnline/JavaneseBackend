@@ -41,7 +41,7 @@ object ArticleTable : Table<Article, Uuid>("articles") {
 
     val Id by idCol(Article.BasicInfo::id, Article::basicInfo)
     val LinkText by linkTextCol(Article.BasicInfo::linkText, Article::basicInfo)
-    val UrlPathComponent by urlPathComponentCol(Article.BasicInfo::urlPathComponent, Article::basicInfo)
+    val UrlPathComponent by urlSegmentCol(Article.BasicInfo::urlPathComponent, Article::basicInfo)
 
     val MetaTitle by metaTitleCol(Article::meta)
     val MetaDescription by metaDescriptionCol(Article::meta)
@@ -104,7 +104,7 @@ private object ArticleBasicInfoTable : Table<Article.BasicInfo, Uuid>("articles"
 
     val Id by idCol(Article.BasicInfo::id)
     val LinkText by linkTextCol(Article.BasicInfo::linkText)
-    val UrlPathComponent by urlPathComponentCol(Article.BasicInfo::urlPathComponent)
+    val UrlPathComponent by urlSegmentCol(Article.BasicInfo::urlPathComponent)
     val LastModified by lastModifiedCol(Article.BasicInfo::lastModified)
     val Pinned by col(Article.BasicInfo::pinned, name = "pinned")
 
@@ -126,7 +126,7 @@ class ArticleDao(
 ) : AbstractDao<Article, Uuid>(session, ArticleTable, ArticleTable.Id.property) {
 
     private val tableName = ArticleTable.name
-    private val basicCols = """"id", "linkText", "urlPathComponent", "lastModified", "pinned" """
+    private val basicCols = """"id", "linkText", "urlSegment", "lastModified", "pinned" """
     private val urlComponentColName = ArticleTable.UrlPathComponent.name
     private val publishedColName = ArticleTable.Published.name
     private val createdAtColName = ArticleTable.CreatedAt.name
@@ -171,7 +171,7 @@ class ArticleDao(
 CREATE TABLE public.articles (
 	id uuid NOT NULL,
 	"linkText" varchar(256) NOT NULL,
-	"urlPathComponent" varchar(64) NOT NULL,
+	"urlSegment" varchar(64) NOT NULL,
 	"metaTitle" varchar(256) NOT NULL,
 	"metaDescription" varchar(256) NOT NULL,
 	"metaKeywords" varchar(256) NOT NULL,
