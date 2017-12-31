@@ -18,9 +18,17 @@ if (!String.prototype.startsWith) {
 $(function() {
 	$('pre code').each(function(i, block) {
 		hljs.highlightBlock(block);
-        $(block).find('.hljs-meta').each(function(){
-			if ($(this).text().startsWith("@"))
-				$(this).addClass("java-annotation");
-		});
+		var $block = $(block);
+		if ($block.hasClass('java')) {
+            $block.find('.hljs-meta').each(function(){
+                if ($(this).text().startsWith("@"))
+                    $(this).addClass('java-annotation');
+            });
+		} else if ($block.hasClass('kotlin')) {
+		    $block.find('.hljs-meta').each(function(){
+                if ($(this).text().startsWith("@"))
+                    $(this).removeClass('hljs-meta').addClass('hljs-keyword');
+            });
+		}
 	});
 });
