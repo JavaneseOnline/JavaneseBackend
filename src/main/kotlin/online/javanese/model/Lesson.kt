@@ -45,7 +45,7 @@ object LessonTable : Table<Lesson, Uuid>("lessons"), VersionedWithTimestamp {
     val MetaTitle by metaTitleCol(Lesson::meta)
     val MetaDescription by metaDescriptionCol(Lesson::meta)
     val MetaKeywords by metaKeywordsCol(Lesson::meta)
-    val H1 by col(Lesson::h1, name = "h1")
+    val H1 by headingCol(Lesson::h1)
     val BodyMarkup by col(Lesson::bodyMarkup, name = "bodyMarkup")
     val SortIndex by sortIndexCol(Lesson::sortIndex)
     val LastModified by lastModifiedCol(Lesson::lastModified)
@@ -140,7 +140,7 @@ CREATE TABLE public.lessons (
 	"metaTitle" varchar(256) NOT NULL,
 	"metaDescription" varchar(256) NOT NULL,
 	"metaKeywords" varchar(256) NOT NULL,
-	"h1" varchar(256) NOT NULL,
+	"heading" varchar(256) NOT NULL,
 	"bodyMarkup" text NOT NULL,
 	"sortIndex" int4 NOT NULL,
 	"lastModified" timestamp NOT NULL,

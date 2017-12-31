@@ -47,7 +47,7 @@ object ArticleTable : Table<Article, Uuid>("articles") {
     val MetaDescription by metaDescriptionCol(Article::meta)
     val MetaKeywords by metaKeywordsCol(Article::meta)
 
-    val Heading by col(Article::heading, name = "heading")
+    val Heading by headingCol(Article::heading)
     val BodyMarkup by col(Article::bodyMarkup, name = "bodyMarkup")
     val SortIndex by sortIndexCol(Article::sortIndex)
     val Published by col(Article::published, name = "published")

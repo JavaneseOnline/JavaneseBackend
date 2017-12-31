@@ -44,7 +44,7 @@ object ChapterTable : Table<Chapter, Uuid>("chapters"), VersionedWithTimestamp {
     val MetaTitle by metaTitleCol(Chapter::meta)
     val MetaDescription by metaDescriptionCol(Chapter::meta)
     val MetaKeywords by metaKeywordsCol(Chapter::meta)
-    val H1 by col(Chapter::h1, name = "h1")
+    val H1 by headingCol(Chapter::h1)
     val Description by col(Chapter::description, name = "description")
     val SortIndex by sortIndexCol(Chapter::sortIndex)
     val LastModified by lastModifiedCol(Chapter::lastModified)
@@ -156,7 +156,7 @@ CREATE TABLE public.chapters (
 	"metaTitle" varchar(256) NOT NULL,
 	"metaDescription" varchar(256) NOT NULL,
 	"metaKeywords" varchar(256) NOT NULL,
-	"h1" varchar(256) NOT NULL,
+	"heading" varchar(256) NOT NULL,
 	"description" text NOT NULL,
 	"sortIndex" int4 NOT NULL,
 	"lastModified" timestamp NOT NULL,

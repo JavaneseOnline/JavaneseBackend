@@ -249,6 +249,6 @@ object JavaneseServer {
 
 }
 
-// todo: rename all 'h1's to 'heading' or 'title', remove linkText and metaTitle if unused
+// todo: rename all 'h1's to 'heading', 'urlPathComponent' to 'urlSegment' after refactoring
 // todo: make DAO functions suspend
 // todo: '200 Ok' with 'ok' body should be replaced with 'No content'

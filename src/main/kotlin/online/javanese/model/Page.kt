@@ -31,7 +31,7 @@ object PageTable : Table<Page, Uuid>("pages"), VersionedWithTimestamp {
     val MetaDescription by metaDescriptionCol(Page::meta)
     val MetaKeywords by metaKeywordsCol(Page::meta)
     val HeadMarkup by col(Page::headMarkup, name = "headMarkup")
-    val H1 by col(Page::h1, name = "h1")
+    val H1 by headingCol(Page::h1)
     val BodyMarkup by col(Page::bodyMarkup, name = "bodyMarkup")
     val BeforeBodyEndMarkup by col(Page::beforeBodyEndMarkup, name = "beforeBodyEndMarkup")
     val LastModified by lastModifiedCol(Page::lastModified)
@@ -89,7 +89,7 @@ CREATE TABLE public.pages (
 	"metaDescription" varchar(256) NOT NULL,
 	"metaKeywords" varchar(256) NOT NULL,
 	"headMarkup" text NOT NULL,
-	"h1" varchar(256) NOT NULL,
+	"heading" varchar(256) NOT NULL,
 	"bodyMarkup" text NOT NULL,
 	"beforeBodyEndMarkup" text NOT NULL,
 	"lastModified" timestamp NOT NULL,

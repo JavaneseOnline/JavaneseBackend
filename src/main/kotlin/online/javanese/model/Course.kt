@@ -40,7 +40,7 @@ object CourseTable : Table<Course, Uuid>("courses"), VersionedWithTimestamp {
     val MetaDescription by metaDescriptionCol(Course::meta)
     val MetaKeywords by metaKeywordsCol(Course::meta)
     val LinkText by linkTextCol(Course.BasicInfo::linkText, Course::basicInfo)
-    val H1 by col(Course::h1, name = "h1")
+    val H1 by headingCol(Course::h1)
     val Description by col(Course::description, name = "description")
     val SortIndex by sortIndexCol(Course::sortIndex)
     val LastModified by lastModifiedCol(Course::lastModified)
@@ -179,7 +179,7 @@ CREATE TABLE public.courses (
 	"metaTitle" varchar(256) NOT NULL,
 	"metaDescription" varchar(256) NOT NULL,
 	"metaKeywords" varchar(256) NOT NULL,
-	"h1" varchar(256) NOT NULL,
+	"heading" varchar(256) NOT NULL,
 	"description" text NOT NULL,
 	"sortIndex" int4 NOT NULL,
 	"lastModified" timestamp NOT NULL,

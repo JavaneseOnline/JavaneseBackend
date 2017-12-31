@@ -40,6 +40,9 @@ internal fun <T : Any> Table<T, *>.urlSegmentCol(urlPathComponentProp: KProperty
 internal fun <T : Any, C> Table<T, *>.urlSegmentCol(urlPathComponentProp: KProperty1<C, String>, path: (T) -> C) =
         col(urlPathComponentProp, path, name = "urlSegment")
 
+internal fun <T : Any> Table<T, *>.headingCol(headingProp: KProperty1<T, String>) =
+        col(headingProp, name = "heading")
+
 internal fun <T : Any> Table<T, *>.lastModifiedCol(lastModifiedProp: KProperty1<T, LocalDateTime>) =
         col(lastModifiedProp, name = "lastModified", version = true)
 
