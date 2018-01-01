@@ -171,7 +171,7 @@ class SandboxRunner(
     private companion object {
         private val ENDL = charArrayOf('\n')
         private const val VM_MIN_MEMORY = 4
-        private const val VM_START_TIME = 1
+        private const val VM_START_TIME = 5
     }
 
 }
