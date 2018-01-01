@@ -2,9 +2,8 @@ package online.javanese
 
 import io.ktor.application.call
 import io.ktor.application.install
-import io.ktor.content.files
+import io.ktor.content.resources
 import io.ktor.content.static
-import io.ktor.content.staticRootFolder
 import io.ktor.features.StatusPages
 import io.ktor.html.respondHtml
 import io.ktor.http.HttpStatusCode
@@ -25,7 +24,6 @@ import online.javanese.route.TwoPartsRoute
 import online.javanese.template.*
 import org.thymeleaf.context.Context
 import org.thymeleaf.templatemode.TemplateMode
-import java.io.File
 import java.io.FileInputStream
 import java.util.*
 
@@ -163,7 +161,7 @@ object JavaneseServer {
                         tree,
                         LessonHandler(
                                 lessonDao,
-                                LessonPageTemplate(urlOfLesson, urlOfTask, render)
+                                LessonPageTemplate(urlOfLesson, render)
                         )
                 )
 
@@ -201,7 +199,7 @@ object JavaneseServer {
         val sandboxWebSocketHandler =
                 SandboxWebSocketHandler(config, taskDao)
 
-        embeddedServer(Netty, 8080) {
+        embeddedServer(Netty, port = config.sitePort, host = config.siteHost) {
             install(StatusPages) {
                 exception<NotFoundException> {
                     call.response.status(HttpStatusCode.NotFound)
@@ -234,12 +232,8 @@ object JavaneseServer {
 
                 webSocket(path = "/sandbox/ws", handler = sandboxWebSocketHandler)
 
-                if (config.localStaticDir != null) {
-                    static(config.exposedStaticDir) {
-                        val localStaticDirFile = File(config.localStaticDir)
-                        staticRootFolder = localStaticDirFile.parentFile
-                        files(localStaticDirFile.name)
-                    }
+                static(config.exposedStaticDir) {
+                    resources("static")
                 }
             }
 
