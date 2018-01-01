@@ -53,7 +53,7 @@
 
         <div th:if="${!lessonTree.tasks.isEmpty()}" id="tasks" class="mdl-tabs__panel is-active no-pad">
             <section th:each="task : ${lessonTree.tasks}" class="content">
-                <h3 class="no-pad-top" th:id="${urlOfTask.invoke(task)}" th:text="${task.task.heading}"></h3>
+                <h3 class="no-pad-top" th:id="${task.urlPathComponent}" th:text="${task.task.heading}"></h3>
 
                 <th:block th:utext="${task.task.condition}" />
 
