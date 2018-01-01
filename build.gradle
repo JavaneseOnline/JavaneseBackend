@@ -1,15 +1,17 @@
 
 buildscript {
-    ext.kotlin_version = '1.2.20-eap-11'
+    ext.kotlin_version = '1.2.10'
     ext.ktor_version = '0.9.0'
     ext.kwery_version = '0.17'
 
     repositories {
         maven { url 'http://dl.bintray.com/kotlin/kotlin-eap-1.2' }
         mavenCentral()
+        jcenter()
     }
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.2'
     }
 }
 
@@ -17,6 +19,13 @@ group 'online.javanese'
 version '1.0-SNAPSHOT'
 
 apply plugin: 'kotlin'
+apply plugin: 'com.github.johnrengelman.shadow'
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'online.javanese.JavaneseServer'
+    }
+}
 
 sourceCompatibility = 1.8
 
