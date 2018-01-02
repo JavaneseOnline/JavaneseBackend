@@ -1,5 +1,5 @@
 
-Это исходники новой, ещё не готовой Javanese.Online.
+Это исходники новой версии Javanese.Online.
 
 Старая версия была написана на
 Java 8 + Kotlin, Spring, Hibernate, Thymeleaf, SCSS.
@@ -28,4 +28,4 @@ Java 8 + Kotlin, Spring, Hibernate, Thymeleaf, SCSS.
 
 VM options.
   * debug: `-Xss175K -Xms16M -Xmx32M`
-  * release: `-Xss256K -Xms20M -XmxСколькоНеЖалко`
+  * release: `-Xss256K -Xms32M -XmxСколькоНеЖалко`
