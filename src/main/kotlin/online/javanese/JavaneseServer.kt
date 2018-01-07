@@ -143,7 +143,7 @@ object JavaneseServer {
                         PageHandler(
                                 courseDao, articleDao,
                                 { layout(this, IndexPage(it)) },
-                                TreePageTemplate(render),
+                                { pg, cs -> layout(this, TreePage(pg, cs, messages, urlOfCourseTree, urlOfChapter, urlOfLesson, urlOfTask)) },
                                 ArticlesPageTemplate(render),
                                 { layout(this, CodeReviewPage(it, messages, codeReviewDao.findAll())) }
                         ),

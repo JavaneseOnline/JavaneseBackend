@@ -7,6 +7,7 @@
 </head>
 <body>
 
+
 <!-- links -->
 
 <a th:fragment="linkToCourse" th:inline="text"
@@ -24,15 +25,8 @@
    th:title="${lesson.linkText}"
 ><!--th:block th:if="${ordinal} != null">[[${k.count}]]. [[#{tree.lesson}]]</th:block-->[[${lesson.linkText}]]</a>
 
+
 <!-- lesson-targeting trees -->
-
-<ul th:fragment="coursesTree" th:inline="text">
-    <li th:each="course, i : ${courses}">
-        <a th:replace="fragments/content :: linkToCourse(ordinal = ${i.count}, course = ${course})"></a>
-
-        <ul th:replace="fragments/content :: chaptersTree(chapters = ${course.chapters})"></ul>
-    </li>
-</ul>
 
 <ul th:fragment="chaptersTree" th:inline="text">
     <li th:each="chapter, j : ${chapters}">
@@ -48,42 +42,6 @@
     </li>
 </ul>
 
-<!-- task-targeting trees -->
-
-<ul th:fragment="coursesTasksTree" th:inline="text">
-    <li th:each="course, i : ${courses}">
-        <a th:replace="fragments/content :: linkToCourse(ordinal = ${i.count}, course = ${course})"></a>
-
-        <ul th:replace="fragments/content :: chaptersTasksTree(chapters = ${course.chapters})"></ul>
-    </li>
-</ul>
-
-<ul th:fragment="chaptersTasksTree" th:inline="text">
-    <li th:each="chapter, j : ${chapters}">
-        <a th:replace="fragments/content :: linkToChapter(ordinal = ${j.count}, chapter = ${chapter})"></a>
-
-        <ul th:replace="fragments/content :: lessonsTasksTree(lessons = ${chapter.lessons})"></ul>
-    </li>
-</ul>
-
-<ul th:fragment="lessonsTasksTree" th:inline="text">
-    <li th:each="lesson, k : ${lessons}">
-        <small>[[${lesson.linkText}]]</small>
-
-        <ul th:replace="fragments/content :: tasks(tasks = ${lesson.tasks})"></ul>
-    </li>
-</ul>
-
-<!-- just tasks -->
-
-<ul th:fragment="tasks" th:inline="text">
-    <li th:each="task, l : ${tasks}">
-        <a th:href="@{~/{course}/{chapter}/{lesson}/ (course=${lesson.chapter.course.urlPathComponent}, chapter=${lesson.chapter.urlPathComponent}, lesson=${lesson.urlPathComponent})}+'#'+${task.urlPathComponent}"
-           th:title="${task.linkText}">
-            <!--[[#{tree.task}]] [[${l.count}]]. -->[[${task.linkText}]]
-        </a>
-    </li>
-</ul>
 
 <!-- prev / next -->
 
