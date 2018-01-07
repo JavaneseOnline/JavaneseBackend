@@ -2,12 +2,16 @@ package online.javanese
 
 import io.ktor.application.call
 import io.ktor.application.install
+import io.ktor.auth.UserIdPrincipal
+import io.ktor.auth.authentication
+import io.ktor.auth.basicAuthentication
 import io.ktor.content.resources
 import io.ktor.content.static
 import io.ktor.features.StatusPages
 import io.ktor.html.respondHtml
 import io.ktor.http.HttpStatusCode
 import io.ktor.routing.get
+import io.ktor.routing.route
 import io.ktor.routing.routing
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
@@ -17,6 +21,12 @@ import nz.net.ultraq.thymeleaf.LayoutDialect
 import online.javanese.exception.NotFoundException
 import online.javanese.extensions.encodeForUrl
 import online.javanese.handler.*
+import online.javanese.krud.installAdmin
+import online.javanese.krud.krudStaticResources
+import online.javanese.krud.stat.HitStat
+import online.javanese.krud.stat.InMemoryStatTable
+import online.javanese.krud.stat.UserAgent
+import online.javanese.krud.stat.installHitStatInterceptor
 import online.javanese.model.*
 import online.javanese.route.OnePartRoute
 import online.javanese.route.ThreePartsRoute
@@ -199,6 +209,9 @@ object JavaneseServer {
         val sandboxWebSocketHandler =
                 SandboxWebSocketHandler(config, taskDao)
 
+        val noUa = UserAgent("", "", "")
+        val stat = HitStat(InMemoryStatTable({ noUa }, { it.endsWith(".css") || it.endsWith(".js") }))
+
         embeddedServer(Netty, port = config.sitePort, host = config.siteHost) {
             install(StatusPages) {
                 exception<NotFoundException> {
@@ -216,6 +229,8 @@ object JavaneseServer {
             routing {
 
                 // todo: addresses as objects
+
+                installHitStatInterceptor(stat)
 
                 get("/") { route1(call, "") }
                 get1(route1)
@@ -235,6 +250,25 @@ object JavaneseServer {
                 static(config.exposedStaticDir) {
                     resources("static")
                 }
+
+                route("/${config.adminRoute}/") {
+                    installAdmin(JavaneseAdminPanel(
+                            config.adminRoute, session,
+                            taskDao, lessonDao, chapterDao, courseDao, articleDao,
+                            pageDao, taskErrorReportDao, codeReviewCandidateDao, codeReviewDao,
+                            stat
+                    ))
+
+                    authentication {
+                        basicAuthentication("Admin") { cred ->
+                            if (cred.name == config.adminUsername && cred.password == config.adminPassword)
+                                UserIdPrincipal("admin")
+                            else null
+                        }
+                    }
+                }
+
+                krudStaticResources("admin-static")
             }
 
             Unit
@@ -246,3 +280,4 @@ object JavaneseServer {
 // todo: rename all 'h1's to 'heading', 'urlPathComponent' to 'urlSegment' after refactoring
 // todo: make DAO functions suspend
 // todo: '200 Ok' with 'ok' body should be replaced with 'No content'
+// todo: indices on urlSegment
