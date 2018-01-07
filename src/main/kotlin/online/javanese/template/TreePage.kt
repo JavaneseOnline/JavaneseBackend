@@ -103,7 +103,9 @@ class TreePage(
 
                                 ul {
                                     lesson.tasks.forEach { task ->
-                                        linkTo(task)
+                                        li {
+                                            linkTo(task)
+                                        }
                                     }
                                 }
                             }
