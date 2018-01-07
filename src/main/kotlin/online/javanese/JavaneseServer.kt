@@ -142,7 +142,7 @@ object JavaneseServer {
                         courseDao,
                         PageHandler(
                                 courseDao, articleDao,
-                                IndexPageTemplate(render),
+                                { layout(this, IndexPage(it)) },
                                 TreePageTemplate(render),
                                 ArticlesPageTemplate(render),
                                 { layout(this, CodeReviewPage(it, messages, codeReviewDao.findAll())) }
