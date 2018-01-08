@@ -144,7 +144,7 @@ object JavaneseServer {
                                 courseDao, articleDao,
                                 { layout(this, IndexPage(it)) },
                                 { pg, cs -> layout(this, TreePage(pg, cs, messages, urlOfCourseTree, urlOfChapter, urlOfLesson, urlOfTask)) },
-                                ArticlesPageTemplate(render),
+                                { page, articles -> layout(this, ArticlesPage(page, articles, messages, config.exposedStaticDir, urlOfArticle)) },
                                 { layout(this, CodeReviewPage(it, messages, codeReviewDao.findAll())) }
                         ),
                         CourseHandler(
