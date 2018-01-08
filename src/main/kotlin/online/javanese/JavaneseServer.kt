@@ -1,5 +1,6 @@
 package online.javanese
 
+import io.ktor.application.ApplicationCall
 import io.ktor.application.call
 import io.ktor.application.install
 import io.ktor.auth.UserIdPrincipal
@@ -185,12 +186,12 @@ object JavaneseServer {
                         )
                 )
 
-        val errorHandler = ErrorHandler(
-                ErrorPageTemplate(
-                        { key, default -> messages.getProperty(key) ?: default },
-                        render
-                )
-        )
+        val errorHandler: suspend (ApplicationCall) -> Unit = { call ->
+            val status = call.response.status()!!
+            call.respondHtml(status) {
+                layout(this, ErrorPage(messages, status.value, status.description))
+            }
+        }
 
         val articleRssHandler = ArticleRssHandler(
                 config.siteUrl,
