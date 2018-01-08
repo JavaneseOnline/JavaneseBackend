@@ -155,8 +155,8 @@ object JavaneseServer {
                                 { layout(this, CodeReviewPage(it, messages, codeReviewDao.findAll())) }
                         ),
                         CourseHandler(
-                                courseDao,
-                                { c, ct, p, n -> layout(this, CoursePage(c, ct, p, n, urlOfCourse, urlOfChapter, urlOfLesson, urlOfTask, messages)) }
+                                pageDao, courseDao,
+                                { tp, c, ct, p, n -> layout(this, CoursePage(tp, c, ct, p, n, pageLink, urlOfCourse, urlOfChapter, urlOfLesson, urlOfTask, messages)) }
                         )
                 )
 

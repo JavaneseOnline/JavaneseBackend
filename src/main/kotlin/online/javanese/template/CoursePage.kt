@@ -5,10 +5,12 @@ import online.javanese.model.*
 import java.util.*
 
 class CoursePage(
+        private val treePage: Page,
         private val course: Course,
         private val courseTree: CourseTree,
         private val previous: Course.BasicInfo?,
         private val next: Course.BasicInfo?,
+        private val pageLink: Link<Page>,
         private val urlOfCourse: (Course.BasicInfo) -> String,
         private val urlOfChapter: (ChapterTree) -> String,
         private val urlOfLesson: (LessonTree) -> String,
@@ -25,7 +27,7 @@ class CoursePage(
             nav {
                 a(href = "/", titleAndText = messages.getProperty("index.title"))
                 +" / "
-                a(href = urlOfCourse(course.basicInfo), titleAndText = courseTree.linkText)
+                pageLink.insert(this, treePage)
             }
 
             main {
