@@ -26,7 +26,7 @@ class TreePage(
                 }
             }
 
-            h1 {
+            h1(classes = "content-padding-v") {
                 +page.h1
             }
 
