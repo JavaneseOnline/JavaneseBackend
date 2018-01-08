@@ -81,6 +81,29 @@ fun FlowContent.tasksTree(tasks: List<TaskTree>, urlOfTask: (TaskTree) -> String
     }
 }
 
+fun <T : Any> FlowContent.prevNextPane(previous: T?, next: T?, urlOf: (T) -> String, linkTextOf: (T) -> String) {
+    if (previous != null || next != null) {
+        nav(classes = "mdl-grid mdl-grid--no-spacing") {
+            p(classes = "mdl-cell mdl-cell--4-col mdl-cell--6-col-desktop") {
+                previous?.let {
+                    a(href = urlOf(it), titleAndText = linkTextOf(it))
+                }
+            }
+
+            p(classes = "mdl-cell mdl-cell--4-col-tablet mdl-cell--6-col-desktop mdl-cell--hide-phone mdl-typography--text-right") {
+                next?.let {
+                    a(href = urlOf(it), titleAndText = linkTextOf(it))
+                }
+            }
+            p(classes = "mdl-cell mdl-cell--4-col mdl-cell--hide-desktop mdl-cell--hide-tablet") {
+                next?.let {
+                    a(href = urlOf(it), titleAndText = linkTextOf(it))
+                }
+            }
+        }
+    }
+}
+
 private inline fun FlowOrInteractiveOrPhrasingContent.linkTo(urlOfCourse: (CourseTree) -> String, course: CourseTree) =
         a(href = urlOfCourse(course), titleAndText = course.linkText)
 

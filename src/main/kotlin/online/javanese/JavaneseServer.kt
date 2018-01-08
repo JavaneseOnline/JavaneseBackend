@@ -149,7 +149,7 @@ object JavaneseServer {
                         ),
                         CourseHandler(
                                 courseDao,
-                                CoursePageTemplate(urlOfCourse, render)
+                                { c, ct, p, n -> layout(this, CoursePage(c, ct, p, n, urlOfCourse, urlOfChapter, urlOfLesson, urlOfTask, messages)) }
                         )
                 )
 

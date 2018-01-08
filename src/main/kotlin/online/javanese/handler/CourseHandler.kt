@@ -1,8 +1,8 @@
 package online.javanese.handler
 
 import io.ktor.application.ApplicationCall
-import io.ktor.http.ContentType
-import io.ktor.response.respondText
+import io.ktor.html.respondHtml
+import kotlinx.html.HTML
 import online.javanese.model.Course
 import online.javanese.model.CourseDao
 import online.javanese.model.CourseTree
@@ -10,17 +10,14 @@ import online.javanese.model.CourseTree
 
 fun CourseHandler(
         courseDao: CourseDao,
-        coursePageTpl: (Course, CourseTree, prev: Course.BasicInfo?, next: Course.BasicInfo?) -> String
+        coursePage: HTML.(Course, CourseTree, prev: Course.BasicInfo?, next: Course.BasicInfo?) -> Unit
 ): suspend (ApplicationCall, Course) -> Unit = { call, course ->
 
-    call.respondText(
-            coursePageTpl(
-                    course,
-                    courseDao.findTree(course.basicInfo.id)!!,
-                    courseDao.findPrevious(course),
-                    courseDao.findNext(course)
-            ),
-            ContentType.Text.Html
-    )
+    val tree = courseDao.findTree(course.basicInfo.id)!!
+    val previous = courseDao.findPrevious(course)
+    val next = courseDao.findNext(course)
 
+    call.respondHtml {
+        coursePage(course, tree, previous, next)
+    }
 }
