@@ -66,7 +66,7 @@ object CourseTable : Table<Course, Uuid>("courses"), VersionedWithTimestamp {
 
 }
 
-private object BasicCourseInfoTable : Table<Course.BasicInfo, Uuid>("courses") {
+object BasicCourseInfoTable : Table<Course.BasicInfo, Uuid>("courses") {
 
     val Id by idCol(Course.BasicInfo::id)
     val UrlPathComponent by urlSegmentCol(Course.BasicInfo::urlPathComponent)

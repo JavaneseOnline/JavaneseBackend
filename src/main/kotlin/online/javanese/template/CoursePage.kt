@@ -42,7 +42,10 @@ class CoursePage(
                 chaptersTree(courseTree.chapters, urlOfChapter, urlOfLesson, urlOfTask, TreeMode.Lessons)
             }
 
-            prevNextPane(previous, next, urlOfCourse, Course.BasicInfo::linkText)
+            prevNextPane(
+                    previous, next, urlOfCourse, Course.BasicInfo::linkText,
+                    messages.getProperty("course.previous"), messages.getProperty("course.next")
+            )
         }
     }
 

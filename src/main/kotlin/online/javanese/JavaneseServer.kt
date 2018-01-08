@@ -95,6 +95,7 @@ object JavaneseServer {
             )
         }
 
+        // fixme: deprecated objects start
         val tree = courseDao.findTreeSortedBySortIndex() // fixme: may not fetch whole tree
         // (after removing Thymeleaf this refactoring would be easy)
 
@@ -133,8 +134,14 @@ object JavaneseServer {
         val urlOfCodeReview = { p: Page, r: CodeReview ->
             "/${p.urlPathComponent.encodeForUrl()}/${r.urlSegment.encodeForUrl()}/"
         }
+        // fixme: deprecated objects end
 
         val layout = Layout(config.exposedStaticDir, messages)
+
+        val pageLink =
+                IndexOrSingleSegmDirLink(PageTable.UrlPathComponent.property, PageTable.MetaTitle.property)
+        val courseLink =
+                SingleSegmentDirLink(BasicCourseInfoTable.UrlPathComponent.property, BasicCourseInfoTable.LinkText.property)
 
         val route1 =
                 OnePartRoute(
@@ -160,8 +167,11 @@ object JavaneseServer {
                             call.respondHtml { layout(this, ArticlePage(pg, ar, messages, urlOfPage)) }
                         },
                         ChapterHandler(
-                                tree,
-                                ChapterPageTemplate(urlOfChapter, render)
+                                pageDao,
+                                tree, layout,
+                                { idx, tr, crs, chp, chpt, prev, next ->
+                                    ChapterPage(idx, tr, crs, chp, chpt, prev, next, pageLink, courseLink, urlOfChapter, urlOfLesson, urlOfTask, messages)
+                                }
                         ),
                         { page, review, call -> call.respondHtml { layout(this, CodeReviewDetailsPage(page, review, messages, urlOfPage)) } }
                 )

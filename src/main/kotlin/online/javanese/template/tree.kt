@@ -81,23 +81,23 @@ fun FlowContent.tasksTree(tasks: List<TaskTree>, urlOfTask: (TaskTree) -> String
     }
 }
 
-fun <T : Any> FlowContent.prevNextPane(previous: T?, next: T?, urlOf: (T) -> String, linkTextOf: (T) -> String) {
+fun <T : Any> FlowContent.prevNextPane(previous: T?, next: T?, urlOf: (T) -> String, linkTextOf: (T) -> String, prevText: String, nextText: String) {
     if (previous != null || next != null) {
         nav(classes = "mdl-grid mdl-grid--no-spacing") {
             p(classes = "mdl-cell mdl-cell--4-col mdl-cell--6-col-desktop") {
                 previous?.let {
-                    a(href = urlOf(it), titleAndText = linkTextOf(it))
+                    a(href = urlOf(it), titleAndText = prevText)
                 }
             }
 
             p(classes = "mdl-cell mdl-cell--4-col-tablet mdl-cell--6-col-desktop mdl-cell--hide-phone mdl-typography--text-right") {
                 next?.let {
-                    a(href = urlOf(it), titleAndText = linkTextOf(it))
+                    a(href = urlOf(it), titleAndText = nextText)
                 }
             }
             p(classes = "mdl-cell mdl-cell--4-col mdl-cell--hide-desktop mdl-cell--hide-tablet") {
                 next?.let {
-                    a(href = urlOf(it), titleAndText = linkTextOf(it))
+                    a(href = urlOf(it), titleAndText = nextText)
                 }
             }
         }

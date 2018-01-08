@@ -62,6 +62,7 @@ class PageDao(
 
     private val tableName = PageTable.name
     private val urlPathComponentColName = PageTable.UrlPathComponent.name
+    private val magicColName = PageTable.Magic.name
 
     fun findAll(): List<Page> =
             session.select(
@@ -75,6 +76,15 @@ class PageDao(
                         |FROM $tableName
                         |WHERE "$urlPathComponentColName" = :component""".trimMargin(),
                     parameters = mapOf("component" to component),
+                    mapper = PageTable.rowMapper()
+            ).singleOrNull()
+
+    fun findByMagic(magic: Page.Magic) =
+            session.select(
+                    sql = """SELECT *
+                        |FROM $tableName
+                        |WHERE "$magicColName" = :magic""".trimMargin(),
+                    parameters = mapOf("magic" to magic.name),
                     mapper = PageTable.rowMapper()
             ).singleOrNull()
 
