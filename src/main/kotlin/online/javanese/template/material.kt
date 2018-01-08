@@ -9,6 +9,9 @@ import online.javanese.extensions.menu
 inline fun FlowContent.contentCardDiv(noinline block: DIV.() -> Unit) =
         div("content card mdl-shadow--8dp", block)
 
+inline fun FlowContent.contentCardMain(noinline block: MAIN.() -> Unit) =
+        main("content card mdl-shadow--8dp", block)
+
 // tabs
 
 inline fun FlowContent.tabs(noinline block: DIV.() -> Unit) =

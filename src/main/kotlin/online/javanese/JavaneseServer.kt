@@ -156,9 +156,9 @@ object JavaneseServer {
         val route2 =
                 TwoPartsRoute(
                         pageDao, articleDao, courseDao, chapterDao, codeReviewDao,
-                        ArticleHandler(
-                                ArticlePageTemplate(render)
-                        ),
+                        { pg, ar, call ->
+                            call.respondHtml { layout(this, ArticlePage(pg, ar, messages, urlOfPage)) }
+                        },
                         ChapterHandler(
                                 tree,
                                 ChapterPageTemplate(urlOfChapter, render)
