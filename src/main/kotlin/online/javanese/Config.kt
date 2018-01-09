@@ -14,10 +14,10 @@ class Config(
     val exposedStaticDir: String = props.getProperty("exposedStaticDir")
 
     // http://javanese.online
-    val siteScheme: String = props.getProperty("siteScheme")
+    val listenHost: String = props.getProperty("listenHost")
+    val listenPort: Int = props.getProperty("listenPort").toInt()
     val siteHost: String = props.getProperty("siteHost")
-    val sitePort: Int = props.getProperty("sitePort").toInt()
-    val siteUrl = "$siteScheme://$siteHost${if (sitePort != 80) ":$sitePort" else ""}"
+    val siteUrl: String = "http://" + siteHost
 
     // /usr/lib/jvm/java-9-oracle/bin/java
     val sandboxJavaLocation: String = props.getProperty("sandbox.javaLocation")

@@ -222,7 +222,7 @@ object JavaneseServer {
         val noUa = UserAgent("", "", "")
         val stat = HitStat(InMemoryStatTable({ noUa }, { it.endsWith(".css") || it.endsWith(".js") }))
 
-        embeddedServer(Netty, port = config.sitePort, host = config.siteHost) {
+        embeddedServer(Netty, port = config.listenPort, host = config.listenHost) {
             install(StatusPages) {
                 exception<NotFoundException> {
                     call.response.status(HttpStatusCode.NotFound)
