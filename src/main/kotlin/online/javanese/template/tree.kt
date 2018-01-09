@@ -81,9 +81,12 @@ fun FlowContent.tasksTree(tasks: List<TaskTree>, urlOfTask: (TaskTree) -> String
     }
 }
 
-fun <T : Any> FlowContent.prevNextPane(previous: T?, next: T?, urlOf: (T) -> String, linkTextOf: (T) -> String, prevText: String, nextText: String) {
+fun <T : Any> FlowContent.prevNextPane(
+        previous: T?, next: T?, urlOf: (T) -> String, linkTextOf: (T) -> String, prevText: String, nextText: String,
+        moreClasses: String? = null
+) {
     if (previous != null || next != null) {
-        nav(classes = "mdl-grid mdl-grid--no-spacing") {
+        nav(classes = classes("mdl-grid mdl-grid--no-spacing", moreClasses)) {
             p(classes = "mdl-cell mdl-cell--4-col mdl-cell--6-col-desktop") {
                 previous?.let {
                     a(href = urlOf(it), titleAndText = prevText)

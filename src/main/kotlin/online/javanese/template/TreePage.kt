@@ -40,11 +40,11 @@ class TreePage(
                     tabLink("tasks", messages.getProperty("tree.tab.tasks"))
                 }
 
-                tabPanel("lessons", true) {
+                tabPanelNav("lessons", true) {
                     coursesTree(courses, urlOfCourse, urlOfChapter, urlOfLesson, urlOfTask, TreeMode.Lessons)
                 }
 
-                tabPanel("tasks") {
+                tabPanelNav("tasks") {
                     coursesTree(courses, urlOfCourse, urlOfChapter, urlOfLesson, urlOfTask, TreeMode.Tasks)
                 }
             }

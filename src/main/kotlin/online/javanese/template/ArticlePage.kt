@@ -48,7 +48,9 @@ class ArticlePage(
                         val vkPostId = postInfo.id
                         val vkPostHash = postInfo.hash
                         val vkPostIdParts = vkPostId.split('_')
-                        +"""VK.Widgets.Post('vk_post_$vkPostId', '${vkPostIdParts[0]}', '${vkPostIdParts[1]}', '$vkPostHash');"""
+                        unsafe {
+                            +"""VK.Widgets.Post('vk_post_$vkPostId', '${vkPostIdParts[0]}', '${vkPostIdParts[1]}', '$vkPostHash');"""
+                        }
                     }
                 }
             }
@@ -58,13 +60,9 @@ class ArticlePage(
             h4 {
                 +messages.getProperty("article.comments")
             }
-            div(classes = "no-pad container-margin-t mdl-shadow--8dp") {
-                id = "vk_comments"
-            }
-            script {
-                +"""VK.init({ apiId: 5748800, onlyWidgets: true });"""
-                +"""VK.Widgets.Comments("vk_comments", {}, '${article.basicInfo.id}');"""
-            }
+            vkComments(
+                    article.basicInfo.id.toString(), init = true, classes = "no-pad container-margin-t mdl-shadow--8dp"
+            )
         }
     }
 

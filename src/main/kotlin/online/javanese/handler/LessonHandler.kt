@@ -1,24 +1,31 @@
 package online.javanese.handler
 
 import io.ktor.application.ApplicationCall
-import io.ktor.http.ContentType
-import io.ktor.response.respondText
-import online.javanese.model.Lesson
-import online.javanese.model.LessonDao
-import online.javanese.model.LessonTree
+import io.ktor.html.respondHtml
+import online.javanese.model.*
+import online.javanese.template.Layout
 
 
 fun LessonHandler(
-        lessonDao: LessonDao,
-        lessonTemplate: (Lesson, LessonTree, prev: LessonTree?, next: LessonTree?) -> String
-): suspend (LessonTree, ApplicationCall) -> Unit = { tree, call ->
+        courseDao: CourseDao, chapterDao: ChapterDao, lessonDao: LessonDao,
+        pageDao: PageDao,
+        layout: Layout,
+        lessonPage: (index: Page, tree: Page, Course.BasicInfo, Chapter.BasicInfo, Lesson, LessonTree, prev: LessonTree?, next: LessonTree?) -> Layout.Page
+): suspend (CourseTree, ChapterTree, LessonTree, ApplicationCall) -> Unit = { courseTr, chapterTr, lessonTr, call ->
 
-    val lesson = lessonDao.findById(tree.id)!!
-    val lessons = tree.chapter.lessons
-    val idx = lessons.indexOf(tree)
+    val course = courseDao.findBasicById(courseTr.id)!!
+    val chapter = chapterDao.findBasicById(chapterTr.id)!!
+    val lesson = lessonDao.findById(lessonTr.id)!!
+
+    val index = pageDao.findByMagic(Page.Magic.Index)!!
+    val treePg = pageDao.findByMagic(Page.Magic.Tree)!!
+    val lessons = lessonTr.chapter.lessons
+    val idx = lessons.indexOf(lessonTr)
     val prev = (idx - 1).let { if (it < 0) null else lessons[it] }
     val next = (idx + 1).let { if (it < lessons.size) lessons[it] else null }
 
-    call.respondText(lessonTemplate(lesson, tree, prev, next), ContentType.Text.Html)
+    call.respondHtml {
+        layout(this, lessonPage(index, treePg, course, chapter, lesson, lessonTr, prev, next))
+    }
 
 }

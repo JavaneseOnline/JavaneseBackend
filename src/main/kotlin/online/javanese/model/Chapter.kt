@@ -71,7 +71,7 @@ object ChapterTable : Table<Chapter, Uuid>("chapters"), VersionedWithTimestamp {
 
 }
 
-private object BasicChapterInfoTable : Table<Chapter.BasicInfo, Uuid>("chapters") {
+object BasicChapterInfoTable : Table<Chapter.BasicInfo, Uuid>("chapters") {
 
     val Id by idCol(Chapter.BasicInfo::id)
     val CourseId by uuidCol(Chapter.BasicInfo::courseId, name = "courseId")

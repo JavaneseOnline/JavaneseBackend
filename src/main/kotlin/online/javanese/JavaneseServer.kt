@@ -143,6 +143,8 @@ object JavaneseServer {
                 IndexOrSingleSegmDirLink(PageTable.UrlPathComponent.property, PageTable.MetaTitle.property)
         val courseLink =
                 SingleSegmentDirLink(BasicCourseInfoTable.UrlPathComponent.property, BasicCourseInfoTable.LinkText.property)
+        val chapterLink =
+                TwoSegmentDirLink(BasicCourseInfoTable.UrlPathComponent.property, BasicChapterInfoTable.UrlPathComponent.property, { _, ch -> ch.linkText })
 
         val route1 =
                 OnePartRoute(
@@ -181,8 +183,8 @@ object JavaneseServer {
                 ThreePartsRoute(
                         tree,
                         LessonHandler(
-                                lessonDao,
-                                LessonPageTemplate(urlOfLesson, render)
+                                courseDao, chapterDao, lessonDao, pageDao, layout,
+                                { idx, tr, crs, chp, l, lt, pr, nx -> LessonPage(idx, tr, crs, chp, l, lt, pr, nx, config.exposedStaticDir, pageLink, courseLink, chapterLink, urlOfLesson, messages) }
                         )
                 )
 
