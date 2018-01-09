@@ -18,7 +18,6 @@ import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
 import io.ktor.websocket.WebSockets
 import io.ktor.websocket.webSocket
-import nz.net.ultraq.thymeleaf.LayoutDialect
 import online.javanese.exception.NotFoundException
 import online.javanese.extensions.encodeForUrl
 import online.javanese.handler.*
@@ -29,12 +28,10 @@ import online.javanese.krud.stat.InMemoryStatTable
 import online.javanese.krud.stat.UserAgent
 import online.javanese.krud.stat.installHitStatInterceptor
 import online.javanese.model.*
+import online.javanese.page.*
 import online.javanese.route.OnePartRoute
 import online.javanese.route.ThreePartsRoute
 import online.javanese.route.TwoPartsRoute
-import online.javanese.template.*
-import org.thymeleaf.context.Context
-import org.thymeleaf.templatemode.TemplateMode
 import java.io.FileInputStream
 import java.util.*
 
@@ -56,20 +53,6 @@ object JavaneseServer {
                 password = config.dbPassword
         )
 
-        val templateEngine = TemplateEngine(
-                templateResolver = ClassLoaderTemplateResolver(
-                        classLoader = javaClass.classLoader,
-                        prefix = "/templates/",
-                        suffix = ".html",
-                        templateMode = TemplateMode.HTML,
-                        charset = Charsets.UTF_8
-                ),
-                messageResolver = MessageResolver(
-                        stream = javaClass.getResourceAsStream("/locale/messages_ru.properties")
-                ),
-                dialects = *arrayOf(LayoutDialect())
-        )
-
         val messages = Properties().apply {
             load(JavaneseServer::class.java.getResourceAsStream("/locale/messages_ru.properties").bufferedReader())
         }
@@ -83,18 +66,6 @@ object JavaneseServer {
         val chapterDao = ChapterDao(session, lessonDao)
         val courseDao = CourseDao(session, chapterDao)
         val codeReviewDao = CodeReviewDao(session)
-
-        val locale = Locale.Builder().setLanguage("ru").setScript("Cyrl").build()
-        val staticDirPair = "static" to config.exposedStaticDir
-        val render = { templateName: String, parameters: Map<String, Any> ->
-            templateEngine.process(
-                    templateName,
-                    Context(
-                            locale,
-                            parameters + staticDirPair
-                    )
-            )
-        }
 
         // fixme: deprecated objects start
         val tree = courseDao.findTreeSortedBySortIndex() // fixme: may not fetch whole tree

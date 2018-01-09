@@ -1,4 +1,4 @@
-package online.javanese.template
+package online.javanese.page
 
 import kotlinx.html.FlowOrInteractiveOrPhrasingContent
 import online.javanese.extensions.encodeForUrl

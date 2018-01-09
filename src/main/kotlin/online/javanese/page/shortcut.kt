@@ -1,5 +1,5 @@
 @file:Suppress("NOTHING_TO_INLINE")
-package online.javanese.template
+package online.javanese.page
 
 import kotlinx.html.FlowOrInteractiveOrPhrasingContent
 import kotlinx.html.a

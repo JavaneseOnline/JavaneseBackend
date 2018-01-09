@@ -1,4 +1,4 @@
-package online.javanese.template
+package online.javanese.page
 
 import kotlinx.html.*
 import online.javanese.extensions.contentDiv

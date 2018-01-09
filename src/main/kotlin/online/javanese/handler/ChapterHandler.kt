@@ -3,7 +3,7 @@ package online.javanese.handler
 import io.ktor.application.ApplicationCall
 import io.ktor.html.respondHtml
 import online.javanese.model.*
-import online.javanese.template.Layout
+import online.javanese.page.Layout
 
 
 fun ChapterHandler(

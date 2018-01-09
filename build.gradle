@@ -53,9 +53,6 @@ dependencies {
 //    compile "com.github.andrewoma.kwery:mapper:$kwery_version"
     compile 'com.github.andrewoma.kommon:kommon:0.14'
 
-    compile 'org.thymeleaf:thymeleaf:3.0.7.RELEASE'
-    compile 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect:2.2.2'
-
     compile 'com.fasterxml.jackson.core:jackson-databind:2.9.2'
 
     compile 'ch.qos.logback:logback-classic:1.2.1'
