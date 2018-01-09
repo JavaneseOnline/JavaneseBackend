@@ -195,10 +195,7 @@ object JavaneseServer {
             }
         }
 
-        val articleRssHandler = ArticleRssHandler(
-                config.siteUrl,
-                articleDao,
-                RssFeedTemplate(render))
+        val articleRssHandler = ArticleRssHandler(articleDao)
 
         val taskErrorReportDao = TaskErrorReportDao(session)
 
