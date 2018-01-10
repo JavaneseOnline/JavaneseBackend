@@ -1,7 +1,8 @@
 package online.javanese.page
 
 import kotlinx.html.FlowOrInteractiveOrPhrasingContent
-import online.javanese.extensions.encodeForUrl
+import java.net.URLDecoder
+import java.net.URLEncoder
 
 
 // todo: shouldn't I move this class to a library?
@@ -77,3 +78,8 @@ class ThreeSegmentDirLink<F, S, T>(
                     titleAndText = linkText(obj.first, obj.second, obj.third)
             )
 }
+
+
+
+fun String.encodeForUrl(): String = URLEncoder.encode(this, "UTF-8").replace("+", "%20")
+fun String.decodeFromUrl(): String = URLDecoder.decode(this, "UTF-8")

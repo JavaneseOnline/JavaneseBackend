@@ -19,7 +19,6 @@ import io.ktor.server.netty.Netty
 import io.ktor.websocket.WebSockets
 import io.ktor.websocket.webSocket
 import online.javanese.exception.NotFoundException
-import online.javanese.extensions.encodeForUrl
 import online.javanese.handler.*
 import online.javanese.krud.installAdmin
 import online.javanese.krud.krudStaticResources
