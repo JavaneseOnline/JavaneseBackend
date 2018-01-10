@@ -1,7 +1,6 @@
 package online.javanese.page
 
 import kotlinx.html.*
-import online.javanese.extensions.contentDiv
 import online.javanese.model.CodeReview
 import online.javanese.model.Meta
 import online.javanese.model.Page
@@ -19,7 +18,7 @@ class CodeReviewDetailsPage(
     override fun additionalHeadMarkup(head: HEAD) = Unit
 
     override fun bodyMarkup(body: BODY) = with(body) {
-        contentDiv {
+        contentCardDiv {
 
             nav {
                 a(href = "/") { +locale.getProperty("index.title") }

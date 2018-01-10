@@ -2,8 +2,6 @@
 package online.javanese.page
 
 import kotlinx.html.*
-import online.javanese.extensions.MENU
-import online.javanese.extensions.menu
 
 
 inline fun FlowContent.contentCardDiv(noinline block: DIV.() -> Unit) =
