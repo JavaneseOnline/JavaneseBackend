@@ -4,9 +4,9 @@ import io.ktor.application.ApplicationCall
 import io.ktor.http.ContentType
 import io.ktor.response.respondWrite
 import io.ktor.util.escapeHTML
-import online.javanese.extensions.encodeForUrl
 import online.javanese.model.ArticleDao
 import online.javanese.model.RssItem
+import online.javanese.page.encodeForUrl
 import java.text.SimpleDateFormat
 import java.time.ZoneId
 import java.util.*

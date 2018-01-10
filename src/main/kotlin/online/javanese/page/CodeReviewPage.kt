@@ -1,7 +1,6 @@
 package online.javanese.page
 
 import kotlinx.html.*
-import online.javanese.extensions.encodeForUrl
 import online.javanese.model.CodeReview
 import online.javanese.model.Meta
 import online.javanese.model.Page
