@@ -1,4 +1,4 @@
-package online.javanese.extensions
+package online.javanese
 
 import java.io.File
 import java.io.FileNotFoundException

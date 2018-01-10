@@ -1,7 +1,7 @@
 package online.javanese.sandbox
 
 import kotlinx.coroutines.experimental.*
-import online.javanese.extensions.deleteDirectory
+import online.javanese.deleteDirectory
 import java.io.*
 import java.nio.file.Files
 import java.nio.file.Paths
