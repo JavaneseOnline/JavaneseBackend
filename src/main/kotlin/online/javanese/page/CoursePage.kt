@@ -1,10 +1,11 @@
 package online.javanese.page
 
 import kotlinx.html.*
+import online.javanese.locale.Language
 import online.javanese.model.*
-import java.util.*
 
 class CoursePage(
+        private val indexPage: Page,
         private val treePage: Page,
         private val course: Course,
         private val courseTree: CourseTree,
@@ -15,7 +16,7 @@ class CoursePage(
         private val urlOfChapter: (ChapterTree) -> String,
         private val urlOfLesson: (LessonTree) -> String,
         private val urlOfTask: (TaskTree) -> String,
-        private val messages: Properties
+        private val language: Language
 ) : Layout.Page {
 
     override val meta: Meta get() = course.meta
@@ -25,7 +26,7 @@ class CoursePage(
     override fun bodyMarkup(body: BODY) = with(body) {
         contentCardDiv {
             nav {
-                a(href = "/", titleAndText = messages.getProperty("index.title"))
+                pageLink.insert(this, indexPage)
                 +" / "
                 pageLink.insert(this, treePage)
             }
@@ -45,8 +46,8 @@ class CoursePage(
             }
 
             prevNextPane(
-                    previous, next, urlOfCourse, Course.BasicInfo::linkText,
-                    messages.getProperty("course.previous"), messages.getProperty("course.next")
+                    previous, next, urlOfCourse, language.previousCourse,
+                    language.nextCourse
             )
         }
     }

@@ -1,22 +1,32 @@
 package online.javanese.page
 
 import kotlinx.html.*
+import online.javanese.locale.Language
 import online.javanese.model.Meta
-import java.util.*
 
-class Layout(
+interface Layout : (HTML, Layout.Page) -> Unit {
+
+    interface Page {
+        val meta: Meta
+        fun additionalHeadMarkup(head: HEAD)
+        fun bodyMarkup(body: BODY)
+        fun scripts(body: BODY)
+    }
+
+}
+class MainLayout(
         private val static: String,
-        private val locale: Properties
-) : (HTML, Layout.Page) -> Unit {
+        private val language: Language
+) : Layout {
 
-    override fun invoke(root: HTML, page: Page) = with(root) {
+    override fun invoke(root: HTML, page: Layout.Page) = with(root) {
         head {
             unsafe {
                 +"\n    <meta charset=\"utf-8\" />"
                 +"\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />"
             }
 
-            title("${page.meta.title} — ${locale.getProperty("title")!!}")
+            title("${page.meta.title} — ${language.siteTitle}")
 
             // fonts & icons
             styleLink("//fonts.googleapis.com/css?family=Tenor+Sans%7CPT+Sans+Caption%7CMaterial+Icons")
@@ -55,13 +65,6 @@ class Layout(
 
             page.scripts(this)
         }
-    }
-
-    interface Page {
-        val meta: Meta
-        fun additionalHeadMarkup(head: HEAD)
-        fun bodyMarkup(body: BODY)
-        fun scripts(body: BODY)
     }
 
 }

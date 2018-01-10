@@ -4,14 +4,14 @@ import kotlinx.html.*
 import online.javanese.model.Article
 import online.javanese.model.Meta
 import online.javanese.model.Page
-import java.util.*
 
 class ArticlesPage(
+        private val indexPage: Page,
         private val page: Page,
         private val articles: List<Article.BasicInfo>,
-        private val messages: Properties,
         private val static: String,
-        private val urlOfArticle: (Page, Article.BasicInfo) -> String
+        private val urlOfArticle: (Page, Article.BasicInfo) -> String,
+        private val pageLink: Link<Page>
 ) : Layout.Page {
 
     override val meta: Meta get() = page.meta
@@ -21,7 +21,7 @@ class ArticlesPage(
     override fun bodyMarkup(body: BODY) = with(body) {
         contentCardDiv {
             nav {
-                a(href = "/", titleAndText = messages.getProperty("index.title"))
+                pageLink.insert(this, indexPage)
             }
 
             main {

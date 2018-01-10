@@ -10,7 +10,6 @@ import io.ktor.websocket.readText
 import kotlinx.coroutines.experimental.CancellationException
 import online.javanese.Config
 import online.javanese.krud.kwery.Uuid
-import online.javanese.locale.SandboxRu
 import online.javanese.model.Task
 import online.javanese.model.TaskDao
 import online.javanese.sandbox.SandboxRunner
@@ -43,21 +42,20 @@ fun SandboxWebSocketHandler(
                 memoryLimit = technical.memoryLimit,
                 timeLimit = technical.timeLimit,
                 allowIn = technical.allowSystemIn,
-                messages = SandboxRu,
                 onProcessEvent = { type, payload ->
                     sendMessage(RuntimeMessage(type, payload))
 
-                    if (type == SandboxRunner.EventType.EXIT) {
-                        if (payload == "0") {
+                    when (type) {
+                        SandboxRunner.EventType.Exit -> if (payload == "0") {
                             sendMessage(
                                     if (task.isOutputCorrect(output))
                                         RuntimeMessage.CORRECT_SOLUTION
                                     else
-                                        RuntimeMessage(RuntimeMessage.MessageType.ILLEGAL_OUTPUT, technical.expectedOutput)
+                                        RuntimeMessage(RuntimeMessage.MessageType.IllegalOutput, technical.expectedOutput)
                             )
                         }
-                    } else if (type == SandboxRunner.EventType.OUT) {
-                        output.append(payload).append('\n')
+                        SandboxRunner.EventType.Out -> output.append(payload).append('\n')
+                        else -> { /* nothing special */ }
                     }
                 }
         ).run()
@@ -65,7 +63,7 @@ fun SandboxWebSocketHandler(
         sendMessage(CheckerMessage(e))
     } catch (ignored: CancellationException) {
     } catch (e: Throwable) {
-        sendMessage(RuntimeMessage(SandboxRunner.EventType.ERR, e.message ?: e.toString()))
+        sendMessage(RuntimeMessage(SandboxRunner.EventType.Err, e.message ?: e.toString()))
     }
 
 }
@@ -114,11 +112,11 @@ private class RuntimeMessage internal constructor(
         val data: String?
 ) {
     internal enum class MessageType {
-        ILLEGAL_OUTPUT, CORRECT_SOLUTION
+        IllegalOutput, CorrectSolution
     }
 
     internal companion object {
-        internal val CORRECT_SOLUTION = RuntimeMessage(MessageType.CORRECT_SOLUTION, null)
+        internal val CORRECT_SOLUTION = RuntimeMessage(MessageType.CorrectSolution, null)
     }
 }
 
@@ -131,17 +129,17 @@ private class CheckerMessage internal constructor(e: Exception) {
     init {
         when (e) {
             is NoRequiredVariableException -> {
-                type = MessageType.NO_VAR
+                type = MessageType.NoVar
                 name = e.name
                 value = e.type
             }
             is NoRequiredEquationException -> {
-                type = MessageType.NO_EQ
+                type = MessageType.NoEq
                 name = e.`var`
                 value = e.`val`.toString()
             }
             is NotMatchesToRequiredPatternException -> {
-                type = MessageType.NOT_MATCHES
+                type = MessageType.NotMatches
                 name = null
                 value = null
             }
@@ -150,7 +148,7 @@ private class CheckerMessage internal constructor(e: Exception) {
     }
 
     private enum class MessageType {
-        NO_VAR, NO_EQ, NOT_MATCHES
+        NoVar, NoEq, NotMatches
     }
 }
 

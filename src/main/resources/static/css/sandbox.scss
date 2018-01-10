@@ -49,7 +49,7 @@
   .runtime-exit {
     color: darkblue;
   }
-  .runtime-deadline, .runtime-no_var, .runtime-no_eq, .runtime-illegal_output, .runtime-not_matches {
+  .runtime-deadline, .runtime-novar, .runtime-noeq, .runtime-illegaloutput, .runtime-notmatches {
     color: orangered;
   }
   .runtime-correct_solution {

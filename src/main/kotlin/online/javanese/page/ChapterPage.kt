@@ -1,8 +1,8 @@
 package online.javanese.page
 
 import kotlinx.html.*
+import online.javanese.locale.Language
 import online.javanese.model.*
-import java.util.*
 
 class ChapterPage(
         private val indexPage: Page,
@@ -17,9 +17,8 @@ class ChapterPage(
         private val urlOfChapter: (ChapterTree) -> String,
         private val urlOfLesson: (LessonTree) -> String,
         private val urlOfTask: (TaskTree) -> String,
-        private val messages: Properties
+        private val language: Language
 ) : Layout.Page {
-// fixme: should be Chapter.BasicInfo ^          ^
 
     override val meta: Meta get() = chapter.meta
 
@@ -50,8 +49,8 @@ class ChapterPage(
             }
 
             prevNextPane(
-                    previousChapter, nextChapter, urlOfChapter, ChapterTree::linkText,
-                    messages.getProperty("chapter.previous"), messages.getProperty("chapter.next")
+                    previousChapter, nextChapter, urlOfChapter, language.previousChapter,
+                    language.nextChapter
             )
         }
     }

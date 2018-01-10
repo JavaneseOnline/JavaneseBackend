@@ -1,16 +1,17 @@
 package online.javanese.page
 
 import kotlinx.html.*
+import online.javanese.locale.Language
 import online.javanese.model.Article
 import online.javanese.model.Meta
 import online.javanese.model.Page
-import java.util.*
 
 class ArticlePage(
+        private val indexPage: Page,
         private val articlesPage: Page,
         private val article: Article,
-        private val messages: Properties,
-        private val urlOfPage: (Page) -> String
+        private val language: Language,
+        private val pageLink: Link<Page>
 ) : Layout.Page {
 
     override val meta: Meta get() = article.meta
@@ -20,9 +21,9 @@ class ArticlePage(
     override fun bodyMarkup(body: BODY) = with(body) {
         contentCardMain {
             nav {
-                a(href = "/", titleAndText = messages.getProperty("index.title"))
+                pageLink.insert(this, indexPage)
                 +" / "
-                a(href = urlOfPage(articlesPage), titleAndText = articlesPage.meta.title) // todo: should I use linkText?
+                pageLink.insert(this, articlesPage)
             }
 
             h1(classes = "content-padding-v") {
@@ -58,7 +59,7 @@ class ArticlePage(
 
         section(classes = "content container-margin-t") {
             h4 {
-                +messages.getProperty("article.comments")
+                +language.articleComments
             }
             vkComments(
                     article.basicInfo.id.toString(), init = true, classes = "no-pad container-margin-t mdl-shadow--8dp"

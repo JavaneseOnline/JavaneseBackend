@@ -21,7 +21,6 @@ class SandboxRunner(
         private val memoryLimit: Int,
         private val timeLimit: Int,
         private val allowIn: Boolean,
-        private val messages: Messages,
         private val onProcessEvent: suspend (EventType, payload: String) -> Unit = { _, _ ->  }
 ) {
 
@@ -62,7 +61,7 @@ class SandboxRunner(
                         communicate(stdout, stderr)
                     } catch (e: CancellationException) {
                         proc.destroyForcibly()
-                        onProcessEvent(EventType.DEADLINE, messages.deadline)
+                        onProcessEvent(EventType.Deadline, "")
                         run(NonCancellable) {
                             communicate(stdout, stderr)
                         }
@@ -72,7 +71,7 @@ class SandboxRunner(
             procStdin = null
 
             // exit
-            onProcessEvent(EventType.EXIT, proc.exitValue().toString())
+            onProcessEvent(EventType.Exit, proc.exitValue().toString())
         } finally {
             classFile.clear()
         }
@@ -81,18 +80,18 @@ class SandboxRunner(
     private suspend fun communicate(stdout: BufferedReader, stderr: BufferedReader) {
         while (stdout.ready()) {
             val l = stdout.readLine()
-            onProcessEvent(EventType.OUT, l)
+            onProcessEvent(EventType.Out, l)
         }
         while (stderr.ready()) {
             val l = stderr.readLine()
-            onProcessEvent(EventType.ERR, l)
+            onProcessEvent(EventType.Err, l)
         }
         delay(100, TimeUnit.MILLISECONDS)
     }
 
     @Throws(IOException::class)
     private suspend fun compile(): CompiledClassFile {
-        onProcessEvent(EventType.STATUS, messages.compiling)
+        onProcessEvent(EventType.Compiling, "")
 
         val sourceFileName = className + ".java"
 
@@ -109,12 +108,12 @@ class SandboxRunner(
         val result = javac.run(null, null, os, sourceFile.absolutePath)
 
         if (result != 0) {
-            onProcessEvent(EventType.ERR, String(os.toByteArray()).replace(compilationDir.absolutePath + "/", "…/"))
-            onProcessEvent(EventType.EXIT, result.toString())
+            onProcessEvent(EventType.Err, String(os.toByteArray()).replace(compilationDir.absolutePath + "/", "…/"))
+            onProcessEvent(EventType.Exit, result.toString())
             throw IOException("compilation error.")
         }
 
-        onProcessEvent(EventType.STATUS, messages.compiled)
+        onProcessEvent(EventType.Compiled, "")
 
         return CompiledClassFile(File(compilationDir, "$className.class"), compilationDir)
     }
@@ -158,14 +157,8 @@ class SandboxRunner(
         }
     }
 
-    interface Messages {
-        val deadline: String
-        val compiling: String
-        val compiled: String
-    }
-
     enum class EventType {
-        STATUS, OUT, ERR, EXIT, DEADLINE
+        Compiling, Compiled, Out, Err, Exit, Deadline
     }
 
     private companion object {

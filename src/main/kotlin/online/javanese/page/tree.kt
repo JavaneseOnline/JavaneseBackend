@@ -82,8 +82,7 @@ fun FlowContent.tasksTree(tasks: List<TaskTree>, urlOfTask: (TaskTree) -> String
 }
 
 fun <T : Any> FlowContent.prevNextPane(
-        previous: T?, next: T?, urlOf: (T) -> String, linkTextOf: (T) -> String, prevText: String, nextText: String,
-        moreClasses: String? = null
+        previous: T?, next: T?, urlOf: (T) -> String, prevText: String, nextText: String, moreClasses: String? = null
 ) {
     if (previous != null || next != null) {
         nav(classes = classes("mdl-grid mdl-grid--no-spacing", moreClasses)) {

@@ -4,12 +4,12 @@ import kotlinx.html.*
 import online.javanese.model.CodeReview
 import online.javanese.model.Meta
 import online.javanese.model.Page
-import java.util.*
 
 class CodeReviewPage(
+        private val indexPage: Page,
         private val model: Page,
-        private val locale: Properties,
-        private val reviews: List<CodeReview>
+        private val reviews: List<CodeReview>,
+        private val pageLink: Link<Page>
 ) : Layout.Page {
 
     override val meta: Meta get() = model.meta
@@ -19,9 +19,7 @@ class CodeReviewPage(
     override fun bodyMarkup(body: BODY) = with(body) {
         contentCardDiv {
             nav {
-                a(href = "/") {
-                    +locale.getProperty("index.title")
-                }
+                pageLink.insert(this, indexPage)
             }
 
             div(classes = "no-pad mdl-tabs mdl-js-tabs mdl-js-ripple-effect content-padding-b") {

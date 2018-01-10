@@ -4,13 +4,12 @@ import kotlinx.html.*
 import online.javanese.model.CodeReview
 import online.javanese.model.Meta
 import online.javanese.model.Page
-import java.util.*
 
 class CodeReviewDetailsPage(
+        private val indexPage: Page,
         private val codeReviewsPage: Page,
         private val codeReview: CodeReview,
-        private val locale: Properties,
-        private val urlOfPage: (Page) -> String
+        private val pageLink: Link<Page>
 ) : Layout.Page {
 
     override val meta: Meta get() = codeReview.meta
@@ -21,9 +20,9 @@ class CodeReviewDetailsPage(
         contentCardDiv {
 
             nav {
-                a(href = "/") { +locale.getProperty("index.title") }
+                pageLink.insert(this, indexPage)
                 +" / "
-                a(href = urlOfPage(codeReviewsPage)) { +codeReviewsPage.meta.title }
+                pageLink.insert(this, codeReviewsPage)
             }
 
             h1 {

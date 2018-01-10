@@ -39,7 +39,7 @@ $('.sandbox').each(function() {
 
             /**
              * enum class MessageType {
-             *     STATUS, IN, OUT, ERR, EXIT, DEADLINE, CORRECT_SOLUTION
+             *     Compiling, Compiled, In, Oot, Err, Exit, Deadline, CorrectSolution
              * }
              * {@see .runtime-status, .runtime-in, .runtime-out, and so on in sandbox.scss}
              *
@@ -68,28 +68,31 @@ $('.sandbox').each(function() {
                 };
                 this.connection.onmessage = function(e) {
                     var data = JSON.parse(e.data);
-                    console.log(data);
                     var last = app.messages[app.messages.length-1];
-                    if (last !== undefined && data.type === 'STATUS' && last.type === 'STATUS') {
-                        last.data += " " + data.data;
-                    } else if (data.type === 'EXIT') {
+                    if (data.type === 'Compiling') {
+                        data.type = 'Status'
+                        data.data = sandboxLocale.compiling;
+                        app.messages.push(data)
+                    } else if (data.type === 'Compiled') {
+                        last.data += " " + sandboxLocale.compiled;
+                    } else if (data.type === 'Exit') {
                         if (data.data !== '0') {
                             data.data = sandboxLocale.exitCode + " " + data.data;
                             app.messages.push(data);
                         }
-                    } else if (data.type === 'NO_VAR') {
+                    } else if (data.type === 'NoVar') {
                         data.data = sandboxLocale.noRequiredVar.format(data.name, data.value);
                         app.messages.push(data);
-                    } else if (data.type === 'NO_EQ') {
+                    } else if (data.type === 'NoEq') {
                         data.data = sandboxLocale.noRequiredEq.format(data.name, data.value);
                         app.messages.push(data);
-                    } else if (data.type === 'NOT_MATCHES') {
+                    } else if (data.type === 'NotMatches') {
                         data.data = sandboxLocale.notMatches;
                         app.messages.push(data);
-                    } else if (data.type === 'ILLEGAL_OUTPUT') {
+                    } else if (data.type === 'IllegalOutput') {
                         data.data = sandboxLocale.illegalOutput + ' ' + data.data;
                         app.messages.push(data);
-                    } else if (data.type === 'CORRECT_SOLUTION') {
+                    } else if (data.type === 'CorrectSolution') {
                         data.data = sandboxLocale.correctSolution;
                         app.messages.push(data);
                     } else {

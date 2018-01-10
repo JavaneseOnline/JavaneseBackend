@@ -26,6 +26,7 @@ import online.javanese.krud.stat.HitStat
 import online.javanese.krud.stat.InMemoryStatTable
 import online.javanese.krud.stat.UserAgent
 import online.javanese.krud.stat.installHitStatInterceptor
+import online.javanese.locale.Russian
 import online.javanese.model.*
 import online.javanese.page.*
 import online.javanese.route.OnePartRoute
@@ -51,10 +52,6 @@ object JavaneseServer {
                 user = config.dbUser,
                 password = config.dbPassword
         )
-
-        val messages = Properties().apply {
-            load(JavaneseServer::class.java.getResourceAsStream("/locale/messages_ru.properties").bufferedReader())
-        }
 
         val pageDao = PageDao(session)
 
@@ -107,7 +104,9 @@ object JavaneseServer {
         }
         // fixme: deprecated objects end
 
-        val layout = Layout(config.exposedStaticDir, messages)
+        val language = Russian
+
+        val layout = MainLayout(config.exposedStaticDir, language)
 
         val pageLink =
                 IndexOrSingleSegmDirLink(PageTable.UrlPathComponent.property, PageTable.MetaTitle.property)
@@ -121,32 +120,32 @@ object JavaneseServer {
                         pageDao,
                         courseDao,
                         PageHandler(
-                                courseDao, articleDao,
-                                { layout(this, IndexPage(it)) },
-                                { pg, cs -> layout(this, TreePage(pg, cs, messages, urlOfCourseTree, urlOfChapter, urlOfLesson, urlOfTask)) },
-                                { page, articles -> layout(this, ArticlesPage(page, articles, messages, config.exposedStaticDir, urlOfArticle)) },
-                                { layout(this, CodeReviewPage(it, messages, codeReviewDao.findAll())) }
+                                pageDao, courseDao, articleDao, layout,
+                                { IndexPage(it) },
+                                { idx, tr, cs -> TreePage(idx, tr, cs, language, urlOfCourseTree, urlOfChapter, urlOfLesson, urlOfTask, pageLink) },
+                                { idx, ar, articles -> ArticlesPage(idx, ar, articles, config.exposedStaticDir, urlOfArticle, pageLink) },
+                                { idx, cr -> CodeReviewPage(idx, cr, codeReviewDao.findAll(), pageLink) }
                         ),
                         CourseHandler(
-                                pageDao, courseDao,
-                                { tp, c, ct, p, n -> layout(this, CoursePage(tp, c, ct, p, n, pageLink, urlOfCourse, urlOfChapter, urlOfLesson, urlOfTask, messages)) }
+                                pageDao, courseDao, layout,
+                                { idx, tr, c, ct, p, n -> CoursePage(idx, tr, c, ct, p, n, pageLink, urlOfCourse, urlOfChapter, urlOfLesson, urlOfTask, language) }
                         )
                 )
 
         val route2 =
                 TwoPartsRoute(
                         pageDao, articleDao, courseDao, chapterDao, codeReviewDao,
-                        { pg, ar, call ->
-                            call.respondHtml { layout(this, ArticlePage(pg, ar, messages, urlOfPage)) }
+                        { idx, ar, ars, call ->
+                            call.respondHtml { layout(this, ArticlePage(idx, ar, ars, language, pageLink)) }
                         },
                         ChapterHandler(
                                 pageDao,
                                 tree, layout,
                                 { idx, tr, crs, chp, chpt, prev, next ->
-                                    ChapterPage(idx, tr, crs, chp, chpt, prev, next, pageLink, courseLink, urlOfChapter, urlOfLesson, urlOfTask, messages)
+                                    ChapterPage(idx, tr, crs, chp, chpt, prev, next, pageLink, courseLink, urlOfChapter, urlOfLesson, urlOfTask, language)
                                 }
                         ),
-                        { page, review, call -> call.respondHtml { layout(this, CodeReviewDetailsPage(page, review, messages, urlOfPage)) } }
+                        { idx, cr, review, call -> call.respondHtml { layout(this, CodeReviewDetailsPage(idx, cr, review, pageLink)) } }
                 )
 
         val route3 =
@@ -154,14 +153,16 @@ object JavaneseServer {
                         tree,
                         LessonHandler(
                                 courseDao, chapterDao, lessonDao, pageDao, layout,
-                                { idx, tr, crs, chp, l, lt, pr, nx -> LessonPage(idx, tr, crs, chp, l, lt, pr, nx, config.exposedStaticDir, pageLink, courseLink, chapterLink, urlOfLesson, messages) }
+                                { idx, tr, crs, chp, l, lt, pr, nx ->
+                                    LessonPage(idx, tr, crs, chp, l, lt, pr, nx, config.exposedStaticDir, pageLink, courseLink, chapterLink, urlOfLesson, language)
+                                }
                         )
                 )
 
         val errorHandler: suspend (ApplicationCall) -> Unit = { call ->
             val status = call.response.status()!!
             call.respondHtml(status) {
-                layout(this, ErrorPage(messages, status.value, status.description))
+                layout(this, ErrorPage(language, status.value, status.description))
             }
         }
 

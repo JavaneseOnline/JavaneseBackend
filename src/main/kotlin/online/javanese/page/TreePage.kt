@@ -1,17 +1,19 @@
 package online.javanese.page
 
 import kotlinx.html.*
+import online.javanese.locale.Language
 import online.javanese.model.*
-import java.util.*
 
 class TreePage(
+        private val indexPage: Page,
         private val page: Page,
         private val courses: List<CourseTree>,
-        private val messages: Properties,
+        private val language: Language,
         private val urlOfCourse: (CourseTree) -> String,
         private val urlOfChapter: (ChapterTree) -> String,
         private val urlOfLesson: (LessonTree) -> String,
-        private val urlOfTask: (TaskTree) -> String
+        private val urlOfTask: (TaskTree) -> String,
+        private val linkToPage: Link<Page>
 ): Layout.Page {
 
     override val meta: Meta get() = page.meta
@@ -22,7 +24,7 @@ class TreePage(
         contentCardDiv {
             nav {
                 a(href = "/") {
-                    +messages.getProperty("index.title")
+                    linkToPage.insert(this, indexPage)
                 }
             }
 
@@ -36,8 +38,8 @@ class TreePage(
 
             tabs {
                 tabBar {
-                    tabLink("lessons", messages.getProperty("tree.tab.lessons"), true)
-                    tabLink("tasks", messages.getProperty("tree.tab.tasks"))
+                    tabLink("lessons", language.lessonsTreeTab, true)
+                    tabLink("tasks", language.tasksTreeTab)
                 }
 
                 tabPanelNav("lessons", true) {

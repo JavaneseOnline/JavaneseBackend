@@ -1,16 +1,16 @@
 package online.javanese.page
 
 import kotlinx.html.*
+import online.javanese.locale.Language
 import online.javanese.model.Meta
-import java.util.*
 
 class ErrorPage(
-        private val messages: Properties,
+        private val language: Language,
         private val statusCode: Int,
         reason: String
 ) : Layout.Page {
 
-    private val reason = messages.getProperty("error.$statusCode.reason", reason)
+    private val reason = language.httpErrors[statusCode] ?: reason
 
     override val meta: Meta = Meta(
             reason,
@@ -23,12 +23,12 @@ class ErrorPage(
     override fun bodyMarkup(body: BODY) = with(body) {
         contentCardDiv {
             nav {
-                a(href ="/", titleAndText = messages.getProperty("index.title"))
+                a(href ="/", titleAndText = language.siteTitle)
             }
 
             main {
                 h1(classes = "content-padding-v") {
-                    +messages.getProperty("error")
+                    +language.error
                     +" "
                     +statusCode.toString()
                 }

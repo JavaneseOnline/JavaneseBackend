@@ -1,8 +1,8 @@
 package online.javanese.page
 
 import kotlinx.html.*
+import online.javanese.locale.Language
 import online.javanese.model.*
-import java.util.*
 
 class LessonPage(
         private val index: Page,
@@ -18,7 +18,7 @@ class LessonPage(
         private val courseLink: Link<Course.BasicInfo>,
         private val chapterLink: Link<Pair<Course.BasicInfo, Chapter.BasicInfo>>,
         private val urlOfLesson: (LessonTree) -> String,
-        private val messages: Properties
+        private val language: Language
 ) : Layout.Page {
 
     override val meta: Meta get() = lesson.meta
@@ -73,8 +73,8 @@ class LessonPage(
             }
 
             prevNextPane(
-                    previous, next, urlOfLesson, LessonTree::linkText,
-                    messages.getProperty("lesson.previous"), messages.getProperty("lesson.next")
+                    previous, next, urlOfLesson, language.previousLesson,
+                    language.nextLesson
             )
         }
 
@@ -83,9 +83,9 @@ class LessonPage(
 
             tabBar {
                 if (hasTasks) {
-                    tabLink(id = "tasks", text = messages.getProperty("lesson.tasks"), active = true)
+                    tabLink(id = "tasks", text = language.lessonTasks, active = true)
                 }
-                tabLink(id = "comments", text = messages.getProperty("lesson.comments"), active = !hasTasks)
+                tabLink(id = "comments", text = language.lessonComments, active = !hasTasks)
             }
 
             if (hasTasks) {
@@ -115,13 +115,13 @@ class LessonPage(
                                         attributes["v-on:click"] = "run"
                                         attributes["v-bind:disabled"] = "running"
 
-                                        +messages.getProperty("sandbox.run")
+                                        +language.sandbox.frontendMessages.run
                                     }
 
                                     raisedMaterialButton(type = ButtonType.button, moreClasses = "content-margin") {
                                         attributes["v-on:click"] = "reportError"
 
-                                        +messages.getProperty("sandbox.reportError")
+                                        +language.sandbox.frontendMessages.reportError
                                     }
                                 }
 
@@ -164,39 +164,32 @@ class LessonPage(
             }
 
             prevNextPane(
-                    previous, next, urlOfLesson, LessonTree::linkText,
-                    messages.getProperty("lesson.previous"), messages.getProperty("lesson.next")
+                    previous, next, urlOfLesson, language.previousLesson,
+                    language.nextLesson
             )
         }
     }
 
     override fun scripts(body: BODY) = with(body) {
+
+        val msg = language.sandbox.frontendMessages
+
         materialDialog(id = "sandbox_reportError") {
             materialDialogTitle {
-                +messages.getProperty("sandbox.errorReport.caption")
+                +msg.reportError
             }
 
             // todo: URL as object
             form(action = "/task/report", method = FormMethod.post) {
-                attributes["data-success-message"] = messages.getProperty("sandbox.errorReport.successMessage")
-                attributes["data-error-message"] = messages.getProperty("sandbox.errorReport.errorMessage")
+                attributes["data-success-message"] = msg.errorReportedSuccessfully
+                attributes["data-error-message"] = msg.errorNotReported
 
                 materialDialogBody {
 
-                    radio(name = "errorKind", value = TaskErrorReport.ErrorKind.RightSolutionNotAccepted.name) {
-                        +messages.getProperty("sandbox.errorKind.rightSolutionNotAccepted")
-                    }
-
-                    radio(name = "errorKind", value = TaskErrorReport.ErrorKind.BadCondition.name) {
-                        +messages.getProperty("sandbox.errorKind.badCondition")
-                    }
-
-                    radio(name = "errorKind", value = TaskErrorReport.ErrorKind.InsufficientMaterial.name) {
-                        +messages.getProperty("sandbox.errorKind.insufficientMaterial")
-                    }
-
-                    radio(name = "errorKind", value = TaskErrorReport.ErrorKind.Other.name) {
-                        +messages.getProperty("sandbox.errorKind.other")
+                    TaskErrorReport.ErrorKind.values().forEach { kind ->
+                        radio(name = "errorKind", value = kind.name) {
+                            +msg.errorKind(kind)
+                        }
                     }
 
                     div(classes = "mdl-textfield mdl-js-textfield") {
@@ -206,7 +199,7 @@ class LessonPage(
                         }
                         label(classes = "mdl-textfield__label") {
                             for_ = "sandbox_errorReport_text"
-                            +messages.getProperty("sandbox.errorReport.text.placeholder")
+                            +msg.errorDescription
                         }
                     }
 
@@ -216,11 +209,11 @@ class LessonPage(
 
                 materialDialogActions {
                     materialButton(ButtonType.submit) {
-                        +messages.getProperty("sendButton")
+                        +language.sendButton
                     }
 
                     materialButton(ButtonType.button, moreClasses = "close") {
-                        +messages.getProperty("cancelButton")
+                        +language.cancelButton
                     }
                 }
             }
@@ -228,24 +221,28 @@ class LessonPage(
 
         script(src = "$static/sandbox/codemirror_clike_sandbox.min.js")
         script {
+            val rt = language.sandbox.runtimeMessages
+
             +"var sandboxLocale = {"
-            pair("exitCode", messages, "sandbox.exitCode")
-            pair("noRequiredVar", messages, "sandbox.varNotFound")
-            pair("noRequiredEq", messages, "sandbox.eqNotFound")
-            pair("illegalOutput", messages, "sandbox.illegalOutput")
-            pair("correctSolution", messages, "sandbox.correctSolution")
-            pair("notMatches", messages, "sandbox.notMatches")
-            pair("webSocketError", messages, "sandbox.webSocketError", false)
+            pair("compiling", rt.compiling)
+            pair("compiled", rt.compiled)
+            pair("exitCode", rt.exitCode)
+            pair("noRequiredVar", rt.varNotFound)
+            pair("noRequiredEq", rt.eqNotFound)
+            pair("illegalOutput", rt.illegalOutput)
+            pair("correctSolution", rt.correctSolution)
+            pair("notMatches", rt.notMatches)
+            pair("webSocketError", msg.webSocketError, false)
             +"};"
         }
     }
 
     @Suppress("NOTHING_TO_INLINE")
-    private inline fun SCRIPT.pair(key: String, messages: Properties, message: String, comma: Boolean = true) {
+    private inline fun SCRIPT.pair(key: String, message: String, comma: Boolean = true) {
         unsafe {
             +key
             +":'"
-            +messages.getProperty(message)
+            +message
             +"'"
             if (comma)
                 +","
