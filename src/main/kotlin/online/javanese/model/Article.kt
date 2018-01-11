@@ -12,8 +12,6 @@ class Article(
         val meta: Meta,
         val heading: String,
         val bodyMarkup: Html,
-        @Deprecated(message = "natural order changed")
-        val sortIndex: Int,
         val published: Boolean,
         val vkPostInfo: VkPostInfo?,
         val createdAt: LocalDateTime,
@@ -51,7 +49,6 @@ object ArticleTable : Table<Article, Uuid>("articles") {
 
     val Heading by headingCol(Article::heading)
     val BodyMarkup by col(Article::bodyMarkup, name = "bodyMarkup")
-    val SortIndex by sortIndexCol(Article::sortIndex)
     val Published by col(Article::published, name = "published")
 
     val VkPostId by col(Article::vkPostIdOrNull, name = "vkPostId")
@@ -80,7 +77,6 @@ object ArticleTable : Table<Article, Uuid>("articles") {
             ),
             heading = value of Heading,
             bodyMarkup = value of BodyMarkup,
-            sortIndex = value of SortIndex,
             published = value of Published,
             vkPostInfo = vkPostInfoOrNull(
                     vkPostId = value of VkPostId,
@@ -173,7 +169,6 @@ CREATE TABLE public.articles (
 	"metaKeywords" varchar(256) NOT NULL,
 	"heading" varchar(256) NOT NULL,
 	"bodyMarkup" text NOT NULL,
-	"sortIndex" int4 NOT NULL,
 	"published" bool NOT NULL,
 	"vkPostId" varchar(64) NOT NULL,
 	"vkPostHash" varchar(64) NOT NULL,
@@ -185,4 +180,5 @@ CREATE TABLE public.articles (
 WITH (
 	OIDS=FALSE
 ) ;
+CREATE UNIQUE INDEX articles_urlsegment_idx ON public.articles ("urlSegment") ;
  */

@@ -157,4 +157,5 @@ CREATE TABLE public.lessons (
 WITH (
 	OIDS=FALSE
 ) ;
+CREATE INDEX lessons_urlsegment_idx ON public.lessons ("urlSegment") ;
  */

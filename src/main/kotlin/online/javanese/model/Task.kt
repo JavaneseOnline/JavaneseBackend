@@ -179,4 +179,5 @@ CREATE TABLE public.tasks (
 WITH (
 	OIDS=FALSE
 ) ;
+CREATE INDEX tasks_urlsegment_idx ON public.tasks ("urlSegment") ;
  */

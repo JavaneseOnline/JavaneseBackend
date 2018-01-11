@@ -154,4 +154,5 @@ CREATE TABLE public.courses (
 WITH (
 	OIDS=FALSE
 ) ;
+CREATE UNIQUE INDEX courses_urlsegment_idx ON public.courses ("urlSegment") ;
  */

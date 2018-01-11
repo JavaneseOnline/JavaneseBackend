@@ -108,4 +108,5 @@ CREATE TABLE public.pages (
 WITH (
 	OIDS=FALSE
 ) ;
+CREATE UNIQUE INDEX pages_urlsegment_idx ON public.pages ("urlSegment") ;
  */

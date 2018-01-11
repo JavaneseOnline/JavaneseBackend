@@ -166,4 +166,5 @@ CREATE TABLE public.chapters (
 WITH (
 	OIDS=FALSE
 ) ;
+CREATE INDEX chapters_urlsegment_idx ON public.chapters ("urlSegment") ;
  */

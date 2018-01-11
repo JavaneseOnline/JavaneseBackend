@@ -89,7 +89,6 @@ fun JavaneseAdminPanel(
                             getTitleOf = ArticleTable.LinkText.property,
                             transformColumn = { when (it) {
                                 ArticleTable.BodyMarkup -> TextCol(ArticleTable.BodyMarkup, createControlFactory = online.javanese.krud.template.control.CodeMirror.Html)
-                                ArticleTable.SortIndex -> TextCol(ArticleTable.SortIndex, createControlFactory = online.javanese.krud.template.control.TextInput.Editable, editControlFactory = online.javanese.krud.template.control.TextInput.ReadOnly)
                                 else -> KweryTable.TransformKweryColumn<Article>()(it)
                             } },
                             fallbackSource = uuidGenerator
