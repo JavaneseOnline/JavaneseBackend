@@ -14,6 +14,7 @@ interface Layout : (HTML, Layout.Page) -> Unit {
     }
 
 }
+
 class MainLayout(
         private val static: String,
         private val language: Language
@@ -31,7 +32,7 @@ class MainLayout(
             // fonts & icons
             styleLink("//fonts.googleapis.com/css?family=Tenor+Sans%7CPT+Sans+Caption%7CMaterial+Icons")
             // mdl, dialog polyfill, highlight darkula, custom styles, sandbox, trace
-            styleLink("$static/css/main.min.css")
+            styleLink("$static/main.min.css")
 
             link(rel = "alternate", type = "application/rss+xml", href = "/articles.rss") {
                 attributes["title"] = "Статьи"
@@ -54,7 +55,7 @@ class MainLayout(
 
             // Vue.js, Zepto, Material Design Lite, dialog polyfill, highlight.js, trace, scroll to top,
             // blur link on click, mdl tabs fix to work with url #fragment, async form handling
-            script(src = "$static/js/vue_zepto_mdl_dialog_highlight_trace_scroll_unfocus_tabs_form.min.js")
+            script(src = "$static/vue_zepto_mdl_dialog_highlight_trace_scroll_unfocus_tabs_form.min.js")
 
             div(classes = "mdl-js-snackbar mdl-snackbar") {
                 id = "toast-container"

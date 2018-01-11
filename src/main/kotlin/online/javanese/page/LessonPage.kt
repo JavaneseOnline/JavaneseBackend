@@ -24,7 +24,7 @@ class LessonPage(
     override val meta: Meta get() = lesson.meta
 
     override fun additionalHeadMarkup(head: HEAD) = with(head) {
-        styleLink("$static/sandbox/codemirror_ambiance.min.css")
+        styleLink("$static/codemirror_ambiance.min.css")
     }
 
     override fun bodyMarkup(body: BODY) = with(body) {
@@ -213,7 +213,7 @@ class LessonPage(
             }
         }
 
-        script(src = "$static/sandbox/codemirror_clike_sandbox.min.js")
+        script(src = "$static/codemirror_clike_sandbox.min.js")
         script {
             val rt = language.sandbox.runtimeMessages
 

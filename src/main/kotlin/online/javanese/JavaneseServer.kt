@@ -6,8 +6,6 @@ import io.ktor.application.install
 import io.ktor.auth.UserIdPrincipal
 import io.ktor.auth.authentication
 import io.ktor.auth.basicAuthentication
-import io.ktor.content.resources
-import io.ktor.content.static
 import io.ktor.features.StatusPages
 import io.ktor.html.respondHtml
 import io.ktor.http.HttpStatusCode
@@ -165,6 +163,7 @@ object JavaneseServer {
 
         val articleRssHandler =
                 ArticleRssHandler(pageDao, articleDao, pageLink, articleLink, config.siteUrl, language.articlesFeedInfo)
+        // TODO: RSS for code reviews; RSS icon on index
 
         val taskErrorReportDao = TaskErrorReportDao(session)
 
@@ -225,10 +224,6 @@ object JavaneseServer {
                 get("/robots.txt", robots)
 
                 webSocket(path = "/sandbox/ws", handler = sandboxWebSocketHandler)
-
-                static(config.exposedStaticDir) {
-                    resources("static")
-                }
 
                 route("/${config.adminRoute}/") {
                     installAdmin(JavaneseAdminPanel(

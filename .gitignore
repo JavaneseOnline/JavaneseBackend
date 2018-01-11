@@ -45,3 +45,4 @@ atlassian-ide-plugin.xml
 local.properties
 .gradle/
 build/
+etc/static-prepared/
