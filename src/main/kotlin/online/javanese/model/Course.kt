@@ -23,15 +23,6 @@ class Course(
 
 }
 
-class CourseTree internal constructor(
-        val id: Uuid,
-        val urlPathComponent: String,
-        val linkText: String,
-        chapters: (CourseTree) -> List<ChapterTree>
-) {
-    val chapters = chapters(this)
-}
-
 object CourseTable : Table<Course, Uuid>("courses"), VersionedWithTimestamp {
 
     val Id by idCol(Course.BasicInfo::id, Course::basicInfo)
@@ -66,6 +57,7 @@ object CourseTable : Table<Course, Uuid>("courses"), VersionedWithTimestamp {
 
 }
 
+
 object BasicCourseInfoTable : Table<Course.BasicInfo, Uuid>("courses") {
 
     val Id by idCol(Course.BasicInfo::id)
@@ -82,12 +74,8 @@ object BasicCourseInfoTable : Table<Course.BasicInfo, Uuid>("courses") {
 
 }
 
-class CourseDao(
-        session: Session,
-        private val chapterDao: ChapterDao
-) : AbstractDao<Course, Uuid>(session, CourseTable, CourseTable.Id.property) {
 
-//    private val baseDao: Dao<Course, Uuid> = object : AbstractDao<Course, Uuid>(session, CourseTable, { it.basicInfo.id }) {}
+class CourseDao(session: Session) : AbstractDao<Course, Uuid>(session, CourseTable, CourseTable.Id.property) {
 
     private val tableName = CourseTable.name
 
@@ -100,22 +88,12 @@ class CourseDao(
     override val defaultOrder: Map<Column<Course, *>, OrderByDirection> =
             mapOf(CourseTable.SortIndex to OrderByDirection.ASC)
 
-    /*fun findById(id: Uuid, columns: Set<Column<Course, *>>): Course? =
-            session.select(
-                    sql = """SELECT * FROM $tableName WHERE "id" = :id""",
-                    parameters = mapOf("id" to id),
-                    mapper = CourseTable.rowMapper()
-            ).firstOrNull()*/
 
-    fun findAllBasicSortedBySortIndex(): List<Course.BasicInfo> =
+    fun findAllBasicSorted(): List<Course.BasicInfo> =
             session.select(
                     sql = """SELECT $basicInfoColumns FROM $tableName ORDER BY "$sortIndexColName" ASC""",
                     mapper = BasicCourseInfoTable.rowMapper()
             )
-
-    fun findTreeSortedBySortIndex(): List<CourseTree> =
-            findAllBasicSortedBySortIndex()
-                    .map { toTree(it) }
 
     fun findBasicById(id: Uuid): Course.BasicInfo? =
             session.select(
@@ -123,16 +101,6 @@ class CourseDao(
                     parameters = mapOf("id" to id),
                     mapper = BasicCourseInfoTable.rowMapper()
             ).singleOrNull()
-
-    fun findTree(courseId: Uuid): CourseTree? =
-            findBasicById(courseId)
-                    ?.let { toTree(it) }
-
-    /*fun findAllSortedBySortIndex() =
-            session.select(
-                    sql = """SELECT * FROM $tableName ORDER BY "$sortIndexColName" ASC""",
-                    mapper = CourseTable.rowMapper()
-            )*/
 
     fun findById(id: Uuid): Course? =
             session.select(
@@ -148,28 +116,26 @@ class CourseDao(
                     mapper = CourseTable.rowMapper()
             ).singleOrNull()
 
-    fun findPrevious(course: Course): Course.BasicInfo? =
+    fun findBasicByUrlComponent(component: String): Course.BasicInfo? =
             session.select(
-                    sql = """SELECT $basicInfoColumns FROM courses WHERE "$sortIndexColName" < :index ORDER BY "$sortIndexColName" DESC LIMIT 1""",
-                    parameters = mapOf("index" to course.sortIndex),
+                    sql = """SELECT $basicInfoColumns FROM $tableName WHERE "$urlComponentColName" = :component LIMIT 1""",
+                    parameters = mapOf("component" to component),
                     mapper = BasicCourseInfoTable.rowMapper()
             ).singleOrNull()
 
-    fun findNext(course: Course): Course.BasicInfo? =
+    fun findPreviousAndNextBasic(course: Course): Pair<Course.BasicInfo?, Course.BasicInfo?> =
             session.select(
-                    sql = """SELECT $basicInfoColumns FROM courses WHERE "$sortIndexColName" > :index ORDER BY "$sortIndexColName" ASC LIMIT 1""",
+                    sql = """SELECT $basicInfoColumns FROM $tableName WHERE "$sortIndexColName" < :index ORDER BY "$sortIndexColName" DESC LIMIT 1""",
+                    parameters = mapOf("index" to course.sortIndex),
+                    mapper = BasicCourseInfoTable.rowMapper()
+            ).singleOrNull() to session.select(
+                    sql = """SELECT $basicInfoColumns FROM $tableName WHERE "$sortIndexColName" > :index ORDER BY "$sortIndexColName" ASC LIMIT 1""",
                     parameters = mapOf("index" to course.sortIndex),
                     mapper = BasicCourseInfoTable.rowMapper()
             ).singleOrNull()
-
-    private fun toTree(info: Course.BasicInfo): CourseTree = CourseTree(
-            id = info.id,
-            urlPathComponent = info.urlPathComponent,
-            linkText = info.linkText,
-            chapters = chapterDao::findTreeSortedBySortIndex
-    )
 
 }
+
 
 /*
 CREATE TABLE public.courses (

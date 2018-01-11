@@ -4,20 +4,20 @@ import kotlinx.html.*
 import online.javanese.locale.Language
 import online.javanese.model.*
 
+
 class LessonPage(
         private val index: Page,
         private val treePage: Page,
         private val course: Course.BasicInfo,
         private val chapter: Chapter.BasicInfo,
         private val lesson: Lesson,
-        private val lessonTree: LessonTree,
-        private val previous: LessonTree?,
-        private val next: LessonTree?,
+        private val tasks: List<Task>,
+        private val previousAndNext: Pair<Lesson.BasicInfo?, Lesson.BasicInfo?>,
         private val static: String,
         private val pageLink: Link<Page>,
         private val courseLink: Link<Course.BasicInfo>,
-        private val chapterLink: Link<Pair<Course.BasicInfo, Chapter.BasicInfo>>,
-        private val urlOfLesson: (LessonTree) -> String,
+        private val chapterLink: Link<Chapter.BasicInfo>,
+        private val lessonLink: Link<Lesson.BasicInfo>,
         private val language: Language
 ) : Layout.Page {
 
@@ -36,7 +36,7 @@ class LessonPage(
                 +" / "
                 courseLink.insert(this, course)
                 +" / "
-                chapterLink.insert(this, course to chapter)
+                chapterLink.insert(this, chapter)
             }
 
             h1(classes = "content-padding-v") {
@@ -72,14 +72,11 @@ class LessonPage(
                 }
             }
 
-            prevNextPane(
-                    previous, next, urlOfLesson, language.previousLesson,
-                    language.nextLesson
-            )
+            prevNextPane(previousAndNext, lessonLink, language.previousLesson, language.nextLesson)
         }
 
         cardWithTabs {
-            val hasTasks = !lessonTree.tasks.isEmpty()
+            val hasTasks = !tasks.isEmpty()
 
             tabBar {
                 if (hasTasks) {
@@ -90,25 +87,25 @@ class LessonPage(
 
             if (hasTasks) {
                 tabPanelSection(id = "tasks", active = true, moreClasses = "no-pad") {
-                    lessonTree.tasks.forEach { task ->
+                    tasks.forEach { task ->
                         section(classes = "content") {
                             h3(classes = "no-pad-top") {
-                                id = task.urlPathComponent
+                                id = task.basicInfo.urlPathComponent
 
-                                +task.task.heading
+                                +task.heading
                             }
 
                             unsafe {
-                                +task.task.condition
+                                +task.condition
                             }
 
                             div(classes = "sandbox no-pad mdl-grid mdl-grid--no-spacing") {
-                                attributes["data-task"] = task.id.toString()
+                                attributes["data-task"] = task.basicInfo.id.toString()
 
                                 div(classes = "mdl-cell mdl-cell--12-col-tablet mdl-cell--7-col") {
 
                                     textArea(classes = "editor") {
-                                        +task.task.technicalInfo.initialCode
+                                        +task.technicalInfo.initialCode
                                     }
 
                                     colouredRaisedMaterialButton(type = ButtonType.submit, moreClasses = "content-margin m-r-0") {
@@ -135,7 +132,7 @@ class LessonPage(
                                         }
                                     }
 
-                                    if (task.task.technicalInfo.allowSystemIn) {
+                                    if (task.technicalInfo.allowSystemIn) {
                                         form {
                                             attributes["v-on:submit"] = "send"
                                             input(type = InputType.text, classes = "cin") {
@@ -163,10 +160,7 @@ class LessonPage(
                 vkComments(lesson.basicInfo.id.toString(), init = false)
             }
 
-            prevNextPane(
-                    previous, next, urlOfLesson, language.previousLesson,
-                    language.nextLesson
-            )
+            prevNextPane(previousAndNext, lessonLink, language.previousLesson, language.nextLesson)
         }
     }
 

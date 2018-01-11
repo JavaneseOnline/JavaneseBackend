@@ -7,25 +7,23 @@ import online.javanese.page.Layout
 
 
 fun LessonHandler(
-        courseDao: CourseDao, chapterDao: ChapterDao, lessonDao: LessonDao,
+        courseDao: CourseDao, chapterDao: ChapterDao, lessonDao: LessonDao, taskDao: TaskDao,
         pageDao: PageDao,
         layout: Layout,
-        lessonPage: (index: Page, tree: Page, Course.BasicInfo, Chapter.BasicInfo, Lesson, LessonTree, prev: LessonTree?, next: LessonTree?) -> Layout.Page
-): suspend (CourseTree, ChapterTree, LessonTree, ApplicationCall) -> Unit = { courseTr, chapterTr, lessonTr, call ->
+        lessonPage: (index: Page, tree: Page, Course.BasicInfo, Chapter.BasicInfo, Lesson, List<Task>, prevNext: Pair<Lesson.BasicInfo?, Lesson.BasicInfo?>) -> Layout.Page
+): suspend (Course.BasicInfo, Chapter.BasicInfo, Lesson, ApplicationCall) -> Unit = { courseTr, chapterTr, lesson, call ->
 
     val course = courseDao.findBasicById(courseTr.id)!!
     val chapter = chapterDao.findBasicById(chapterTr.id)!!
-    val lesson = lessonDao.findById(lessonTr.id)!!
 
     val index = pageDao.findByMagic(Page.Magic.Index)!!
     val treePg = pageDao.findByMagic(Page.Magic.Tree)!!
-    val lessons = lessonTr.chapter.lessons
-    val idx = lessons.indexOf(lessonTr)
-    val prev = (idx - 1).let { if (it < 0) null else lessons[it] }
-    val next = (idx + 1).let { if (it < lessons.size) lessons[it] else null }
+
+    val tasks = taskDao.findForLessonSorted(lesson.basicInfo.id)
+    val prevNext = lessonDao.findPreviousAndNext(lesson)
 
     call.respondHtml {
-        layout(this, lessonPage(index, treePg, course, chapter, lesson, lessonTr, prev, next))
+        layout(this, lessonPage(index, treePg, course, chapter, lesson, tasks, prevNext))
     }
 
 }

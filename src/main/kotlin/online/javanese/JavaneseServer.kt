@@ -58,77 +58,75 @@ object JavaneseServer {
         val articleDao = ArticleDao(session)
 
         val taskDao = TaskDao(session)
-        val lessonDao = LessonDao(session, taskDao)
-        val chapterDao = ChapterDao(session, lessonDao)
-        val courseDao = CourseDao(session, chapterDao)
+        val lessonDao = LessonDao(session)
+        val chapterDao = ChapterDao(session)
+        val courseDao = CourseDao(session)
         val codeReviewDao = CodeReviewDao(session)
 
-        // fixme: deprecated objects start
-        val tree = courseDao.findTreeSortedBySortIndex() // fixme: may not fetch whole tree
-        // (after removing Thymeleaf this refactoring would be easy)
 
-        val urlOfPage = { p: Page ->
-            "/${p.urlPathComponent.encodeForUrl()}/"
-        }
+        val pageLink =
+                IndexOrSingleSegmDirLink(
+                        PageTable.UrlPathComponent.property,
+                        PageTable.MetaTitle.property
+                )
+        val courseLink =
+                SingleSegmentDirLink(
+                        BasicCourseInfoTable.UrlPathComponent.property,
+                        BasicCourseInfoTable.LinkText.property
+                )
+        val chapterLink =
+                TwoSegmentDirLink(
+                        { courseDao.findBasicById(it.courseId)!!.urlPathComponent },
+                        BasicChapterInfoTable.UrlPathComponent.property,
+                        BasicChapterInfoTable.LinkText.property
+                )
+        val lessonLink =
+                ThreeSegmentDirLink( // fixme: round-trippng
+                        { courseDao.findBasicById(chapterDao.findBasicById(it.chapterId)!!.courseId)!!.urlPathComponent },
+                        { chapterDao.findBasicById(it.chapterId)!!.urlPathComponent },
+                        BasicLessonInfoTable.UrlPathComponent.property,
+                        BasicLessonInfoTable.LinkText.property
+                )
+        val taskLink =
+                ThreeSegmentDirLinkWithFragment(  // fixme: so ugly round-tripping
+                        { courseDao.findBasicById(chapterDao.findBasicById(lessonDao.findBasicById(it.lessonId)!!.chapterId)!!.courseId)!!.urlPathComponent },
+                        { chapterDao.findBasicById(lessonDao.findBasicById(it.lessonId)!!.chapterId)!!.urlPathComponent },
+                        { lessonDao.findBasicById(it.lessonId)!!.urlPathComponent },
+                        BasicTaskInfoTable.UrlPathComponent.property,
+                        BasicTaskInfoTable.LinkText.property
+                )
+        val articleLink =
+                TwoSegmentDirLink(
+                        { pageDao.findByMagic(Page.Magic.Articles)!!.urlPathComponent },
+                        BasicArticleInfoTable.UrlPathComponent.property,
+                        BasicArticleInfoTable.LinkText.property
+                )
+        val codeReviewLink =
+                TwoSegmentDirLink(
+                        { pageDao.findByMagic(Page.Magic.CodeReview)!!.urlPathComponent },
+                        CodeReviewTable.UrlSegment.property,
+                        CodeReviewTable.MetaTitle.property
+                )
 
-        val urlOfCourse = { c: Course.BasicInfo ->
-            "/${c.urlPathComponent.encodeForUrl()}/"
-        }
-        val urlOfCourseTree = { c: CourseTree ->
-            "/${c.urlPathComponent.encodeForUrl()}/"
-        }
-
-        val urlOfChapter = { ch: ChapterTree ->
-            "/${ch.course.urlPathComponent.encodeForUrl()}/${ch.urlPathComponent.encodeForUrl()}/"
-        }
-
-        val urlOfLesson = { l: LessonTree ->
-            val ch = l.chapter
-            val co = ch.course
-            "/${co.urlPathComponent.encodeForUrl()}/${ch.urlPathComponent.encodeForUrl()}/${l.urlPathComponent.encodeForUrl()}/"
-        }
-
-        val urlOfTask = { t: TaskTree ->
-            val l = t.lesson
-            val ch = l.chapter
-            val co = ch.course
-            "/${co.urlPathComponent.encodeForUrl()}/${ch.urlPathComponent.encodeForUrl()}/${l.urlPathComponent.encodeForUrl()}/#${t.urlPathComponent.encodeForUrl()}"
-        }
-
-        val urlOfArticle = { p: Page, a: Article.BasicInfo ->
-            "/${p.urlPathComponent.encodeForUrl()}/${a.urlPathComponent.encodeForUrl()}/"
-        }
-
-        val urlOfCodeReview = { p: Page, r: CodeReview ->
-            "/${p.urlPathComponent.encodeForUrl()}/${r.urlSegment.encodeForUrl()}/"
-        }
-        // fixme: deprecated objects end
 
         val language = Russian
 
         val layout = MainLayout(config.exposedStaticDir, language)
-
-        val pageLink =
-                IndexOrSingleSegmDirLink(PageTable.UrlPathComponent.property, PageTable.MetaTitle.property)
-        val courseLink =
-                SingleSegmentDirLink(BasicCourseInfoTable.UrlPathComponent.property, BasicCourseInfoTable.LinkText.property)
-        val chapterLink =
-                TwoSegmentDirLink(BasicCourseInfoTable.UrlPathComponent.property, BasicChapterInfoTable.UrlPathComponent.property, { _, ch -> ch.linkText })
 
         val route1 =
                 OnePartRoute(
                         pageDao,
                         courseDao,
                         PageHandler(
-                                pageDao, courseDao, articleDao, layout,
-                                { IndexPage(it) },
-                                { idx, tr, cs -> TreePage(idx, tr, cs, language, urlOfCourseTree, urlOfChapter, urlOfLesson, urlOfTask, pageLink) },
-                                { idx, ar, articles -> ArticlesPage(idx, ar, articles, config.exposedStaticDir, urlOfArticle, pageLink) },
+                                pageDao, courseDao, chapterDao, lessonDao, taskDao, articleDao, layout,
+                                ::IndexPage,
+                                { idx, tr, cs -> TreePage(idx, tr, cs, language, pageLink, courseLink, chapterLink, lessonLink, taskLink) },
+                                { idx, ar, articles -> ArticlesPage(idx, ar, articles, config.exposedStaticDir, pageLink, articleLink) },
                                 { idx, cr -> CodeReviewPage(idx, cr, codeReviewDao.findAll(), pageLink) }
                         ),
                         CourseHandler(
-                                pageDao, courseDao, layout,
-                                { idx, tr, c, ct, p, n -> CoursePage(idx, tr, c, ct, p, n, pageLink, urlOfCourse, urlOfChapter, urlOfLesson, urlOfTask, language) }
+                                pageDao, courseDao, chapterDao, lessonDao, taskDao, layout,
+                                { idx, tr, c, ct, pn -> CoursePage(idx, tr, c, ct, pn, pageLink, courseLink, chapterLink, lessonLink, taskLink, language) }
                         )
                 )
 
@@ -139,10 +137,9 @@ object JavaneseServer {
                             call.respondHtml { layout(this, ArticlePage(idx, ar, ars, language, pageLink)) }
                         },
                         ChapterHandler(
-                                pageDao,
-                                tree, layout,
-                                { idx, tr, crs, chp, chpt, prev, next ->
-                                    ChapterPage(idx, tr, crs, chp, chpt, prev, next, pageLink, courseLink, urlOfChapter, urlOfLesson, urlOfTask, language)
+                                pageDao, chapterDao, lessonDao, taskDao, layout,
+                                { idx, tr, crs, chp, chpt, prevNext ->
+                                    ChapterPage(idx, tr, crs, chp, chpt, prevNext, pageLink, courseLink, chapterLink, lessonLink, taskLink, language)
                                 }
                         ),
                         { idx, cr, review, call -> call.respondHtml { layout(this, CodeReviewDetailsPage(idx, cr, review, pageLink)) } }
@@ -150,11 +147,11 @@ object JavaneseServer {
 
         val route3 =
                 ThreePartsRoute(
-                        tree,
+                        courseDao, chapterDao, lessonDao,
                         LessonHandler(
-                                courseDao, chapterDao, lessonDao, pageDao, layout,
-                                { idx, tr, crs, chp, l, lt, pr, nx ->
-                                    LessonPage(idx, tr, crs, chp, l, lt, pr, nx, config.exposedStaticDir, pageLink, courseLink, chapterLink, urlOfLesson, language)
+                                courseDao, chapterDao, lessonDao, taskDao, pageDao, layout,
+                                { idx, tr, crs, chp, l, lt, prNx ->
+                                    LessonPage(idx, tr, crs, chp, l, lt, prNx, config.exposedStaticDir, pageLink, courseLink, chapterLink, lessonLink, language)
                                 }
                         )
                 )
@@ -180,8 +177,8 @@ object JavaneseServer {
 
         val sitemap =
                 SitemapHandler(config.siteUrl,
-                        urlOfPage, urlOfCourseTree, urlOfChapter, urlOfLesson, urlOfArticle, urlOfCodeReview,
-                        tree, pageDao, courseDao, chapterDao, lessonDao, articleDao, codeReviewDao
+                        pageLink, courseLink, chapterLink, lessonLink, articleLink, codeReviewLink,
+                        pageDao, courseDao, chapterDao, lessonDao, articleDao, codeReviewDao
                 )
 
         val robots =

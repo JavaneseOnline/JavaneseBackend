@@ -1,19 +1,21 @@
 package online.javanese.page
 
 import kotlinx.html.*
+import online.javanese.handler.Courses
 import online.javanese.locale.Language
 import online.javanese.model.*
+
 
 class TreePage(
         private val indexPage: Page,
         private val page: Page,
-        private val courses: List<CourseTree>,
+        private val courses: Courses,
         private val language: Language,
-        private val urlOfCourse: (CourseTree) -> String,
-        private val urlOfChapter: (ChapterTree) -> String,
-        private val urlOfLesson: (LessonTree) -> String,
-        private val urlOfTask: (TaskTree) -> String,
-        private val linkToPage: Link<Page>
+        private val pageLink: Link<Page>,
+        private val courseLink: Link<Course.BasicInfo>,
+        private val chapterLink: Link<Chapter.BasicInfo>,
+        private val lessonLink: Link<Lesson.BasicInfo>,
+        private val taskLink: Link<Task.BasicInfo>
 ): Layout.Page {
 
     override val meta: Meta get() = page.meta
@@ -23,9 +25,7 @@ class TreePage(
     override fun bodyMarkup(body: BODY) = with(body) {
         contentCardDiv {
             nav {
-                a(href = "/") {
-                    linkToPage.insert(this, indexPage)
-                }
+                pageLink.insert(this, indexPage)
             }
 
             h1(classes = "content-padding-v") {
@@ -43,11 +43,11 @@ class TreePage(
                 }
 
                 tabPanelNav("lessons", true) {
-                    coursesTree(courses, urlOfCourse, urlOfChapter, urlOfLesson, urlOfTask, TreeMode.Lessons)
+                    coursesTree(courses, courseLink, chapterLink, lessonLink, taskLink, TreeMode.Lessons)
                 }
 
                 tabPanelNav("tasks") {
-                    coursesTree(courses, urlOfCourse, urlOfChapter, urlOfLesson, urlOfTask, TreeMode.Tasks)
+                    coursesTree(courses, courseLink, chapterLink, lessonLink, taskLink, TreeMode.Tasks)
                 }
             }
         }

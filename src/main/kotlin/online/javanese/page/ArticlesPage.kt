@@ -5,13 +5,14 @@ import online.javanese.model.Article
 import online.javanese.model.Meta
 import online.javanese.model.Page
 
+
 class ArticlesPage(
         private val indexPage: Page,
         private val page: Page,
         private val articles: List<Article.BasicInfo>,
         private val static: String,
-        private val urlOfArticle: (Page, Article.BasicInfo) -> String,
-        private val pageLink: Link<Page>
+        private val pageLink: Link<Page>,
+        private val articleLink: Link<Article.BasicInfo>
 ) : Layout.Page {
 
     override val meta: Meta get() = page.meta
@@ -41,7 +42,7 @@ class ArticlesPage(
                             if (article.pinned)
                                 img(src = "$static/pin.png")
 
-                            a(href = urlOfArticle(page, article), titleAndText = article.linkText)
+                            articleLink.insert(this, article)
                         }
                     }
                 }

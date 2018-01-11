@@ -10,7 +10,7 @@ import online.javanese.krud.kwery.Uuid
 import java.time.LocalDateTime
 
 
-class CodeReview(
+class CodeReview( // todo: introduce BasicInfo
         val id: Uuid,
         val urlSegment: String,
         val meta: Meta,
@@ -21,37 +21,19 @@ class CodeReview(
         val lastModified: LocalDateTime
 )
 
+
 object CodeReviewTable : Table<CodeReview, Uuid>("codeReviews") {
 
-    val Id
-            by idCol(CodeReview::id)
-
-    val UrlSegment
-            by urlSegmentCol(CodeReview::urlSegment)
-
-    val MetaTitle
-            by metaTitleCol(CodeReview::meta)
-
-    val MetaDescription
-            by metaDescriptionCol(CodeReview::meta)
-
-    val MetaKeywords
-            by metaKeywordsCol(CodeReview::meta)
-
-    val SenderName
-            by col(CodeReview::senderName, name = "senderName")
-
-    val ProblemStatement
-            by col(CodeReview::problemStatement, name = "problemStatement")
-
-    val ReviewMarkup
-            by col(CodeReview::reviewMarkup, name = "review")
-
-    val DatePublished
-            by col(CodeReview::datePublished, name = "datePublished")
-
-    val LastModified
-            by col(CodeReview::lastModified, name = "lastModified")
+    val Id by idCol(CodeReview::id)
+    val UrlSegment by urlSegmentCol(CodeReview::urlSegment)
+    val MetaTitle by metaTitleCol(CodeReview::meta)
+    val MetaDescription by metaDescriptionCol(CodeReview::meta)
+    val MetaKeywords by metaKeywordsCol(CodeReview::meta)
+    val SenderName by col(CodeReview::senderName, name = "senderName")
+    val ProblemStatement by col(CodeReview::problemStatement, name = "problemStatement")
+    val ReviewMarkup by col(CodeReview::reviewMarkup, name = "review")
+    val DatePublished by col(CodeReview::datePublished, name = "datePublished")
+    val LastModified by col(CodeReview::lastModified, name = "lastModified")
 
     override fun idColumns(id: Uuid): Set<Pair<Column<CodeReview, *>, *>> =
             setOf(Id of id)
@@ -73,22 +55,20 @@ object CodeReviewTable : Table<CodeReview, Uuid>("codeReviews") {
 
 }
 
+
 class CodeReviewDao(
         session: Session
 ) : AbstractDao<CodeReview, Uuid>(session, CodeReviewTable, CodeReviewTable.Id.property) {
 
     fun findByUrlSegment(segment: String): CodeReview? =
             session.select(
-                    sql = """SELECT *
-                        |FROM "${table.name}"
-                        |WHERE "${CodeReviewTable.UrlSegment.name}" = :segment
-                        |LIMIT 1""".trimMargin(),
-
+                    sql = """SELECT * FROM "${table.name}" WHERE "${CodeReviewTable.UrlSegment.name}" = :segment LIMIT 1""",
                     parameters = mapOf("segment" to segment),
                     mapper = CodeReviewTable.rowMapper()
             ).firstOrNull()
 
 }
+
 
 /*
 CREATE TABLE public."codeReviews" (

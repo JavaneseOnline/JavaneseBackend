@@ -40,17 +40,6 @@ class Task(
 
 }
 
-class TaskTree internal constructor(
-        val id: Uuid,
-        val lessonId: Uuid,
-        val lesson: LessonTree,
-        val linkText: String,
-        val urlPathComponent: String,
-        task: (Uuid) -> Task
-) {
-    val task by lazy { task(id) }
-}
-
 object TaskTable : Table<Task, Uuid>("tasks") {
 
     val Id by idCol(Task.BasicInfo::id, Task::basicInfo)
@@ -111,7 +100,8 @@ object TaskTable : Table<Task, Uuid>("tasks") {
 
 }
 
-private object TaskBasicInfoTable : Table<Task.BasicInfo, Uuid>("tasks") {
+
+object BasicTaskInfoTable : Table<Task.BasicInfo, Uuid>("tasks") {
 
     val Id by idCol(Task.BasicInfo::id)
     val LessonId by uuidCol(Task.BasicInfo::lessonId, name = "lessonId")
@@ -130,9 +120,8 @@ private object TaskBasicInfoTable : Table<Task.BasicInfo, Uuid>("tasks") {
 
 }
 
-class TaskDao(
-        session: Session
-) : AbstractDao<Task, Uuid>(session, TaskTable, { it.basicInfo.id }) {
+
+class TaskDao(session: Session) : AbstractDao<Task, Uuid>(session, TaskTable, { it.basicInfo.id }) {
 
     private val tableName = TaskTable.name
     private val idColName = TaskTable.Id.name
@@ -142,26 +131,19 @@ class TaskDao(
     override val defaultOrder: Map<Column<Task, *>, OrderByDirection> =
             mapOf(TaskTable.SortIndex to OrderByDirection.ASC)
 
-    fun findBasicSortedBySortIndex(lessonId: Uuid) =
+    fun findAllBasicSorted(lessonId: Uuid): List<Task.BasicInfo> =
             session.select(
-                    sql = """SELECT $basicColNames
-                        |FROM "$tableName"
-                        |WHERE "$lessonIdColName" = :lessonId""".trimMargin(),
+                    sql = """SELECT $basicColNames FROM "$tableName" WHERE "$lessonIdColName" = :lessonId""",
                     parameters = mapOf("lessonId" to lessonId),
-                    mapper = TaskBasicInfoTable.rowMapper()
+                    mapper = BasicTaskInfoTable.rowMapper()
             )
 
-    fun findTreeSortedBySortIndex(lesson: LessonTree) =
-            findBasicSortedBySortIndex(lesson.id).map {
-                TaskTree(
-                        id = it.id,
-                        lessonId = it.lessonId,
-                        lesson = lesson,
-                        linkText = it.linkText,
-                        urlPathComponent = it.urlPathComponent,
-                        task = { findById(it)!! }
-                )
-            }
+    fun findForLessonSorted(lessonId: Uuid): List<Task> =
+            session.select(
+                    sql = """SELECT * FROM "$tableName" WHERE "$lessonIdColName" = :lessonId""",
+                    parameters = mapOf("lessonId" to lessonId),
+                    mapper = TaskTable.rowMapper()
+            )
 
     fun findById(taskId: Uuid) =
             session.select(
@@ -171,6 +153,7 @@ class TaskDao(
             ).singleOrNull()
 
 }
+
 
 /*
 CREATE TABLE public.tasks (

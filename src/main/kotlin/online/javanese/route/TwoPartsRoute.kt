@@ -12,7 +12,7 @@ fun TwoPartsRoute(
         chapterDao: ChapterDao,
         codeReviewDao: CodeReviewDao,
         articleHandler: suspend (idx: Page, articles: Page, article: Article, call: ApplicationCall) -> Unit,
-        chapterHandler: suspend (Course, Chapter, ApplicationCall) -> Unit,
+        chapterHandler: suspend (Course.BasicInfo, Chapter, ApplicationCall) -> Unit,
         codeReviewHandler: suspend (idx: Page, cr: Page, CodeReview, ApplicationCall) -> Unit
 ): suspend (ApplicationCall, String, String) -> Unit = f@ { call, first, second ->
 
@@ -24,11 +24,12 @@ fun TwoPartsRoute(
             Page.Magic.CodeReview -> codeReviewDao.findByUrlSegment(second)?.let { codeReview ->
                 return@f codeReviewHandler(pageDao.findByMagic(Page.Magic.Index)!!, page, codeReview, call)
             }
+            else -> { /* pass through, nothing special */ }
         }
         Unit
     }
 
-    courseDao.findByUrlComponent(first)?.let { course -> // todo: this lookup may be optimized
+    courseDao.findBasicByUrlComponent(first)?.let { course -> // todo: this lookup may be optimized
         chapterDao.findByUrlComponent(second)?.let { chapter ->
             return@f chapterHandler(course, chapter, call)
         }

@@ -1,22 +1,23 @@
 package online.javanese.page
 
 import kotlinx.html.*
+import online.javanese.handler.Lessons
 import online.javanese.locale.Language
 import online.javanese.model.*
+
 
 class ChapterPage(
         private val indexPage: Page,
         private val treePage: Page,
-        private val course: Course,
-        private val chapter: Chapter,
-        private val chapterTree: ChapterTree,
-        private val previousChapter: ChapterTree?,
-        private val nextChapter: ChapterTree?,
+        private val course: Course.BasicInfo,
+        private val chapter: Chapter, // fixme: basic info here
+        private val lessons: Lessons,
+        private val previousAndNext: Pair<Chapter.BasicInfo?, Chapter.BasicInfo?>,
         private val pageLink: Link<Page>,
         private val courseLink: Link<Course.BasicInfo>,
-        private val urlOfChapter: (ChapterTree) -> String,
-        private val urlOfLesson: (LessonTree) -> String,
-        private val urlOfTask: (TaskTree) -> String,
+        private val chapterLink: Link<Chapter.BasicInfo>,
+        private val lessonLink: Link<Lesson.BasicInfo>,
+        private val taskLink: Link<Task.BasicInfo>,
         private val language: Language
 ) : Layout.Page {
 
@@ -31,7 +32,7 @@ class ChapterPage(
                 +" / "
                 pageLink.insert(this, treePage)
                 +" / "
-                courseLink.insert(this, course.basicInfo)
+                courseLink.insert(this, course)
             }
 
             main {
@@ -45,11 +46,11 @@ class ChapterPage(
             }
 
             nav {
-                TreeMode.Lessons.lessonsTree(this, chapterTree.lessons, urlOfLesson, urlOfTask)
+                TreeMode.Lessons.lessonsTree(this, lessons, lessonLink, taskLink)
             }
 
             prevNextPane(
-                    previousChapter, nextChapter, urlOfChapter, language.previousChapter,
+                    previousAndNext, chapterLink, language.previousChapter,
                     language.nextChapter
             )
         }

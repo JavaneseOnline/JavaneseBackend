@@ -25,17 +25,6 @@ class Lesson(
 
 }
 
-class LessonTree internal constructor(
-        val id: Uuid,
-        val chapterId: Uuid,
-        val urlPathComponent: String,
-        val linkText: String,
-        val chapter: ChapterTree,
-        tasks: (LessonTree) -> List<TaskTree>
-) {
-    val tasks = tasks(this)
-}
-
 object LessonTable : Table<Lesson, Uuid>("lessons"), VersionedWithTimestamp {
 
     val Id by idCol(Lesson.BasicInfo::id, Lesson::basicInfo)
@@ -73,7 +62,7 @@ object LessonTable : Table<Lesson, Uuid>("lessons"), VersionedWithTimestamp {
 
 }
 
-private object BasicLessonInfoTable : Table<Lesson.BasicInfo, Uuid>("lessons") {
+object BasicLessonInfoTable : Table<Lesson.BasicInfo, Uuid>("lessons") {
 
     val Id by idCol(Lesson.BasicInfo::id)
     val ChapterId by uuidCol(Lesson.BasicInfo::chapterId, name = "chapterId")
@@ -92,35 +81,39 @@ private object BasicLessonInfoTable : Table<Lesson.BasicInfo, Uuid>("lessons") {
 
 }
 
-class LessonDao(
-        session: Session,
-        private val taskDao: TaskDao
-) : AbstractDao<Lesson, Uuid>(session, LessonTable, { it.basicInfo.id }) {
+class LessonDao(session: Session) : AbstractDao<Lesson, Uuid>(session, LessonTable, { it.basicInfo.id }) {
 
     private val tableName = LessonTable.name
 
     private val basicCols = """"id", "chapterId", "urlSegment", "linkText""""
     private val idColName = LessonTable.Id.name
+    private val urlSegmColName = LessonTable.UrlPathComponent.name
+    private val sortIndexColName = LessonTable.SortIndex.name
+    private val chapterIdColName = LessonTable.ChapterId.name
 
     override val defaultOrder: Map<Column<Lesson, *>, OrderByDirection> =
             mapOf(LessonTable.SortIndex to OrderByDirection.ASC)
 
-    internal fun findBasicSortedBySortIndex(chapterId: Uuid): List<Lesson.BasicInfo> =
+    internal fun findAllBasicSorted(chapterId: Uuid): List<Lesson.BasicInfo> =
             session.select(
                     sql = """SELECT $basicCols FROM "$tableName" WHERE "chapterId" = :chapterId ORDER BY "sortIndex"""",
                     parameters = mapOf("chapterId" to chapterId),
                     mapper = BasicLessonInfoTable.rowMapper()
             )
 
-    fun findTreeSortedBySortIndex(chapter: ChapterTree): List<LessonTree> =
-            findBasicSortedBySortIndex(chapter.id).map { LessonTree(
-                    id = it.id,
-                    chapterId = it.chapterId,
-                    urlPathComponent = it.urlPathComponent,
-                    linkText = it.linkText,
-                    chapter = chapter,
-                    tasks = taskDao::findTreeSortedBySortIndex
-            ) }
+    internal fun findBasicById(id: Uuid): Lesson.BasicInfo? =
+            session.select(
+                    sql = """SELECT $basicCols FROM "$tableName" WHERE "$idColName" = :id LIMIT 1""",
+                    parameters = mapOf("id" to id),
+                    mapper = BasicLessonInfoTable.rowMapper()
+            ).singleOrNull()
+
+    fun findByUrlSegment(segment: String): Lesson? =
+            session.select(
+                    sql = """SELECT * FROM $tableName WHERE "$urlSegmColName" = :segm LIMIT 1""",
+                    parameters = mapOf("segm" to segment),
+                    mapper = LessonTable.rowMapper()
+            ).singleOrNull()
 
     internal fun findById(id: Uuid): Lesson? =
             session.select(
@@ -129,7 +122,21 @@ class LessonDao(
                     mapper = LessonTable.rowMapper()
             ).singleOrNull()
 
+    fun findPreviousAndNext(lesson: Lesson): Pair<Lesson.BasicInfo?, Lesson.BasicInfo?> {
+        val params = mapOf("cId" to lesson.basicInfo.chapterId, "idx" to lesson.sortIndex)
+        val mapper = BasicLessonInfoTable.rowMapper()
+
+        return session.select(
+                sql = """SELECT $basicCols FROM $tableName WHERE "$chapterIdColName" = :cId AND "$sortIndexColName" < :idx ORDER BY "$sortIndexColName" DESC LIMIT 1""",
+                parameters = params, mapper = mapper
+        ).singleOrNull() to session.select(
+                sql = """SELECT $basicCols FROM $tableName WHERE "$chapterIdColName" = :cId AND "$sortIndexColName" > :idx ORDER BY "$sortIndexColName" ASC LIMIT 1""",
+                parameters = params, mapper = mapper
+        ).singleOrNull()
+    }
+
 }
+
 
 /*
 CREATE TABLE public.lessons (

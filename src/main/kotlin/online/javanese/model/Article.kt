@@ -6,6 +6,7 @@ import online.javanese.Html
 import online.javanese.krud.kwery.Uuid
 import java.time.LocalDateTime
 
+
 class Article(
         val basicInfo: BasicInfo,
         val meta: Meta,
@@ -36,6 +37,7 @@ class Article(
     internal val vkPostHashOrNull get() = vkPostInfo?.hash ?: ""
 
 }
+
 
 object ArticleTable : Table<Article, Uuid>("articles") {
 
@@ -100,7 +102,8 @@ object ArticleTable : Table<Article, Uuid>("articles") {
 
 }
 
-private object ArticleBasicInfoTable : Table<Article.BasicInfo, Uuid>("articles") {
+
+object BasicArticleInfoTable : Table<Article.BasicInfo, Uuid>("articles") {
 
     val Id by idCol(Article.BasicInfo::id)
     val LinkText by linkTextCol(Article.BasicInfo::linkText)
@@ -121,6 +124,7 @@ private object ArticleBasicInfoTable : Table<Article.BasicInfo, Uuid>("articles"
 
 }
 
+
 class ArticleDao(
         session: Session
 ) : AbstractDao<Article, Uuid>(session, ArticleTable, ArticleTable.Id.property) {
@@ -139,33 +143,25 @@ class ArticleDao(
 
     fun findAllBasicPublished(): List<Article.BasicInfo> =
             session.select(
-                    sql = """SELECT $basicCols
-                        |FROM "$tableName"
-                        |WHERE "$publishedColName" = true
-                        |$naturalOrder""".trimMargin(),
-                    mapper = ArticleBasicInfoTable.rowMapper()
+                    sql = """SELECT $basicCols FROM "$tableName" WHERE "$publishedColName" = true $naturalOrder""",
+                    mapper = BasicArticleInfoTable.rowMapper()
             )
 
     fun findAllPublished(): List<Article> =
             session.select(
-                    sql = """SELECT *
-                        |FROM "$tableName"
-                        |WHERE "$publishedColName" = true
-                        |$naturalOrder""".trimMargin(),
+                    sql = """SELECT * FROM "$tableName" WHERE "$publishedColName" = true $naturalOrder""",
                     mapper = ArticleTable.rowMapper()
             )
 
     fun findByUrlComponent(component: String): Article? =
             session.select(
-                    sql = """SELECT *
-                        |FROM "$tableName"
-                        |WHERE "$urlComponentColName" = :component
-                        |LIMIT 1""".trimMargin(),
+                    sql = """SELECT * FROM "$tableName" WHERE "$urlComponentColName" = :component LIMIT 1""",
                     parameters = mapOf("component" to component),
                     mapper = ArticleTable.rowMapper()
             ).firstOrNull()
 
 }
+
 
 /*
 CREATE TABLE public.articles (

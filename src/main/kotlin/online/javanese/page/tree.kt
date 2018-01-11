@@ -1,37 +1,44 @@
-@file:Suppress("NOTHING_TO_INLINE")
 package online.javanese.page
 
 import kotlinx.html.*
-import online.javanese.model.ChapterTree
-import online.javanese.model.CourseTree
-import online.javanese.model.LessonTree
-import online.javanese.model.TaskTree
+import online.javanese.handler.Chapters
+import online.javanese.handler.Courses
+import online.javanese.model.Chapter
+import online.javanese.model.Course
+import online.javanese.model.Lesson
+import online.javanese.model.Task
+import online.javanese.handler.Lessons as MLessons
+
 
 fun FlowContent.coursesTree(
-        courses: List<CourseTree>,
-        urlOfCourse: (CourseTree) -> String, urlOfChapter: (ChapterTree) -> String,
-        urlOfLesson: (LessonTree) -> String, urlOfTask: (TaskTree) -> String,
+        courses: Courses,
+        courseLink: Link<Course.BasicInfo>,
+        chapterLink: Link<Chapter.BasicInfo>,
+        lessonLink: Link<Lesson.BasicInfo>,
+        taskLink: Link<Task.BasicInfo>,
         mode: TreeMode
 ) = ul {
-    courses.forEach { course ->
+    courses.forEach { (course, chapters) ->
         li {
-            linkTo(urlOfCourse, course)
+            courseLink.insert(this, course)
 
-            chaptersTree(course.chapters, urlOfChapter, urlOfLesson, urlOfTask, mode)
+            chaptersTree(chapters, chapterLink, lessonLink, taskLink, mode)
         }
     }
 }
 
 fun FlowContent.chaptersTree(
-        chapters: List<ChapterTree>,
-        urlOfChapter: (ChapterTree) -> String, urlOfLesson: (LessonTree) -> String, urlOfTask: (TaskTree) -> String,
+        chapters: Chapters,
+        chapterLink: Link<Chapter.BasicInfo>,
+        lessonLink: Link<Lesson.BasicInfo>,
+        taskLink: Link<Task.BasicInfo>,
         mode: TreeMode
 ) = ul {
-    chapters.forEach { chapter ->
+    chapters.forEach { (chapter, lessons) ->
         li {
-            linkTo(urlOfChapter, chapter)
+            chapterLink.insert(this, chapter)
 
-            mode.lessonsTree(this, chapter.lessons, urlOfLesson, urlOfTask)
+            mode.lessonsTree(this, lessons, lessonLink, taskLink)
         }
     }
 }
@@ -39,28 +46,28 @@ fun FlowContent.chaptersTree(
 enum class TreeMode {
     Lessons {
         override fun lessonsTree(
-                doc: FlowContent, lessons: List<LessonTree>,
-                urlOfLesson: (LessonTree) -> String, urlOfTask: (TaskTree) -> String
+                doc: FlowContent, lessons: MLessons,
+                lessonLink: Link<Lesson.BasicInfo>, taskLink: Link<Task.BasicInfo>
         ) = with (doc) {
             ul {
-                lessons.forEach { lesson ->
+                lessons.forEach { (lesson, _) ->
                     li {
-                        linkTo(urlOfLesson, lesson)
+                        lessonLink.insert(this, lesson)
                     }
                 }
             }
         }
     }, Tasks {
         override fun lessonsTree(
-                doc: FlowContent, lessons: List<LessonTree>,
-                urlOfLesson: (LessonTree) -> String, urlOfTask: (TaskTree) -> String
+                doc: FlowContent, lessons: MLessons,
+                lessonLink: Link<Lesson.BasicInfo>, taskLink: Link<Task.BasicInfo>
         ) = with(doc) {
             ul {
-                lessons.forEach { lesson ->
+                lessons.forEach { (lesson, tasks) ->
                     li {
-                        small { +lesson.linkText }
+                        small { +lessonLink.linkText(lesson) }
 
-                        tasksTree(lesson.tasks, urlOfTask)
+                        tasksTree(tasks, taskLink)
                     }
                 }
             }
@@ -68,52 +75,41 @@ enum class TreeMode {
     };
 
     abstract fun lessonsTree(
-            doc: FlowContent, lessons: List<LessonTree>,
-            urlOfLesson: (LessonTree) -> String, urlOfTask: (TaskTree) -> String
+            doc: FlowContent, lessons: MLessons,
+            lessonLink: Link<Lesson.BasicInfo>, taskLink: Link<Task.BasicInfo>
     )
 }
 
-fun FlowContent.tasksTree(tasks: List<TaskTree>, urlOfTask: (TaskTree) -> String) = ul {
+fun FlowContent.tasksTree(tasks: List<Task.BasicInfo>, linkToTask: Link<Task.BasicInfo>) = ul {
     tasks.forEach { task ->
         li {
-            linkTo(urlOfTask, task)
+            linkToTask.insert(this, task)
         }
     }
 }
 
 fun <T : Any> FlowContent.prevNextPane(
-        previous: T?, next: T?, urlOf: (T) -> String, prevText: String, nextText: String, moreClasses: String? = null
+        previousAndNext: Pair<T?, T?>, tLink: Link<T>, prevText: String, nextText: String, moreClasses: String? = null
 ) {
+    val (previous, next) = previousAndNext
     if (previous != null || next != null) {
         nav(classes = classes("mdl-grid mdl-grid--no-spacing", moreClasses)) {
             p(classes = "mdl-cell mdl-cell--4-col mdl-cell--6-col-desktop") {
                 previous?.let {
-                    a(href = urlOf(it), titleAndText = prevText)
+                    a(href = tLink.url(it), titleAndText = prevText)
                 }
             }
 
             p(classes = "mdl-cell mdl-cell--4-col-tablet mdl-cell--6-col-desktop mdl-cell--hide-phone mdl-typography--text-right") {
                 next?.let {
-                    a(href = urlOf(it), titleAndText = nextText)
+                    a(href = tLink.url(it), titleAndText = nextText)
                 }
             }
             p(classes = "mdl-cell mdl-cell--4-col mdl-cell--hide-desktop mdl-cell--hide-tablet") {
                 next?.let {
-                    a(href = urlOf(it), titleAndText = nextText)
+                    a(href = tLink.url(it), titleAndText = nextText)
                 }
             }
         }
     }
 }
-
-private inline fun FlowOrInteractiveOrPhrasingContent.linkTo(urlOfCourse: (CourseTree) -> String, course: CourseTree) =
-        a(href = urlOfCourse(course), titleAndText = course.linkText)
-
-private inline fun FlowOrInteractiveOrPhrasingContent.linkTo(urlOfChapter: (ChapterTree) -> String, chapter: ChapterTree) =
-        a(href = urlOfChapter(chapter), titleAndText = chapter.linkText)
-
-private inline fun FlowOrInteractiveOrPhrasingContent.linkTo(urlOfLesson: (LessonTree) -> String, lesson: LessonTree) =
-        a(href = urlOfLesson(lesson), titleAndText = lesson.linkText)
-
-private inline fun FlowOrInteractiveOrPhrasingContent.linkTo(urlOfTask: (TaskTree) -> String, task: TaskTree) =
-        a(href = urlOfTask(task), titleAndText = task.linkText)

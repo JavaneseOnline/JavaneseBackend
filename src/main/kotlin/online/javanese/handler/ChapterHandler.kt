@@ -8,28 +8,22 @@ import online.javanese.page.Layout
 
 fun ChapterHandler(
         pageDao: PageDao,
-        tree: List<CourseTree>,
+        chapterDao: ChapterDao,
+        lessonDao: LessonDao,
+        taskDao: TaskDao,
         layout: Layout,
-        page: (idxPage: Page, treePage: Page, Course, Chapter, ChapterTree, previous: ChapterTree?, next: ChapterTree?) -> Layout.Page
-): suspend (Course, Chapter, ApplicationCall) -> Unit = { course, chapter, call ->
+        page: (idxPage: Page, treePage: Page, Course.BasicInfo, Chapter, Lessons, prevAndNext: Pair<Chapter.BasicInfo?, Chapter.BasicInfo?>) -> Layout.Page
+): suspend (Course.BasicInfo, Chapter, ApplicationCall) -> Unit = { course, chapter, call ->
 
     val idxPage = pageDao.findByMagic(Page.Magic.Index)!!
     val treePage = pageDao.findByMagic(Page.Magic.Tree)!!
 
-    // fixme: should stop keeping whole graph in memory
-    val chapters = tree
-            .first { it.id == course.basicInfo.id }
-            .chapters
+    val lessons = lessons(chapter.basicInfo, lessonDao, taskDao)
 
-    val chapterTree = chapters
-            .first { it.id == chapter.basicInfo.id }
-
-    val idx = chapters.indexOf(chapterTree)
-    val prev = (idx - 1).let { if (it < 0) null else chapters[it] }
-    val next = (idx + 1).let { if (it < chapters.size) chapters[it] else null }
+    val prevAndNext = chapterDao.findPreviousAndNextBasic(chapter)
 
     call.respondHtml {
-        layout(this, page(idxPage, treePage, course, chapter, chapterTree, prev, next))
+        layout(this, page(idxPage, treePage, course, chapter, lessons, prevAndNext))
     }
 
 }

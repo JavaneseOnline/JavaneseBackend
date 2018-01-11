@@ -8,6 +8,7 @@ import io.ktor.http.ContentType
 import io.ktor.response.respondText
 import online.javanese.krud.kwery.Uuid
 import online.javanese.model.*
+import online.javanese.page.Link
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.util.*
@@ -15,13 +16,12 @@ import java.util.*
 
 fun SitemapHandler(
         siteUrl: String,
-        urlOfPage: (Page) -> String,
-        urlOfCourseTree: (CourseTree) -> String,
-        urlOfChapterTree: (ChapterTree) -> String,
-        urlOfLessonTree: (LessonTree) -> String,
-        urlOfArticle: (Page, Article.BasicInfo) -> String,
-        urlOfCodeReview: (Page, CodeReview) -> String,
-        tree: List<CourseTree>,
+        pageLink: Link<Page>,
+        courseLink: Link<Course.BasicInfo>,
+        chapterLink: Link<Chapter.BasicInfo>,
+        lessonLink: Link<Lesson.BasicInfo>,
+        articleLink: Link<Article.BasicInfo>,
+        codeReviewLink: Link<CodeReview>,
         pageDao: PageDao,
         courseDao: CourseDao,
         chapterDao: ChapterDao,
@@ -38,27 +38,23 @@ fun SitemapHandler(
 
     val pages = pageDao.findAll()
 
-    wsg.addAll(sb, pages, urlOfPage, PageTable.LastModified.property)
+    wsg.addAll(sb, pages, pageLink::url, PageTable.LastModified.property)
 
-    wsg.addAll(sb, tree, urlOfCourseTree, { courseDao.findById(it.id)!!.lastModified }) { course ->
-        wsg.addAll(sb, course.chapters, urlOfChapterTree, { chapterDao.findById(it.id)!!.lastModified }) { chapter ->
-            wsg.addAll(sb, chapter.lessons, urlOfLessonTree, { lessonDao.findById(it.id)!!.lastModified })
+    wsg.addAll(sb, courseDao.findAllBasicSorted(), courseLink::url, { courseDao.findById(it.id)!!.lastModified }) { course ->
+        wsg.addAll(sb, chapterDao.findAllBasicSorted(course.id), chapterLink::url, { chapterDao.findById(it.id)!!.lastModified }) { chapter ->
+            wsg.addAll(sb, lessonDao.findAllBasicSorted(chapter.id), lessonLink::url, { lessonDao.findById(it.id)!!.lastModified })
         }
     }
 
-    val articlesPage = pages.first { it.magic == Page.Magic.Articles }
-    wsg.addAll(sb, articleDao.findAllBasicPublished(),
-            { urlOfArticle(articlesPage, it) }, Article.BasicInfo::lastModified)
+    wsg.addAll(sb, articleDao.findAllBasicPublished(), articleLink::url, Article.BasicInfo::lastModified)
 
-    val codeReviewsPage = pages.first { it.magic == Page.Magic.Articles }
-    wsg.addAll(sb, codeReviewDao.findAll(),
-            { urlOfCodeReview(codeReviewsPage, it) }, CodeReviewTable.LastModified.property)
+    wsg.addAll(sb, codeReviewDao.findAll(), codeReviewLink::url, CodeReviewTable.LastModified.property)
 
     val strs = wsg.writeAsStrings()
     call.respondText(strs.joinToString("\n"), ContentType.Text.Xml)
 }
 
-private inline fun <T> WebSitemapGenerator.addAll(
+private /*inline Back-end (JVM) internal error */ fun <T> WebSitemapGenerator.addAll(
         sb: StringBuilder,
         items: List<T>,
         urlOfT: (T) -> String,

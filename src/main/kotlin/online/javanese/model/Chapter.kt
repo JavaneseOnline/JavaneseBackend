@@ -6,6 +6,7 @@ import online.javanese.Html
 import online.javanese.krud.kwery.Uuid
 import java.time.LocalDateTime
 
+
 class Chapter(
         val basicInfo: BasicInfo,
         val meta: Meta,
@@ -24,16 +25,6 @@ class Chapter(
 
 }
 
-class ChapterTree internal constructor(
-        val id: Uuid,
-        val courseId: Uuid,
-        val urlPathComponent: String,
-        val linkText: String,
-        val course: CourseTree,
-        lessons: (ChapterTree) -> List<LessonTree>
-) {
-    val lessons = lessons(this)
-}
 
 object ChapterTable : Table<Chapter, Uuid>("chapters"), VersionedWithTimestamp {
 
@@ -71,6 +62,7 @@ object ChapterTable : Table<Chapter, Uuid>("chapters"), VersionedWithTimestamp {
 
 }
 
+
 object BasicChapterInfoTable : Table<Chapter.BasicInfo, Uuid>("chapters") {
 
     val Id by idCol(Chapter.BasicInfo::id)
@@ -89,10 +81,8 @@ object BasicChapterInfoTable : Table<Chapter.BasicInfo, Uuid>("chapters") {
 
 }
 
-class ChapterDao(
-        session: Session,
-        private val lessonDao: LessonDao
-) : AbstractDao<Chapter, Uuid>(session, ChapterTable, ChapterTable.Id.property) {
+
+class ChapterDao(session: Session) : AbstractDao<Chapter, Uuid>(session, ChapterTable, ChapterTable.Id.property) {
 
     private val tableName = ChapterTable.name
     private val idColName = ChapterTable.Id.name
@@ -105,15 +95,13 @@ class ChapterDao(
     override val defaultOrder: Map<Column<Chapter, *>, OrderByDirection> =
             mapOf(ChapterTable.SortIndex to OrderByDirection.ASC)
 
-    fun findBasicSortedBySortIndex(courseId: Uuid): List<Chapter.BasicInfo> =
+
+    fun findAllBasicSorted(courseId: Uuid): List<Chapter.BasicInfo> =
             session.select(
                     sql = """SELECT $basicColumns FROM $tableName WHERE "$courseIdColName" = :courseId ORDER BY "$sortIndexColName"""",
                     parameters = mapOf("courseId" to courseId),
                     mapper = BasicChapterInfoTable.rowMapper()
             )
-
-    fun findTreeSortedBySortIndex(course: CourseTree): List<ChapterTree> =
-            findBasicSortedBySortIndex(course.id).map { it.toTree(course) }
 
     fun findBasicById(chapterId: Uuid): Chapter.BasicInfo? =
             session.select(
@@ -136,16 +124,28 @@ class ChapterDao(
                     mapper = ChapterTable.rowMapper()
             ).singleOrNull()
 
-    private fun Chapter.BasicInfo.toTree(course: CourseTree) = ChapterTree(
-            id = id,
-            courseId = courseId,
-            urlPathComponent = urlPathComponent,
-            linkText = linkText,
-            course = course,
-            lessons = lessonDao::findTreeSortedBySortIndex
-    )
+    fun findBasicByUrlComponent(component: String): Chapter.BasicInfo? =
+            session.select(
+                    sql = """SELECT $basicColumns FROM $tableName WHERE "$urlComponentColName" = :component LIMIT 1""",
+                    parameters = mapOf("component" to component),
+                    mapper = BasicChapterInfoTable.rowMapper()
+            ).singleOrNull()
+
+    fun findPreviousAndNextBasic(chapter: Chapter): Pair<Chapter.BasicInfo?, Chapter.BasicInfo?> {
+        val params = hashMapOf("cId" to chapter.basicInfo.courseId, "idx" to chapter.sortIndex)
+        val mapper = BasicChapterInfoTable.rowMapper()
+
+        return session.select(
+                """SELECT $basicColumns FROM $tableName WHERE "$courseIdColName" = :cId AND "$sortIndexColName" < :idx ORDER BY "$sortIndexColName" DESC LIMIT 1""",
+                parameters = params, mapper = mapper
+        ).singleOrNull() to session.select(
+                """SELECT $basicColumns FROM $tableName WHERE "$courseIdColName" = :cId AND "$sortIndexColName" > :idx ORDER BY "$sortIndexColName" ASC LIMIT 1""",
+                parameters = params, mapper = mapper
+        ).singleOrNull()
+    }
 
 }
+
 
 /*
 CREATE TABLE public.chapters (
