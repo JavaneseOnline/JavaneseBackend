@@ -18,20 +18,11 @@ class CodeReviewCandidate(
 
 object CodeReviewCandidateTable : Table<CodeReviewCandidate, Uuid>("codeReviewCandidates") {
 
-    val Id
-            by idCol(CodeReviewCandidate::id)
-
-    val SenderName
-            by col(CodeReviewCandidate::senderName, name = "senderName")
-
-    val ProblemStatement
-            by col(CodeReviewCandidate::problemStatement, name = "problemStatement")
-
-    val Code
-            by col(CodeReviewCandidate::code, name = "code")
-
-    val SenderContact
-            by col(CodeReviewCandidate::senderContact, name = "senderContact")
+    val Id by idCol(CodeReviewCandidate::id)
+    val SenderName by col(CodeReviewCandidate::senderName, name = "senderName")
+    val ProblemStatement by col(CodeReviewCandidate::problemStatement, name = "problemStatement")
+    val Code by col(CodeReviewCandidate::code, name = "code")
+    val SenderContact by col(CodeReviewCandidate::senderContact, name = "senderContact")
 
 
     override fun idColumns(id: Uuid): Set<Pair<Column<CodeReviewCandidate, *>, *>> =

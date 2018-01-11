@@ -35,7 +35,7 @@ class CodeReviewPage(
                     ul {
                         reviews.forEach { review ->
                             li {
-                                a(href = "/${model.urlPathComponent.encodeForUrl()}/${review.urlSegment}/") {
+                                a(href = "/${model.urlSegment.encodeForUrl()}/${review.urlSegment}/") {
                                     +review.meta.title
                                 }
                             }
@@ -47,7 +47,7 @@ class CodeReviewPage(
                     id = "submit"
 
                     h2 {
-                        +model.h1
+                        +model.heading
                     }
 
                     unsafe {

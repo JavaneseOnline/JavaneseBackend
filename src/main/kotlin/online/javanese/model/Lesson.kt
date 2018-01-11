@@ -9,7 +9,7 @@ import java.time.LocalDateTime
 class Lesson(
         val basicInfo: BasicInfo,
         val meta: Meta,
-        val h1: String,
+        val heading: String,
         val bodyMarkup: Html,
         val sortIndex: Int,
         val lastModified: LocalDateTime
@@ -19,7 +19,7 @@ class Lesson(
     class BasicInfo(
             val id: Uuid,
             val chapterId: Uuid,
-            val urlPathComponent: String,
+            val urlSegment: String,
             val linkText: String
     )
 
@@ -29,12 +29,12 @@ object LessonTable : Table<Lesson, Uuid>("lessons"), VersionedWithTimestamp {
 
     val Id by idCol(Lesson.BasicInfo::id, Lesson::basicInfo)
     val ChapterId by uuidCol(Lesson.BasicInfo::chapterId, Lesson::basicInfo, name = "chapterId")
-    val UrlPathComponent by urlSegmentCol(Lesson.BasicInfo::urlPathComponent, Lesson::basicInfo)
+    val UrlSegment by urlSegmentCol(Lesson.BasicInfo::urlSegment, Lesson::basicInfo)
     val LinkText by linkTextCol(Lesson.BasicInfo::linkText, Lesson::basicInfo)
     val MetaTitle by metaTitleCol(Lesson::meta)
     val MetaDescription by metaDescriptionCol(Lesson::meta)
     val MetaKeywords by metaKeywordsCol(Lesson::meta)
-    val H1 by headingCol(Lesson::h1)
+    val Heading by headingCol(Lesson::heading)
     val BodyMarkup by col(Lesson::bodyMarkup, name = "bodyMarkup")
     val SortIndex by sortIndexCol(Lesson::sortIndex)
     val LastModified by lastModifiedCol(Lesson::lastModified)
@@ -46,7 +46,7 @@ object LessonTable : Table<Lesson, Uuid>("lessons"), VersionedWithTimestamp {
             basicInfo = Lesson.BasicInfo(
                     id = value of LessonTable.Id,
                     chapterId = value of LessonTable.ChapterId,
-                    urlPathComponent = value of LessonTable.UrlPathComponent,
+                    urlSegment = value of LessonTable.UrlSegment,
                     linkText = value of LessonTable.LinkText
             ),
             meta = Meta(
@@ -54,7 +54,7 @@ object LessonTable : Table<Lesson, Uuid>("lessons"), VersionedWithTimestamp {
                     keywords = value of MetaKeywords,
                     description = value of MetaDescription
             ),
-            h1 = value of H1,
+            heading = value of Heading,
             bodyMarkup = value of BodyMarkup,
             sortIndex = value of SortIndex,
             lastModified = value of LastModified
@@ -66,7 +66,7 @@ object BasicLessonInfoTable : Table<Lesson.BasicInfo, Uuid>("lessons") {
 
     val Id by idCol(Lesson.BasicInfo::id)
     val ChapterId by uuidCol(Lesson.BasicInfo::chapterId, name = "chapterId")
-    val UrlPathComponent by urlSegmentCol(Lesson.BasicInfo::urlPathComponent)
+    val UrlSegment by urlSegmentCol(Lesson.BasicInfo::urlSegment)
     val LinkText by linkTextCol(Lesson.BasicInfo::linkText)
 
     override fun idColumns(id: Uuid): Set<Pair<Column<Lesson.BasicInfo, *>, *>> =
@@ -75,7 +75,7 @@ object BasicLessonInfoTable : Table<Lesson.BasicInfo, Uuid>("lessons") {
     override fun create(value: Value<Lesson.BasicInfo>): Lesson.BasicInfo = Lesson.BasicInfo(
             id = value of Id,
             chapterId = value of ChapterId,
-            urlPathComponent = value of UrlPathComponent,
+            urlSegment = value of UrlSegment,
             linkText = value of LinkText
     )
 
@@ -87,7 +87,7 @@ class LessonDao(session: Session) : AbstractDao<Lesson, Uuid>(session, LessonTab
 
     private val basicCols = """"id", "chapterId", "urlSegment", "linkText""""
     private val idColName = LessonTable.Id.name
-    private val urlSegmColName = LessonTable.UrlPathComponent.name
+    private val urlSegmColName = LessonTable.UrlSegment.name
     private val sortIndexColName = LessonTable.SortIndex.name
     private val chapterIdColName = LessonTable.ChapterId.name
 
@@ -108,10 +108,10 @@ class LessonDao(session: Session) : AbstractDao<Lesson, Uuid>(session, LessonTab
                     mapper = BasicLessonInfoTable.rowMapper()
             ).singleOrNull()
 
-    fun findByUrlSegment(segment: String): Lesson? =
+    fun findByUrlSegment(chapterId: Uuid, segment: String): Lesson? =
             session.select(
-                    sql = """SELECT * FROM $tableName WHERE "$urlSegmColName" = :segm LIMIT 1""",
-                    parameters = mapOf("segm" to segment),
+                    sql = """SELECT * FROM $tableName WHERE "$chapterIdColName" = :cId AND "$urlSegmColName" = :segment LIMIT 1""",
+                    parameters = hashMapOf("cId" to chapterId, "segment" to segment),
                     mapper = LessonTable.rowMapper()
             ).singleOrNull()
 

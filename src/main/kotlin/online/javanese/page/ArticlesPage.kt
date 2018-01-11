@@ -27,7 +27,7 @@ class ArticlesPage(
 
             main {
                 h1(classes = "content-padding-v") {
-                    +page.h1
+                    +page.heading
                 }
 
                 unsafe {

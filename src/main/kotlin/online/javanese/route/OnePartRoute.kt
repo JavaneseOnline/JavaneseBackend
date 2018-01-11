@@ -15,11 +15,11 @@ fun OnePartRoute(
         courseHandler: suspend (ApplicationCall, Course) -> Unit
 ) : suspend (ApplicationCall, String) -> Unit = func@ { call, query ->
 
-    pageDao.findByUrlPathComponent(query)?.let {
+    pageDao.findByUrlSegment(query)?.let {
         return@func pageHandler(call, it)
     }
 
-    courseDao.findByUrlComponent(query)?.let {
+    courseDao.findByUrlSegment(query)?.let {
         return@func courseHandler(call, it)
     }
 

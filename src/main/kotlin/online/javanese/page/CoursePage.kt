@@ -34,7 +34,7 @@ class CoursePage(
 
             main {
                 h1(classes = "content-padding-v") {
-                    +course.h1
+                    +course.heading
                 }
 
                 unsafe {

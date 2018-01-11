@@ -10,7 +10,7 @@ import java.time.LocalDateTime
 class Chapter(
         val basicInfo: BasicInfo,
         val meta: Meta,
-        val h1: String,
+        val heading: String,
         val description: Html,
         val sortIndex: Int,
         val lastModified: LocalDateTime
@@ -19,7 +19,7 @@ class Chapter(
     class BasicInfo(
             val id: Uuid,
             val courseId: Uuid,
-            val urlPathComponent: String,
+            val urlSegment: String,
             val linkText: String
     )
 
@@ -30,12 +30,12 @@ object ChapterTable : Table<Chapter, Uuid>("chapters"), VersionedWithTimestamp {
 
     val Id by idCol(Chapter.BasicInfo::id, Chapter::basicInfo)
     val CourseId by uuidCol(Chapter.BasicInfo::courseId, Chapter::basicInfo, name = "courseId")
-    val UrlPathComponent by urlSegmentCol(Chapter.BasicInfo::urlPathComponent, Chapter::basicInfo)
+    val UrlSegment by urlSegmentCol(Chapter.BasicInfo::urlSegment, Chapter::basicInfo)
     val LinkText by linkTextCol(Chapter.BasicInfo::linkText, Chapter::basicInfo)
     val MetaTitle by metaTitleCol(Chapter::meta)
     val MetaDescription by metaDescriptionCol(Chapter::meta)
     val MetaKeywords by metaKeywordsCol(Chapter::meta)
-    val H1 by headingCol(Chapter::h1)
+    val Heading by headingCol(Chapter::heading)
     val Description by col(Chapter::description, name = "description")
     val SortIndex by sortIndexCol(Chapter::sortIndex)
     val LastModified by lastModifiedCol(Chapter::lastModified)
@@ -46,7 +46,7 @@ object ChapterTable : Table<Chapter, Uuid>("chapters"), VersionedWithTimestamp {
             basicInfo = Chapter.BasicInfo(
                     id = value of Id,
                     courseId = value of CourseId,
-                    urlPathComponent = value of UrlPathComponent,
+                    urlSegment = value of UrlSegment,
                     linkText = value of LinkText
             ),
             meta = Meta(
@@ -54,7 +54,7 @@ object ChapterTable : Table<Chapter, Uuid>("chapters"), VersionedWithTimestamp {
                     description = value of MetaDescription,
                     keywords = value of MetaKeywords
             ),
-            h1 = value of H1,
+            heading = value of Heading,
             description = value of Description,
             sortIndex = value of SortIndex,
             lastModified = value of LastModified
@@ -67,7 +67,7 @@ object BasicChapterInfoTable : Table<Chapter.BasicInfo, Uuid>("chapters") {
 
     val Id by idCol(Chapter.BasicInfo::id)
     val CourseId by uuidCol(Chapter.BasicInfo::courseId, name = "courseId")
-    val UrlPathComponent by urlSegmentCol(Chapter.BasicInfo::urlPathComponent)
+    val UrlSegment by urlSegmentCol(Chapter.BasicInfo::urlSegment)
     val LinkText by linkTextCol(Chapter.BasicInfo::linkText)
 
     override fun idColumns(id: Uuid): Set<Pair<Column<Chapter.BasicInfo, *>, *>> = setOf(Id of id)
@@ -75,7 +75,7 @@ object BasicChapterInfoTable : Table<Chapter.BasicInfo, Uuid>("chapters") {
     override fun create(value: Value<Chapter.BasicInfo>): Chapter.BasicInfo = Chapter.BasicInfo(
             id = value of Id,
             courseId = value of CourseId,
-            urlPathComponent = value of UrlPathComponent,
+            urlSegment = value of UrlSegment,
             linkText = value of LinkText
     )
 
@@ -87,7 +87,7 @@ class ChapterDao(session: Session) : AbstractDao<Chapter, Uuid>(session, Chapter
     private val tableName = ChapterTable.name
     private val idColName = ChapterTable.Id.name
     private val courseIdColName = ChapterTable.CourseId.name
-    private val urlComponentColName = ChapterTable.UrlPathComponent.name
+    private val urlSegmentColName = ChapterTable.UrlSegment.name
     private val sortIndexColName = ChapterTable.SortIndex.name
 
     private val basicColumns = """id, "courseId", "urlSegment", "linkText""""
@@ -117,17 +117,17 @@ class ChapterDao(session: Session) : AbstractDao<Chapter, Uuid>(session, Chapter
                     mapper = ChapterTable.rowMapper()
             ).singleOrNull()
 
-    fun findByUrlComponent(component: String): Chapter? =
+    fun findByUrlSegment(courseId: Uuid, segment: String): Chapter? =
             session.select(
-                    sql = """SELECT * FROM $tableName WHERE "$urlComponentColName" = :component LIMIT 1""",
-                    parameters = mapOf("component" to component),
+                    sql = """SELECT * FROM $tableName WHERE "$courseIdColName" = :cId AND "$urlSegmentColName" = :segment LIMIT 1""",
+                    parameters = hashMapOf("cId" to courseId, "segment" to segment),
                     mapper = ChapterTable.rowMapper()
             ).singleOrNull()
 
-    fun findBasicByUrlComponent(component: String): Chapter.BasicInfo? =
+    fun findBasicByUrlSegment(courseId: Uuid, segment: String): Chapter.BasicInfo? =
             session.select(
-                    sql = """SELECT $basicColumns FROM $tableName WHERE "$urlComponentColName" = :component LIMIT 1""",
-                    parameters = mapOf("component" to component),
+                    sql = """SELECT $basicColumns FROM $tableName WHERE "$courseIdColName" = :cId AND "$urlSegmentColName" = :segment LIMIT 1""",
+                    parameters = hashMapOf("cId" to courseId, "segment" to segment),
                     mapper = BasicChapterInfoTable.rowMapper()
             ).singleOrNull()
 

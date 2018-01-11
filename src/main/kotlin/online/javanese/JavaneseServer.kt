@@ -66,44 +66,44 @@ object JavaneseServer {
 
         val pageLink =
                 IndexOrSingleSegmDirLink(
-                        PageTable.UrlPathComponent.property,
+                        PageTable.UrlSegment.property,
                         PageTable.MetaTitle.property
                 )
         val courseLink =
                 SingleSegmentDirLink(
-                        BasicCourseInfoTable.UrlPathComponent.property,
+                        BasicCourseInfoTable.UrlSegment.property,
                         BasicCourseInfoTable.LinkText.property
                 )
         val chapterLink =
                 TwoSegmentDirLink(
-                        { courseDao.findBasicById(it.courseId)!!.urlPathComponent },
-                        BasicChapterInfoTable.UrlPathComponent.property,
+                        { courseDao.findBasicById(it.courseId)!!.urlSegment },
+                        BasicChapterInfoTable.UrlSegment.property,
                         BasicChapterInfoTable.LinkText.property
                 )
         val lessonLink =
                 ThreeSegmentDirLink( // fixme: round-trippng
-                        { courseDao.findBasicById(chapterDao.findBasicById(it.chapterId)!!.courseId)!!.urlPathComponent },
-                        { chapterDao.findBasicById(it.chapterId)!!.urlPathComponent },
-                        BasicLessonInfoTable.UrlPathComponent.property,
+                        { courseDao.findBasicById(chapterDao.findBasicById(it.chapterId)!!.courseId)!!.urlSegment },
+                        { chapterDao.findBasicById(it.chapterId)!!.urlSegment },
+                        BasicLessonInfoTable.UrlSegment.property,
                         BasicLessonInfoTable.LinkText.property
                 )
         val taskLink =
                 ThreeSegmentDirLinkWithFragment(  // fixme: so ugly round-tripping
-                        { courseDao.findBasicById(chapterDao.findBasicById(lessonDao.findBasicById(it.lessonId)!!.chapterId)!!.courseId)!!.urlPathComponent },
-                        { chapterDao.findBasicById(lessonDao.findBasicById(it.lessonId)!!.chapterId)!!.urlPathComponent },
-                        { lessonDao.findBasicById(it.lessonId)!!.urlPathComponent },
+                        { courseDao.findBasicById(chapterDao.findBasicById(lessonDao.findBasicById(it.lessonId)!!.chapterId)!!.courseId)!!.urlSegment },
+                        { chapterDao.findBasicById(lessonDao.findBasicById(it.lessonId)!!.chapterId)!!.urlSegment },
+                        { lessonDao.findBasicById(it.lessonId)!!.urlSegment },
                         BasicTaskInfoTable.UrlPathComponent.property,
                         BasicTaskInfoTable.LinkText.property
                 )
         val articleLink =
                 TwoSegmentDirLink(
-                        { pageDao.findByMagic(Page.Magic.Articles)!!.urlPathComponent },
-                        BasicArticleInfoTable.UrlPathComponent.property,
+                        { pageDao.findByMagic(Page.Magic.Articles)!!.urlSegment },
+                        BasicArticleInfoTable.UrlSegment.property,
                         BasicArticleInfoTable.LinkText.property
                 )
         val codeReviewLink =
                 TwoSegmentDirLink(
-                        { pageDao.findByMagic(Page.Magic.CodeReview)!!.urlPathComponent },
+                        { pageDao.findByMagic(Page.Magic.CodeReview)!!.urlSegment },
                         CodeReviewTable.UrlSegment.property,
                         CodeReviewTable.MetaTitle.property
                 )
@@ -255,7 +255,5 @@ object JavaneseServer {
 
 }
 
-// todo: rename all 'h1's to 'heading', 'urlPathComponent' to 'urlSegment' after refactoring
 // todo: make DAO functions suspend
 // todo: '200 Ok' with 'ok' body should be replaced with 'No content'
-// todo: indices on urlSegment

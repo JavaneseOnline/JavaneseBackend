@@ -21,7 +21,7 @@ class Article(
     class BasicInfo(
             val id: Uuid,
             val linkText: String,
-            val urlPathComponent: String,
+            val urlSegment: String,
             val lastModified: LocalDateTime,
             val pinned: Boolean
     )
@@ -41,7 +41,7 @@ object ArticleTable : Table<Article, Uuid>("articles") {
 
     val Id by idCol(Article.BasicInfo::id, Article::basicInfo)
     val LinkText by linkTextCol(Article.BasicInfo::linkText, Article::basicInfo)
-    val UrlPathComponent by urlSegmentCol(Article.BasicInfo::urlPathComponent, Article::basicInfo)
+    val UrlSegment by urlSegmentCol(Article.BasicInfo::urlSegment, Article::basicInfo)
 
     val MetaTitle by metaTitleCol(Article::meta)
     val MetaDescription by metaDescriptionCol(Article::meta)
@@ -66,7 +66,7 @@ object ArticleTable : Table<Article, Uuid>("articles") {
             basicInfo = Article.BasicInfo(
                     id = value of Id,
                     linkText = value of LinkText,
-                    urlPathComponent = value of UrlPathComponent,
+                    urlSegment = value of UrlSegment,
                     lastModified = value of LastModified,
                     pinned = value of Pinned
             ),
@@ -103,7 +103,7 @@ object BasicArticleInfoTable : Table<Article.BasicInfo, Uuid>("articles") {
 
     val Id by idCol(Article.BasicInfo::id)
     val LinkText by linkTextCol(Article.BasicInfo::linkText)
-    val UrlPathComponent by urlSegmentCol(Article.BasicInfo::urlPathComponent)
+    val UrlSegment by urlSegmentCol(Article.BasicInfo::urlSegment)
     val LastModified by lastModifiedCol(Article.BasicInfo::lastModified)
     val Pinned by col(Article.BasicInfo::pinned, name = "pinned")
 
@@ -113,7 +113,7 @@ object BasicArticleInfoTable : Table<Article.BasicInfo, Uuid>("articles") {
     override fun create(value: Value<Article.BasicInfo>): Article.BasicInfo = Article.BasicInfo(
             id = value of Id,
             linkText = value of LinkText,
-            urlPathComponent = value of UrlPathComponent,
+            urlSegment = value of UrlSegment,
             lastModified = value of LastModified,
             pinned = value of Pinned
     )
@@ -127,7 +127,7 @@ class ArticleDao(
 
     private val tableName = ArticleTable.name
     private val basicCols = """"id", "linkText", "urlSegment", "lastModified", "pinned" """
-    private val urlComponentColName = ArticleTable.UrlPathComponent.name
+    private val urlComponentColName = ArticleTable.UrlSegment.name
     private val publishedColName = ArticleTable.Published.name
     private val createdAtColName = ArticleTable.CreatedAt.name
     private val pinnedColName = ArticleTable.Pinned.name
@@ -143,16 +143,17 @@ class ArticleDao(
                     mapper = BasicArticleInfoTable.rowMapper()
             )
 
+    @Deprecated(message = "shouldn't bulk-select whole articles")
     fun findAllPublished(): List<Article> =
             session.select(
                     sql = """SELECT * FROM "$tableName" WHERE "$publishedColName" = true $naturalOrder""",
                     mapper = ArticleTable.rowMapper()
             )
 
-    fun findByUrlComponent(component: String): Article? =
+    fun findByUrlSegment(segment: String): Article? =
             session.select(
-                    sql = """SELECT * FROM "$tableName" WHERE "$urlComponentColName" = :component LIMIT 1""",
-                    parameters = mapOf("component" to component),
+                    sql = """SELECT * FROM "$tableName" WHERE "$urlComponentColName" = :segment LIMIT 1""",
+                    parameters = mapOf("segment" to segment),
                     mapper = ArticleTable.rowMapper()
             ).firstOrNull()
 

@@ -96,7 +96,7 @@ fun JavaneseAdminPanel(
                     KweryTable("page",
                             PageTable, pageDao,
                             SelectCount(session, session.dialect.escapeName(PageTable.name)),
-                            getTitleOf = PageTable.H1.property,
+                            getTitleOf = PageTable.Heading.property,
                             transformColumn = { when (it) {
                                 PageTable.BodyMarkup -> TextCol(PageTable.BodyMarkup, createControlFactory = online.javanese.krud.template.control.CodeMirror.Html)
                                 PageTable.HeadMarkup -> TextCol(PageTable.HeadMarkup, createControlFactory = online.javanese.krud.template.control.CodeMirror.Html)

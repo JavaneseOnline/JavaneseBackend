@@ -9,7 +9,7 @@ import java.time.LocalDateTime
 class Course(
         val basicInfo: BasicInfo,
         val meta: Meta,
-        val h1: String,
+        val heading: String,
         val description: Html,
         val sortIndex: Int,
         val lastModified: LocalDateTime
@@ -17,7 +17,7 @@ class Course(
 
     class BasicInfo(
             val id: Uuid,
-            val urlPathComponent: String,
+            val urlSegment: String,
             val linkText: String
     )
 
@@ -26,12 +26,12 @@ class Course(
 object CourseTable : Table<Course, Uuid>("courses"), VersionedWithTimestamp {
 
     val Id by idCol(Course.BasicInfo::id, Course::basicInfo)
-    val UrlPathComponent by urlSegmentCol(Course.BasicInfo::urlPathComponent, Course::basicInfo)
+    val UrlSegment by urlSegmentCol(Course.BasicInfo::urlSegment, Course::basicInfo)
     val MetaTitle by metaTitleCol(Course::meta)
     val MetaDescription by metaDescriptionCol(Course::meta)
     val MetaKeywords by metaKeywordsCol(Course::meta)
     val LinkText by linkTextCol(Course.BasicInfo::linkText, Course::basicInfo)
-    val H1 by headingCol(Course::h1)
+    val Heading by headingCol(Course::heading)
     val Description by col(Course::description, name = "description")
     val SortIndex by sortIndexCol(Course::sortIndex)
     val LastModified by lastModifiedCol(Course::lastModified)
@@ -41,7 +41,7 @@ object CourseTable : Table<Course, Uuid>("courses"), VersionedWithTimestamp {
     override fun create(value: Value<Course>): Course = Course(
             basicInfo = Course.BasicInfo(
                     id = value of Id,
-                    urlPathComponent = value of UrlPathComponent,
+                    urlSegment = value of UrlSegment,
                     linkText = value of LinkText
             ),
             meta = Meta(
@@ -49,7 +49,7 @@ object CourseTable : Table<Course, Uuid>("courses"), VersionedWithTimestamp {
                     description = value of MetaDescription,
                     keywords = value of MetaKeywords
             ),
-            h1 = value of H1,
+            heading = value of Heading,
             description = value of Description,
             sortIndex = value of SortIndex,
             lastModified = value of LastModified
@@ -61,14 +61,14 @@ object CourseTable : Table<Course, Uuid>("courses"), VersionedWithTimestamp {
 object BasicCourseInfoTable : Table<Course.BasicInfo, Uuid>("courses") {
 
     val Id by idCol(Course.BasicInfo::id)
-    val UrlPathComponent by urlSegmentCol(Course.BasicInfo::urlPathComponent)
+    val UrlSegment by urlSegmentCol(Course.BasicInfo::urlSegment)
     val LinkText by linkTextCol(Course.BasicInfo::linkText)
 
     override fun idColumns(id: Uuid): Set<Pair<Column<Course.BasicInfo, *>, *>> = setOf(Id of id)
 
     override fun create(value: Value<Course.BasicInfo>): Course.BasicInfo = Course.BasicInfo(
             id = value of Id,
-            urlPathComponent = value of UrlPathComponent,
+            urlSegment = value of UrlSegment,
             linkText = value of LinkText
     )
 
@@ -81,7 +81,7 @@ class CourseDao(session: Session) : AbstractDao<Course, Uuid>(session, CourseTab
 
     private val idColName = CourseTable.Id.name
     private val sortIndexColName = CourseTable.SortIndex.name
-    private val urlComponentColName = CourseTable.UrlPathComponent.name
+    private val urlSegmentColName = CourseTable.UrlSegment.name
 
     private val basicInfoColumns = """ "id", "urlSegment", "linkText" """
 
@@ -109,17 +109,17 @@ class CourseDao(session: Session) : AbstractDao<Course, Uuid>(session, CourseTab
                     mapper = CourseTable.rowMapper()
             ).singleOrNull()
 
-    fun findByUrlComponent(component: String): Course? =
+    fun findByUrlSegment(segment: String): Course? =
             session.select(
-                    sql = """SELECT * FROM $tableName WHERE "$urlComponentColName" = :component LIMIT 1""",
-                    parameters = mapOf("component" to component),
+                    sql = """SELECT * FROM $tableName WHERE "$urlSegmentColName" = :segment LIMIT 1""",
+                    parameters = mapOf("segment" to segment),
                     mapper = CourseTable.rowMapper()
             ).singleOrNull()
 
-    fun findBasicByUrlComponent(component: String): Course.BasicInfo? =
+    fun findBasicByUrlSegment(segment: String): Course.BasicInfo? =
             session.select(
-                    sql = """SELECT $basicInfoColumns FROM $tableName WHERE "$urlComponentColName" = :component LIMIT 1""",
-                    parameters = mapOf("component" to component),
+                    sql = """SELECT $basicInfoColumns FROM $tableName WHERE "$urlSegmentColName" = :segment LIMIT 1""",
+                    parameters = mapOf("segment" to segment),
                     mapper = BasicCourseInfoTable.rowMapper()
             ).singleOrNull()
 

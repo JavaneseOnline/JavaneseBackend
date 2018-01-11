@@ -24,7 +24,7 @@ fun ArticleRssHandler(
                 RssItem(
                         title = it.basicInfo.linkText,
                         description = it.meta.description,
-                        link = "http://javanese.online/" + статьи + '/' + it.basicInfo.urlPathComponent.encodeForUrl() + '/',
+                        link = "http://javanese.online/" + статьи + '/' + it.basicInfo.urlSegment.encodeForUrl() + '/',
                         pubDate = it.createdAt
                 )
             }

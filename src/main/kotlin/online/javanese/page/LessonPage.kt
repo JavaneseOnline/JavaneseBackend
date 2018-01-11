@@ -40,7 +40,7 @@ class LessonPage(
             }
 
             h1(classes = "content-padding-v") {
-                +lesson.h1
+                +lesson.heading
             }
 
             article {

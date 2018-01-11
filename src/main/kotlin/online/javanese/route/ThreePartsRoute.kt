@@ -10,9 +10,9 @@ fun ThreePartsRoute(
         lessonHandler: suspend (course: Course.BasicInfo, chapter: Chapter.BasicInfo, lesson: Lesson, call: ApplicationCall) -> Unit
 ): suspend (ApplicationCall, String, String, String) -> Unit = f@ { call, first, second, third ->
 
-    courseDao.findBasicByUrlComponent(first)?.let { course ->
-        chapterDao.findBasicByUrlComponent(second)?.let { chapter ->
-            lessonDao.findByUrlSegment(third)?.let { lesson ->
+    courseDao.findBasicByUrlSegment(first)?.let { course ->
+        chapterDao.findBasicByUrlSegment(course.id, second)?.let { chapter ->
+            lessonDao.findByUrlSegment(chapter.id, third)?.let { lesson ->
                 return@f lessonHandler(course, chapter, lesson, call)
             }
         }

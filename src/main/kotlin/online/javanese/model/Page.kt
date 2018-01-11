@@ -8,11 +8,11 @@ import java.time.LocalDateTime
 
 class Page(
         val id: Uuid,
-        val urlPathComponent: String,
+        val urlSegment: String,
         val magic: Magic,
         val meta: Meta,
         val headMarkup: Html,
-        val h1: String,
+        val heading: String,
         val bodyMarkup: Html,
         val beforeBodyEndMarkup: Html,
         val lastModified: LocalDateTime
@@ -25,13 +25,13 @@ class Page(
 object PageTable : Table<Page, Uuid>("pages"), VersionedWithTimestamp {
 
     val Id by idCol(Page::id)
-    val UrlPathComponent by urlSegmentCol(Page::urlPathComponent)
+    val UrlSegment by urlSegmentCol(Page::urlSegment)
     val Magic by col(Page::magic, name = "magic", default = Page.Magic.Index)
     val MetaTitle by metaTitleCol(Page::meta)
     val MetaDescription by metaDescriptionCol(Page::meta)
     val MetaKeywords by metaKeywordsCol(Page::meta)
     val HeadMarkup by col(Page::headMarkup, name = "headMarkup")
-    val H1 by headingCol(Page::h1)
+    val Heading by headingCol(Page::heading)
     val BodyMarkup by col(Page::bodyMarkup, name = "bodyMarkup")
     val BeforeBodyEndMarkup by col(Page::beforeBodyEndMarkup, name = "beforeBodyEndMarkup")
     val LastModified by lastModifiedCol(Page::lastModified)
@@ -40,14 +40,14 @@ object PageTable : Table<Page, Uuid>("pages"), VersionedWithTimestamp {
 
     override fun create(value: Value<Page>): Page = Page(
             id = value of Id,
-            urlPathComponent = value of UrlPathComponent,
+            urlSegment = value of UrlSegment,
             magic = value of Magic,
             meta = Meta(
                     title = value of MetaTitle,
                     description = value of MetaDescription,
                     keywords = value of MetaKeywords
             ),
-            h1 = value of H1,
+            heading = value of Heading,
             bodyMarkup = value of BodyMarkup,
             headMarkup = value of HeadMarkup,
             beforeBodyEndMarkup = value of BeforeBodyEndMarkup,
@@ -61,7 +61,7 @@ class PageDao(
 ) : AbstractDao<Page, Uuid>(session, PageTable, PageTable.Id.property) {
 
     private val tableName = PageTable.name
-    private val urlPathComponentColName = PageTable.UrlPathComponent.name
+    private val urlPathComponentColName = PageTable.UrlSegment.name
     private val magicColName = PageTable.Magic.name
 
     fun findAll(): List<Page> =
@@ -70,20 +70,16 @@ class PageDao(
                     mapper = PageTable.rowMapper()
             )
 
-    fun findByUrlPathComponent(component: String) =
+    fun findByUrlSegment(segment: String) =
             session.select(
-                    sql = """SELECT *
-                        |FROM $tableName
-                        |WHERE "$urlPathComponentColName" = :component""".trimMargin(),
-                    parameters = mapOf("component" to component),
+                    sql = """SELECT * FROM $tableName WHERE "$urlPathComponentColName" = :segment""",
+                    parameters = mapOf("segment" to segment),
                     mapper = PageTable.rowMapper()
             ).singleOrNull()
 
     fun findByMagic(magic: Page.Magic) =
             session.select(
-                    sql = """SELECT *
-                        |FROM $tableName
-                        |WHERE "$magicColName" = :magic""".trimMargin(),
+                    sql = """SELECT * FROM $tableName WHERE "$magicColName" = :magic""",
                     parameters = mapOf("magic" to magic.name),
                     mapper = PageTable.rowMapper()
             ).singleOrNull()

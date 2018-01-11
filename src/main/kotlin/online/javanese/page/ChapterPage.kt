@@ -37,7 +37,7 @@ class ChapterPage(
 
             main {
                 h1(classes = "content-padding-v") {
-                    +chapter.h1
+                    +chapter.heading
                 }
 
                 unsafe {
