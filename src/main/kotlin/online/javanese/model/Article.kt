@@ -14,14 +14,15 @@ class Article(
         val bodyMarkup: Html,
         val published: Boolean,
         val vkPostInfo: VkPostInfo?,
-        val createdAt: LocalDateTime,
         val lastModified: LocalDateTime
 ) {
 
     class BasicInfo(
             val id: Uuid,
             val linkText: String,
+            val description_duplicatesMetaDescription: String,
             val urlSegment: String,
+            val createdAt: LocalDateTime,
             val lastModified: LocalDateTime,
             val pinned: Boolean
     )
@@ -54,7 +55,7 @@ object ArticleTable : Table<Article, Uuid>("articles") {
     val VkPostId by col(Article::vkPostIdOrNull, name = "vkPostId")
     val VkPostHash by col(Article::vkPostHashOrNull, name = "vkPostHash")
 
-    val CreatedAt by col(Article::createdAt, name = "createdAt")
+    val CreatedAt by col(Article.BasicInfo::createdAt, Article::basicInfo, name = "createdAt")
     val LastModified by lastModifiedCol(Article::lastModified)
     val Pinned by col(Article.BasicInfo::pinned, Article::basicInfo, name = "pinned")
 
@@ -66,8 +67,10 @@ object ArticleTable : Table<Article, Uuid>("articles") {
             basicInfo = Article.BasicInfo(
                     id = value of Id,
                     linkText = value of LinkText,
+                    description_duplicatesMetaDescription = value of MetaDescription,
                     urlSegment = value of UrlSegment,
                     lastModified = value of LastModified,
+                    createdAt = value of CreatedAt,
                     pinned = value of Pinned
             ),
             meta = Meta(
@@ -82,7 +85,6 @@ object ArticleTable : Table<Article, Uuid>("articles") {
                     vkPostId = value of VkPostId,
                     vkPostHash = value of VkPostHash
             ),
-            createdAt = value of CreatedAt,
             lastModified = value of LastModified
     )
 
@@ -103,7 +105,9 @@ object BasicArticleInfoTable : Table<Article.BasicInfo, Uuid>("articles") {
 
     val Id by idCol(Article.BasicInfo::id)
     val LinkText by linkTextCol(Article.BasicInfo::linkText)
+    val MetaDescription by col(Article.BasicInfo::description_duplicatesMetaDescription, name = "metaDescription")
     val UrlSegment by urlSegmentCol(Article.BasicInfo::urlSegment)
+    val CreatedAt by col(Article.BasicInfo::createdAt, name = "createdAt")
     val LastModified by lastModifiedCol(Article.BasicInfo::lastModified)
     val Pinned by col(Article.BasicInfo::pinned, name = "pinned")
 
@@ -113,7 +117,9 @@ object BasicArticleInfoTable : Table<Article.BasicInfo, Uuid>("articles") {
     override fun create(value: Value<Article.BasicInfo>): Article.BasicInfo = Article.BasicInfo(
             id = value of Id,
             linkText = value of LinkText,
+            description_duplicatesMetaDescription = value of MetaDescription,
             urlSegment = value of UrlSegment,
+            createdAt = value of CreatedAt,
             lastModified = value of LastModified,
             pinned = value of Pinned
     )
@@ -126,7 +132,7 @@ class ArticleDao(
 ) : AbstractDao<Article, Uuid>(session, ArticleTable, ArticleTable.Id.property) {
 
     private val tableName = ArticleTable.name
-    private val basicCols = """"id", "linkText", "urlSegment", "lastModified", "pinned" """
+    private val basicCols = """"id", "linkText", "metaDescription", "urlSegment", "createdAt", "lastModified", "pinned" """
     private val urlComponentColName = ArticleTable.UrlSegment.name
     private val publishedColName = ArticleTable.Published.name
     private val createdAtColName = ArticleTable.CreatedAt.name
@@ -141,13 +147,6 @@ class ArticleDao(
             session.select(
                     sql = """SELECT $basicCols FROM "$tableName" WHERE "$publishedColName" = true $naturalOrder""",
                     mapper = BasicArticleInfoTable.rowMapper()
-            )
-
-    @Deprecated(message = "shouldn't bulk-select whole articles")
-    fun findAllPublished(): List<Article> =
-            session.select(
-                    sql = """SELECT * FROM "$tableName" WHERE "$publishedColName" = true $naturalOrder""",
-                    mapper = ArticleTable.rowMapper()
             )
 
     fun findByUrlSegment(segment: String): Article? =

@@ -34,6 +34,11 @@ object Russian : Language {
         }
     }
 
+    override val articlesFeedInfo: Language.FeedInfo = object : Language.FeedInfo {
+        override val title: String get() = "Статьи на Javanese.Online"
+        override val description: String get() = "Статьи о Java и Kotlin, JVM и Android"
+    }
+
     override val siteTitle: String get() = "Javanese"
     override val error: String get() = "Ошибка"
     override val httpErrors: Map<Int, String> = hashMapOf(

@@ -3,6 +3,7 @@ package online.javanese.locale
 import online.javanese.model.TaskErrorReport
 
 interface Language {
+
     val sandbox: SandboxLanguage
 
     interface SandboxLanguage {
@@ -30,6 +31,13 @@ interface Language {
             val errorDescription: String
             val webSocketError: String
         }
+    }
+
+    val articlesFeedInfo: FeedInfo
+
+    interface FeedInfo {
+        val title: String
+        val description: String
     }
 
     val siteTitle: String

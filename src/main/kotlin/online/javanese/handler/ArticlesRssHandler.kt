@@ -4,27 +4,34 @@ import io.ktor.application.ApplicationCall
 import io.ktor.http.ContentType
 import io.ktor.response.respondWrite
 import io.ktor.util.escapeHTML
-import online.javanese.model.ArticleDao
-import online.javanese.model.RssItem
-import online.javanese.page.encodeForUrl
+import online.javanese.locale.Language
+import online.javanese.model.*
+import online.javanese.page.Link
 import java.text.SimpleDateFormat
 import java.time.ZoneId
 import java.util.*
 
-private val статьи = "статьи".encodeForUrl() // fixme
+
 private val timeFormat = SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z", Locale.US)
 
 fun ArticleRssHandler(
-        articleDao: ArticleDao
+        pageDao: PageDao,
+        articleDao: ArticleDao,
+        pageLink: Link<Page>,
+        articleLink: Link<Article.BasicInfo>,
+        siteUrl: String,
+        feedInfo: Language.FeedInfo
 ): suspend (ApplicationCall) -> Unit = { call ->
 
+    val articlesUrl = siteUrl + pageLink.url(pageDao.findByMagic(Page.Magic.Articles)!!)
+
     val items = articleDao
-            .findAllPublished()
+            .findAllBasicPublished()
             .map {
                 RssItem(
-                        title = it.basicInfo.linkText,
-                        description = it.meta.description,
-                        link = "http://javanese.online/" + статьи + '/' + it.basicInfo.urlSegment.encodeForUrl() + '/',
+                        title = it.linkText,
+                        description = it.description_duplicatesMetaDescription,
+                        link = siteUrl + articleLink.url(it),
                         pubDate = it.createdAt
                 )
             }
@@ -34,17 +41,17 @@ fun ArticleRssHandler(
         write("""<rss version="2.0">""")
 
         write("<channel>")
-        write("<title>Статьи на Javanese.Online</title>") // todo: resources
-        write("<description>Статьи о Java, Kotlin и Android</description>")
-        write("<link>http://javanese.online/%D1%81%D1%82%D0%B0%D1%82%D1%8C%D0%B8/</link>") // todo: real page
+        write("<title>"); write(feedInfo.title.escapeHTML()); write("</title>")
+        write("<description>"); write(feedInfo.description.escapeHTML()); write("</description>")
+        write("<link>"); write(articlesUrl.escapeHTML()); write("</link>")
 
         items.forEach {
             write("<item>")
             write("<title>"); write(it.title.escapeHTML()); write("</title>")
             write("<description>"); write(it.description.escapeHTML()); write("</description>")
             write("<link>"); write(it.link.escapeHTML()); write("</link>")
-            write("<pubDate>");
-            write(timeFormat.format(Date.from(it.pubDate.atZone(ZoneId.systemDefault()).toInstant())));
+            write("<pubDate>")
+            write(timeFormat.format(Date.from(it.pubDate.atZone(ZoneId.systemDefault()).toInstant())))
             write("</pubDate>")
             write("</item>")
         }

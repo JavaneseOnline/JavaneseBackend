@@ -163,7 +163,8 @@ object JavaneseServer {
             }
         }
 
-        val articleRssHandler = ArticleRssHandler(articleDao)
+        val articleRssHandler =
+                ArticleRssHandler(pageDao, articleDao, pageLink, articleLink, config.siteUrl, language.articlesFeedInfo)
 
         val taskErrorReportDao = TaskErrorReportDao(session)
 
