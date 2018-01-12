@@ -29,7 +29,7 @@ fun TwoPartsRoute(
         Unit
     }
 
-    courseDao.findBasicByUrlSegment(first)?.let { course -> // todo: this lookup may be optimized
+    courseDao.findBasicByUrlSegment(first)?.let { course ->
         chapterDao.findByUrlSegment(course.id, second)?.let { chapter ->
             return@f chapterHandler(course, chapter, call)
         }

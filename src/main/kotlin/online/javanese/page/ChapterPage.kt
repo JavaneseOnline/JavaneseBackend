@@ -10,7 +10,7 @@ class ChapterPage(
         private val indexPage: Page,
         private val treePage: Page,
         private val course: Course.BasicInfo,
-        private val chapter: Chapter, // fixme: basic info here
+        private val chapter: Chapter,
         private val lessons: Lessons,
         private val previousAndNext: Pair<Chapter.BasicInfo?, Chapter.BasicInfo?>,
         private val pageLink: Link<Page>,

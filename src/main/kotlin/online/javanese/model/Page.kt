@@ -6,7 +6,8 @@ import online.javanese.Html
 import online.javanese.krud.kwery.Uuid
 import java.time.LocalDateTime
 
-class Page(
+
+class Page( // todo: introduce BasicInfo
         val id: Uuid,
         val urlSegment: String,
         val magic: Magic,
@@ -17,7 +18,7 @@ class Page(
         val beforeBodyEndMarkup: Html,
         val lastModified: LocalDateTime
 ) {
-    enum class Magic { // todo: transform to sealed class
+    enum class Magic { // todo: re-think arch & eliminate
         Index, Tree, Articles, CodeReview
     }
 }

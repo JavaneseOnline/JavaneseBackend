@@ -113,6 +113,7 @@ object JavaneseServer {
 
         val layout = MainLayout(config.exposedStaticDir, language)
 
+        // fixme: eliminate these OnePart, TwoPart, ThreePart route handlers by more generic things
         val route1 =
                 OnePartRoute(
                         pageDao,
