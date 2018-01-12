@@ -59,6 +59,8 @@ object JavaneseServer {
         val lessonDao = LessonDao(session)
         val chapterDao = ChapterDao(session)
         val courseDao = CourseDao(session)
+
+        val codeReviewCandidateDao = CodeReviewCandidateDao(session)
         val codeReviewDao = CodeReviewDao(session)
 
 
@@ -170,8 +172,6 @@ object JavaneseServer {
         val submitTaskErrorReport =
                 SubmitTaskErrorReportHandler(taskErrorReportDao)
 
-        val codeReviewCandidateDao = CodeReviewCandidateDao(session)
-
         val submitCodeReviewCandidate =
                 SubmitCodeReviewCandidateHandler(codeReviewCandidateDao)
 
@@ -252,4 +252,3 @@ object JavaneseServer {
 }
 
 // todo: make DAO functions suspend
-// todo: '200 Ok' with 'ok' body should be replaced with 'No content'

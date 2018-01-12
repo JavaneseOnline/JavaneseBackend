@@ -1,9 +1,9 @@
 package online.javanese.handler
 
 import io.ktor.application.ApplicationCall
-import io.ktor.http.ContentType
+import io.ktor.http.HttpStatusCode
 import io.ktor.request.receiveParameters
-import io.ktor.response.respondText
+import io.ktor.response.respond
 import online.javanese.krud.kwery.kweryEntityMapping.MapToKweryEntityMapper
 import online.javanese.krud.toStringMap
 import online.javanese.model.CodeReviewCandidateDao
@@ -26,10 +26,12 @@ fun SubmitCodeReviewCandidateHandler(
                 }
             }
 
+    // todo: validate
+
     return { call ->
         val valuesMap = call.receiveParameters()
         val reviewCandidate = valuesToTaskErrorReport(valuesMap.toStringMap())
         reviewCandidateDao.insert(reviewCandidate)
-        call.respondText("ok", ContentType.Text.Plain)
+        call.respond(HttpStatusCode.NoContent, "")
     }
 }
