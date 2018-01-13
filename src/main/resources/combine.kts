@@ -102,7 +102,9 @@ fun minifyJs(name: String) {
     if (minified.exists() && minified.isFile) {
         check(minified.delete())
     }
-    check(Runtime.getRuntime().exec(arrayOf("uglifyjs", "-o", minified.path, src.path)).waitFor() == 0)
+    val cmd = arrayOf("uglifyjs", "-o", minified.path, src.path)
+    println(cmd.toList())
+    check(Runtime.getRuntime().exec(cmd).waitFor() == 0)
 
     print(minified.name)
     println(" has been created.")
