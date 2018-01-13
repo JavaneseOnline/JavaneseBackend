@@ -1,6 +1,9 @@
 package online.javanese.page
 
+import kotlinx.html.A
 import kotlinx.html.FlowOrInteractiveOrPhrasingContent
+import kotlinx.html.a
+import kotlinx.html.title
 import java.net.URLDecoder
 import java.net.URLEncoder
 
@@ -10,9 +13,13 @@ import java.net.URLEncoder
 /**
  * Represents a web link to an object.
  */
-interface Link<T> {
-    fun insert(doc: FlowOrInteractiveOrPhrasingContent, obj: T) =
+interface Link<in T> {
+    fun render(doc: FlowOrInteractiveOrPhrasingContent, obj: T) =
             doc.a(href = url(obj), titleAndText = linkText(obj))
+
+    fun renderCustom(doc: FlowOrInteractiveOrPhrasingContent, obj: T, block: A.(text: String) -> Unit) =
+            doc.a(href = url(obj), title = linkText(obj), block = block)
+
     fun linkText(obj: T): String
     fun url(obj: T): String
 }
@@ -98,3 +105,10 @@ class ThreeSegmentDirLinkWithFragment<T>(
 
 fun String.encodeForUrl(): String = URLEncoder.encode(this, "UTF-8").replace("+", "%20")
 fun String.decodeFromUrl(): String = URLDecoder.decode(this, "UTF-8")
+
+@Suppress("NOTHING_TO_INLINE")
+inline fun FlowOrInteractiveOrPhrasingContent.a(href: String, title: String, noinline block: A.(String) -> Unit) =
+        a(href = href) aTag@ {
+            this@aTag.title = title
+            block(title)
+        }

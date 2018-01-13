@@ -25,7 +25,7 @@ class TreePage(
     override fun bodyMarkup(body: BODY) = with(body) {
         contentCardDiv {
             nav {
-                pageLink.insert(this, indexPage)
+                pageLink.render(this, indexPage)
             }
 
             h1(classes = "content-padding-v") {

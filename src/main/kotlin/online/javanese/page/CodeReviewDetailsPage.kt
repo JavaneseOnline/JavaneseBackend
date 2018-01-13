@@ -20,9 +20,9 @@ class CodeReviewDetailsPage(
         contentCardDiv {
 
             nav {
-                pageLink.insert(this, indexPage)
+                pageLink.render(this, indexPage)
                 +" / "
-                pageLink.insert(this, codeReviewsPage)
+                pageLink.render(this, codeReviewsPage)
             }
 
             h1 {

@@ -19,7 +19,7 @@ class CodeReviewPage(
     override fun bodyMarkup(body: BODY) = with(body) {
         contentCardDiv {
             nav {
-                pageLink.insert(this, indexPage)
+                pageLink.render(this, indexPage)
             }
 
             div(classes = "no-pad mdl-tabs mdl-js-tabs mdl-js-ripple-effect content-padding-b") {

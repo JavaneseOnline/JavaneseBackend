@@ -22,7 +22,7 @@ class ArticlesPage(
     override fun bodyMarkup(body: BODY) = with(body) {
         contentCardDiv {
             nav {
-                pageLink.insert(this, indexPage)
+                pageLink.render(this, indexPage)
             }
 
             main {
@@ -42,7 +42,7 @@ class ArticlesPage(
                             if (article.pinned)
                                 img(src = "$static/pin.png")
 
-                            articleLink.insert(this, article)
+                            articleLink.render(this, article)
                         }
                     }
                 }

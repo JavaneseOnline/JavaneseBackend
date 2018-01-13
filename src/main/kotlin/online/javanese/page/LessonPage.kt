@@ -30,13 +30,13 @@ class LessonPage(
     override fun bodyMarkup(body: BODY) = with(body) {
         contentCardMain {
             nav {
-                pageLink.insert(this, index)
+                pageLink.render(this, index)
                 +" / "
-                pageLink.insert(this, treePage)
+                pageLink.render(this, treePage)
                 +" / "
-                courseLink.insert(this, course)
+                courseLink.render(this, course)
                 +" / "
-                chapterLink.insert(this, chapter)
+                chapterLink.render(this, chapter)
             }
 
             h1(classes = "content-padding-v") {

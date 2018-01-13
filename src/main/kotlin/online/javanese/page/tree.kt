@@ -20,7 +20,7 @@ fun FlowContent.coursesTree(
 ) = ul {
     courses.forEach { (course, chapters) ->
         li {
-            courseLink.insert(this, course)
+            courseLink.render(this, course)
 
             chaptersTree(chapters, chapterLink, lessonLink, taskLink, mode)
         }
@@ -36,7 +36,7 @@ fun FlowContent.chaptersTree(
 ) = ul {
     chapters.forEach { (chapter, lessons) ->
         li {
-            chapterLink.insert(this, chapter)
+            chapterLink.render(this, chapter)
 
             mode.lessonsTree(this, lessons, lessonLink, taskLink)
         }
@@ -52,7 +52,7 @@ enum class TreeMode {
             ul {
                 lessons.forEach { (lesson, _) ->
                     li {
-                        lessonLink.insert(this, lesson)
+                        lessonLink.render(this, lesson)
                     }
                 }
             }
@@ -83,7 +83,7 @@ enum class TreeMode {
 fun FlowContent.tasksTree(tasks: List<Task.BasicInfo>, linkToTask: Link<Task.BasicInfo>) = ul {
     tasks.forEach { task ->
         li {
-            linkToTask.insert(this, task)
+            linkToTask.render(this, task)
         }
     }
 }
@@ -96,18 +96,18 @@ fun <T : Any> FlowContent.prevNextPane(
         nav(classes = classes("mdl-grid mdl-grid--no-spacing", moreClasses)) {
             p(classes = "mdl-cell mdl-cell--4-col mdl-cell--6-col-desktop") {
                 previous?.let {
-                    a(href = tLink.url(it), titleAndText = prevText)
+                    tLink.renderCustom(this, it) { +prevText }
                 }
             }
 
             p(classes = "mdl-cell mdl-cell--4-col-tablet mdl-cell--6-col-desktop mdl-cell--hide-phone mdl-typography--text-right") {
                 next?.let {
-                    a(href = tLink.url(it), titleAndText = nextText)
+                    tLink.renderCustom(this, it) { +nextText }
                 }
             }
             p(classes = "mdl-cell mdl-cell--4-col mdl-cell--hide-desktop mdl-cell--hide-tablet") {
                 next?.let {
-                    a(href = tLink.url(it), titleAndText = nextText)
+                    tLink.renderCustom(this, it) { +nextText }
                 }
             }
         }

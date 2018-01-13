@@ -21,9 +21,9 @@ class ArticlePage(
     override fun bodyMarkup(body: BODY) = with(body) {
         contentCardMain {
             nav {
-                pageLink.insert(this, indexPage)
+                pageLink.render(this, indexPage)
                 +" / "
-                pageLink.insert(this, articlesPage)
+                pageLink.render(this, articlesPage)
             }
 
             h1(classes = "content-padding-v") {

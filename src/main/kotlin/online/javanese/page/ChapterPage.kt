@@ -28,11 +28,11 @@ class ChapterPage(
     override fun bodyMarkup(body: BODY) = with(body) {
         contentCardDiv {
             nav {
-                pageLink.insert(this, indexPage)
+                pageLink.render(this, indexPage)
                 +" / "
-                pageLink.insert(this, treePage)
+                pageLink.render(this, treePage)
                 +" / "
-                courseLink.insert(this, course)
+                courseLink.render(this, course)
             }
 
             main {

@@ -27,9 +27,9 @@ class CoursePage(
     override fun bodyMarkup(body: BODY) = with(body) {
         contentCardDiv {
             nav {
-                pageLink.insert(this, indexPage)
+                pageLink.render(this, indexPage)
                 +" / "
-                pageLink.insert(this, treePage)
+                pageLink.render(this, treePage)
             }
 
             main {
