@@ -41,16 +41,17 @@ $('a').click(function() {
 });
 
 // switch to tab if location.hash set
-(function(h, d, a, m) {
-    if (h.length > 1) {
-        var t = d.querySelector('a[href="' + h + '"]');
-        var p = d.getElementById(h.substr(1));
+(function(s, u, k, a) {
+    if (s.length > 1) {
+        var t = u.querySelector('a[href="' + s + '"]');
+        var p = u.getElementById(s.substr(1));
         if (t == null || p == null) {
             return;
         }
-        $(p.parentNode).find('.' + a).removeClass(a);
-        $(t)[m](a);
-        $(p)[m](a);
+        $(p.parentNode).find('.' + k).removeClass(k);
+        $(t)[a](k);
+        $(p)[a](k);
+        setTimeout(function() { window.location.hash = s; }, 1);
     }
 })(window.location.hash, document, 'is-active', 'addClass');
 
