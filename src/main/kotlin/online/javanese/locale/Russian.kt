@@ -51,8 +51,8 @@ object Russian : Language {
 //    index.title=Главная
 //    course.title=Курс
 
-    override val lessonsTreeTab: String get() = "Задачи"
-    override val tasksTreeTab: String get() = "Материалы"
+    override val lessonsTreeTab: String get() = "Уроки"
+    override val tasksTreeTab: String get() = "Задачи"
 //    tree.course=Курс
 //    tree.chapter=Глава
 //    tree.lesson=Урок
