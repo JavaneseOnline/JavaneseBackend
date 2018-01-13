@@ -46,3 +46,4 @@ local.properties
 .gradle/
 build/
 etc/static-prepared/
+src/main/resources/.sass-cache

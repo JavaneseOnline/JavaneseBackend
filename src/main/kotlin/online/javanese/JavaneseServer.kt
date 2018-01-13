@@ -6,6 +6,8 @@ import io.ktor.application.install
 import io.ktor.auth.UserIdPrincipal
 import io.ktor.auth.authentication
 import io.ktor.auth.basicAuthentication
+import io.ktor.content.files
+import io.ktor.content.static
 import io.ktor.features.StatusPages
 import io.ktor.html.respondHtml
 import io.ktor.http.HttpStatusCode
@@ -191,6 +193,12 @@ object JavaneseServer {
         val noUa = UserAgent("", "", "")
         val stat = HitStat(InMemoryStatTable({ noUa }, { it.endsWith(".css") || it.endsWith(".js") }))
 
+        val serveResourcesAs = (config.listenHost + ":" + config.listenPort).let { hostAndPort ->
+            val idx = config.exposedStaticDir.indexOf(hostAndPort)
+
+            if (idx < 0) null else config.exposedStaticDir.substring(idx + hostAndPort.length)
+        }
+
         embeddedServer(Netty, port = config.listenPort, host = config.listenHost) {
             install(StatusPages) {
                 exception<NotFoundException> {
@@ -243,6 +251,12 @@ object JavaneseServer {
                     }
                 }
 
+                serveResourcesAs?.let {
+                    println("Serving static resources from a directory is intended for debug only. Exposing as $it")
+                    static(it) {
+                        files("./etc/static-prepared/")
+                    }
+                }
                 krudStaticResources("admin-static")
             }
 

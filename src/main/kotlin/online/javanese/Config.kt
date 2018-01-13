@@ -10,7 +10,8 @@ class Config(
     val dbUser: String = props.getProperty("user")
     val dbPassword: String = props.getProperty("password")
 
-    // /path/to/static/files/whatever
+    // //static.javanese.online in production,
+    // //$listenHost:$listenPort/s/t/a/t/i/c (e. g. //localhost:8080/s/t/a/t/i/c) to serve static content from classpath
     val exposedStaticDir: String = props.getProperty("exposedStaticDir")
 
     // http://javanese.online
