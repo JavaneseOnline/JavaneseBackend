@@ -17,6 +17,7 @@ interface Layout : (HTML, Layout.Page) -> Unit {
 
 class MainLayout(
         private val static: String,
+        private val mainScript: String,
         private val language: Language
 ) : Layout {
 
@@ -55,7 +56,7 @@ class MainLayout(
 
             // Vue.js, Zepto, Material Design Lite, dialog polyfill, highlight.js, trace, scroll to top,
             // blur link on click, mdl tabs fix to work with url #fragment, async form handling
-            script(src = "$static/vue_zepto_mdl_dialog_highlight_trace_scroll_unfocus_tabs_form.min.js")
+            script(src = "$static/$mainScript")
 
             div(classes = "mdl-js-snackbar mdl-snackbar") {
                 id = "toast-container"
