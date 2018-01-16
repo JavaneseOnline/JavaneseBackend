@@ -63,4 +63,7 @@ interface Language {
 
     val articleComments: String
 
+    val readCodeReviews: String
+    val submitCodeReview: String
+
 }

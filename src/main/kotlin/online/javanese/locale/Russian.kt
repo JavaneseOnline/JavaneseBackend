@@ -71,4 +71,7 @@ object Russian : Language {
 
     override val articleComments: String get() = "Комментарии к статье"
 
+    override val readCodeReviews: String get() = "Читать"
+    override val submitCodeReview: String get() = "Разберите мой код!"
+
 }
