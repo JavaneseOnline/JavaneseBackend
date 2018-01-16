@@ -30,10 +30,8 @@ class MainLayout(
 
             title("${page.meta.title} — ${language.siteTitle}")
 
-            // fonts & icons
-            styleLink("//fonts.googleapis.com/css?family=Tenor+Sans%7CPT+Sans+Caption%7CMaterial+Icons")
-            // mdl, dialog polyfill, highlight darkula, custom styles, sandbox, trace
-            styleLink("$static/main.min.css")
+            // Tenor Sans, PT Sans, Material Icons; mdl, dialog polyfill, highlight darkula, custom styles, sandbox, trace
+            styleLink("$static/main.min.css?1")
 
             link(rel = "alternate", type = "application/rss+xml", href = "/articles.rss") {
                 attributes["title"] = "Статьи"
