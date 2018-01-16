@@ -11,7 +11,9 @@ class ArticlePage(
         private val articlesPage: Page,
         private val article: Article,
         private val language: Language,
-        private val pageLink: Link<Page>
+        private val pageLink: Link<Page>,
+        private val static: String,
+        private val highlightScript: String
 ) : Layout.Page {
 
     override val meta: Meta get() = article.meta
@@ -67,6 +69,8 @@ class ArticlePage(
         }
     }
 
-    override fun scripts(body: BODY) = Unit
+    override fun scripts(body: BODY) = with(body) {
+        script(src = "$static/$highlightScript")
+    }
 
 }

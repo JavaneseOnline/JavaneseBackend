@@ -113,8 +113,8 @@ object JavaneseServer {
 
         val language = Russian
 
-        val mainScript = "vue_zepto_mdl_dialog_highlight_trace_scroll_unfocus_tabs_form.min.js?2"
-        val sandboxScript = "codemirror_clike_sandbox.min.js"
+        val mainScript = "vue_zepto_mdl_dialog_scroll_unfocus_tabs_form.min.js"
+        val sandboxScript = "highlight_trace_codemirror_clike_sandbox.min.js"
 
         val layout = MainLayout(config.exposedStaticDir, mainScript, language)
 
@@ -128,27 +128,34 @@ object JavaneseServer {
                                 ::IndexPage,
                                 { idx, tr, cs -> TreePage(idx, tr, cs, language, pageLink, courseLink, chapterLink, lessonLink, taskLink) },
                                 { idx, ar, articles -> ArticlesPage(idx, ar, articles, config.exposedStaticDir, pageLink, articleLink) },
-                                { idx, cr -> CodeReviewPage(idx, cr, codeReviewDao.findAll(), pageLink) }
+                                { idx, cr -> CodeReviewPage(idx, cr, codeReviewDao.findAll(), pageLink, language) }
                         ),
                         CourseHandler(
                                 pageDao, courseDao, chapterDao, lessonDao, taskDao, layout,
-                                { idx, tr, c, ct, pn -> CoursePage(idx, tr, c, ct, pn, pageLink, courseLink, chapterLink, lessonLink, taskLink, language) }
+                                { idx, tr, c, ct, pn -> CoursePage(
+                                        idx, tr, c, ct, pn,
+                                        pageLink, courseLink, chapterLink, lessonLink, taskLink, language
+                                ) }
                         )
                 )
 
         val route2 =
                 TwoPartsRoute(
                         pageDao, articleDao, courseDao, chapterDao, codeReviewDao,
-                        { idx, ar, ars, call ->
-                            call.respondHtml { layout(this, ArticlePage(idx, ar, ars, language, pageLink)) }
-                        },
+                        { idx, ar, ars, call -> call.respondHtml { layout(this, ArticlePage(
+                                idx, ar, ars, language, pageLink,
+                                config.exposedStaticDir, highlightScript = sandboxScript
+                        )) } },
                         ChapterHandler(
                                 pageDao, chapterDao, lessonDao, taskDao, layout,
-                                { idx, tr, crs, chp, chpt, prevNext ->
-                                    ChapterPage(idx, tr, crs, chp, chpt, prevNext, pageLink, courseLink, chapterLink, lessonLink, taskLink, language)
-                                }
+                                { idx, tr, crs, chp, chpt, prevNext -> ChapterPage(
+                                        idx, tr, crs, chp, chpt,
+                                        prevNext, pageLink, courseLink, chapterLink, lessonLink, taskLink, language
+                                ) }
                         ),
-                        { idx, cr, review, call -> call.respondHtml { layout(this, CodeReviewDetailsPage(idx, cr, review, pageLink)) } }
+                        { idx, cr, review, call -> call.respondHtml { layout(this, CodeReviewDetailsPage(
+                                idx, cr, review, pageLink, config.exposedStaticDir, highlightScript = sandboxScript
+                        )) } }
                 )
 
         val route3 =
@@ -156,9 +163,10 @@ object JavaneseServer {
                         courseDao, chapterDao, lessonDao,
                         LessonHandler(
                                 courseDao, chapterDao, lessonDao, taskDao, pageDao, layout,
-                                { idx, tr, crs, chp, l, lt, prNx ->
-                                    LessonPage(idx, tr, crs, chp, l, lt, prNx, config.exposedStaticDir, pageLink, courseLink, chapterLink, lessonLink, language, sandboxScript)
-                                }
+                                { idx, tr, crs, chp, l, lt, prNx -> LessonPage(
+                                        idx, tr, crs, chp, l, lt, prNx, config.exposedStaticDir,
+                                        pageLink, courseLink, chapterLink, lessonLink, language, sandboxScript
+                                ) }
                         )
                 )
 

@@ -7,8 +7,8 @@ val nl = charArrayOf('\n')
 val raw = "/home/miha/IdeaProjects/javanese/etc/static-raw/"
 val prepared = "/home/miha/IdeaProjects/javanese/etc/static-prepared/"
 
-val mainScript = "vue_zepto_mdl_dialog_highlight_trace_scroll_unfocus_tabs_form"
-val sandboxScript = "codemirror_clike_sandbox"
+val mainScript = "vue_zepto_mdl_dialog_scroll_unfocus_tabs_form"
+val sandboxScript = "highlight_trace_codemirror_clike_sandbox"
 
 val mainStyle = "css/main"
 val codeMirrorStyle = "sandbox/codemirror_ambiance"
@@ -36,8 +36,6 @@ fun combineAndUglifyMain(fileName: String) {
 
                 appendFrom(URL("https://code.getmdl.io/1.1.3/material.min.js"), it) // TODO: upgrade whole MDL
                 appendFrom(URL("https://raw.githubusercontent.com/GoogleChrome/dialog-polyfill/master/dialog-polyfill.js"), it)
-                appendFrom(File(raw + "js/trace.js"), it)
-                appendFrom(File(raw + "js/highlight.pack.js"), it)
                 appendFrom(File(raw + "js/scroll_unfocus_tabs.js"), it)
                 appendFrom(File(raw + "js/form.js"), it)
             }
@@ -46,6 +44,8 @@ fun combineAndUglifyMain(fileName: String) {
 
 fun combineAndUglifySandbox(fileName: String) {
     jsFile(prepared + fileName).assertNotExists().create().writer().use {
+                appendFrom(File(raw + "js/highlight.pack.js"), it)
+                appendFrom(File(raw + "js/trace.js"), it)
                 appendFrom(URL("https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.33.0/codemirror.min.js"), it)
                 appendFrom(URL("https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.33.0/mode/clike/clike.min.js"), it)
                 appendFrom(File(raw + "sandbox/sandbox.js"), it)

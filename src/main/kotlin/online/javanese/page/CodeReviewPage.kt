@@ -1,6 +1,7 @@
 package online.javanese.page
 
 import kotlinx.html.*
+import online.javanese.locale.Language
 import online.javanese.model.CodeReview
 import online.javanese.model.Meta
 import online.javanese.model.Page
@@ -9,7 +10,8 @@ class CodeReviewPage(
         private val indexPage: Page,
         private val model: Page,
         private val reviews: List<CodeReview>,
-        private val pageLink: Link<Page>
+        private val pageLink: Link<Page>,
+        private val language: Language
 ) : Layout.Page {
 
     override val meta: Meta get() = model.meta
@@ -25,8 +27,8 @@ class CodeReviewPage(
             div(classes = "no-pad mdl-tabs mdl-js-tabs mdl-js-ripple-effect content-padding-b") {
 
                 menu(classes = "mdl-tabs__tab-bar mdl-color-text--grey-600") {
-                    a(href = "#reviews", classes = "mdl-tabs__tab is-active") { +"Читать" } // todo: move to locale
-                    a(href = "#submit", classes = "mdl-tabs__tab") { +"Разберите мой код!" }
+                    a(href = "#reviews", classes = "mdl-tabs__tab is-active") { +language.readCodeReviews }
+                    a(href = "#submit", classes = "mdl-tabs__tab") { +language.submitCodeReview }
                 }
 
                 nav(classes = "mdl-tabs__panel is-active") {

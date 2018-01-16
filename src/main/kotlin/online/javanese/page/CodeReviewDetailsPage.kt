@@ -9,7 +9,9 @@ class CodeReviewDetailsPage(
         private val indexPage: Page,
         private val codeReviewsPage: Page,
         private val codeReview: CodeReview,
-        private val pageLink: Link<Page>
+        private val pageLink: Link<Page>,
+        private val static: String,
+        private val highlightScript: String
 ) : Layout.Page {
 
     override val meta: Meta get() = codeReview.meta
@@ -47,6 +49,8 @@ class CodeReviewDetailsPage(
         }
     }
 
-    override fun scripts(body: BODY) = Unit
+    override fun scripts(body: BODY) = with(body) {
+        script(src = "$static/$highlightScript")
+    }
 
 }
