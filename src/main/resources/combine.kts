@@ -66,15 +66,19 @@ fun String.withoutPrecedingDirs() = split('/').last()
 fun scssAndCsso(fileName: String) {
     val cssFile = cssFile(prepared + fileName.withoutPrecedingDirs()).assertNotExists().apply { parentFile.mkdirs() }
     val minCssFile = minCssFile(prepared + fileName.withoutPrecedingDirs())
+
     val scssCmd = arrayOf("scss", scssFile(raw + fileName).path, cssFile.path)
-    println(scssCmd.toList())
+    printSh(scssCmd)
     check(Runtime.getRuntime().exec(scssCmd).waitFor() == 0)
     check(cssMapFile(prepared + fileName.withoutPrecedingDirs()).delete())
-    println("Running CSSO...")
-    check(Runtime.getRuntime().exec(arrayOf("csso", cssFile.path, minCssFile.path)).waitFor() == 0)
+
+    val cssoCmd = arrayOf("csso", cssFile.path, minCssFile.path)
+    printSh(cssoCmd)
+    check(Runtime.getRuntime().exec(cssoCmd).waitFor() == 0)
     check(cssFile.delete())
+
     print(minCssFile.path)
-    println(" has been created.")
+    println(" has been created.\n")
 }
 
 fun File.assertNotExists() = apply { check(!exists()) }
@@ -97,17 +101,20 @@ fun appendFrom(file: File, output: OutputStreamWriter) {
 fun minifyJs(name: String) {
     val src = jsFile(name)
 
-    println("Running UglifyJS...")
     val minified = minJsFile(name)
     if (minified.exists() && minified.isFile) {
         check(minified.delete())
     }
     val cmd = arrayOf("uglifyjs", "-o", minified.path, src.path)
-    println(cmd.toList())
+    printSh(cmd)
     check(Runtime.getRuntime().exec(cmd).waitFor() == 0)
 
     print(minified.name)
-    println(" has been created.")
+    println(" has been created.\n")
 
     src.delete()
+}
+
+fun printSh(cmd: Array<out String>) {
+    println(cmd.joinToString(" "))
 }
