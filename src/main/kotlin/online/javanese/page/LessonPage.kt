@@ -18,7 +18,8 @@ class LessonPage(
         private val courseLink: Link<Course.BasicInfo>,
         private val chapterLink: Link<Chapter.BasicInfo>,
         private val lessonLink: Link<Lesson.BasicInfo>,
-        private val language: Language
+        private val language: Language,
+        private val sandboxScript: String
 ) : Layout.Page {
 
     override val meta: Meta get() = lesson.meta
@@ -213,7 +214,7 @@ class LessonPage(
             }
         }
 
-        script(src = "$static/codemirror_clike_sandbox.min.js")
+        script(src = "$static/$sandboxScript")
         script {
             val rt = language.sandbox.runtimeMessages
 

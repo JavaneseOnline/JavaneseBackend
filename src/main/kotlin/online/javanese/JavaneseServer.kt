@@ -113,11 +113,10 @@ object JavaneseServer {
 
         val language = Russian
 
-        val layout = MainLayout(
-                config.exposedStaticDir,
-                "vue_zepto_mdl_dialog_highlight_trace_scroll_unfocus_tabs_form.min.js?1",
-                language
-        )
+        val mainScript = "vue_zepto_mdl_dialog_highlight_trace_scroll_unfocus_tabs_form.min.js?2"
+        val sandboxScript = "codemirror_clike_sandbox.min.js"
+
+        val layout = MainLayout(config.exposedStaticDir, mainScript, language)
 
         // fixme: eliminate these OnePart, TwoPart, ThreePart route handlers by more generic things
         val route1 =
@@ -158,7 +157,7 @@ object JavaneseServer {
                         LessonHandler(
                                 courseDao, chapterDao, lessonDao, taskDao, pageDao, layout,
                                 { idx, tr, crs, chp, l, lt, prNx ->
-                                    LessonPage(idx, tr, crs, chp, l, lt, prNx, config.exposedStaticDir, pageLink, courseLink, chapterLink, lessonLink, language)
+                                    LessonPage(idx, tr, crs, chp, l, lt, prNx, config.exposedStaticDir, pageLink, courseLink, chapterLink, lessonLink, language, sandboxScript)
                                 }
                         )
                 )

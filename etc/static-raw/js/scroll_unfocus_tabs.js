@@ -51,7 +51,9 @@ $('a').click(function() {
         $(p.parentNode).find('.' + k).removeClass(k);
         $(t)[a](k);
         $(p)[a](k);
-        setTimeout(function() { window.location.hash = s; }, 1);
+        document.addEventListener("DOMContentLoaded", function(event) {
+            window.location.hash = s;
+        });
     }
 })(window.location.hash, document, 'is-active', 'addClass');
 
