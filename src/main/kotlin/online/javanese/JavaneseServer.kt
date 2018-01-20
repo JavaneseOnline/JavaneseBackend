@@ -202,7 +202,7 @@ object JavaneseServer {
                 SandboxWebSocketHandler(config, taskDao)
 
         val noUa = UserAgent("", "", "")
-        val stat = HitStat(InMemoryStatTable({ noUa }, { it.endsWith(".css") || it.endsWith(".js") }))
+        val stat = HitStat(InMemoryStatTable({ noUa }))
 
         val serveResourcesAs = (config.listenHost + ":" + config.listenPort).let { hostAndPort ->
             val idx = config.exposedStaticDir.indexOf(hostAndPort)
