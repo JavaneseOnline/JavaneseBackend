@@ -51,14 +51,10 @@ class LessonPage(
             }
 
             section(classes = "content-padding-v") {
-                script(src = "https://vk.com/js/api/openapi.js?136")
-                script(src = "https://vk.com/js/api/share.js?94") {
-                    charset = "windows-1251"
-                }
-                div {
-                    id ="vk_like"
-                    style = "display: inline-block"
-                }
+                vkOpenApiScript()
+                vkShareScript()
+
+                vkLikeButton()
 
                 // Put this script tag to the place, where the Share button will be
                 div {
@@ -66,8 +62,8 @@ class LessonPage(
                     script {
                         unsafe {
                             +VkInitWidgetsScriptLine
-                            +"VK.Widgets.Like('vk_like', { type: 'button' }, '${lesson.basicInfo.id}');"
-                            +"document.write(VK.Share.button(false, { type: 'round', text: 'Сохранить' }));"
+                            +initVkWidgetJs(lesson.basicInfo.id.toString())
+                            +documentWriteShareButton(language.shareLessonButtonLabel)
                         }
                     }
                 }

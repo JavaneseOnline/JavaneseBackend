@@ -60,6 +60,7 @@ interface Language {
     val lessonComments: String
     val nextLesson: String
     val previousLesson: String
+    val shareLessonButtonLabel: String
 
     val articleComments: String
 

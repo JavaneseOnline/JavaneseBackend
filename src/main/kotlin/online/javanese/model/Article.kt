@@ -27,14 +27,6 @@ class Article(
             val pinned: Boolean
     )
 
-    class VkPostInfo(
-            val id: String,
-            val hash: String
-    )
-
-    internal val vkPostIdOrNull get() = vkPostInfo?.id ?: ""
-    internal val vkPostHashOrNull get() = vkPostInfo?.hash ?: ""
-
 }
 
 
@@ -52,8 +44,8 @@ object ArticleTable : Table<Article, Uuid>("articles") {
     val BodyMarkup by col(Article::bodyMarkup, name = "bodyMarkup")
     val Published by col(Article::published, name = "published")
 
-    val VkPostId by col(Article::vkPostIdOrNull, name = "vkPostId")
-    val VkPostHash by col(Article::vkPostHashOrNull, name = "vkPostHash")
+    val VkPostId by vkPostIdCol(Article::vkPostInfo)
+    val VkPostHash by vkPostHashCol(Article::vkPostInfo)
 
     val CreatedAt by col(Article.BasicInfo::createdAt, Article::basicInfo, name = "createdAt")
     val LastModified by lastModifiedCol(Article::lastModified)
@@ -81,22 +73,12 @@ object ArticleTable : Table<Article, Uuid>("articles") {
             heading = value of Heading,
             bodyMarkup = value of BodyMarkup,
             published = value of Published,
-            vkPostInfo = vkPostInfoOrNull(
-                    vkPostId = value of VkPostId,
-                    vkPostHash = value of VkPostHash
+            vkPostInfo = VkPostInfo.fromComponentsOrNull(
+                    id = value of VkPostId,
+                    hash = value of VkPostHash
             ),
             lastModified = value of LastModified
     )
-
-    private fun vkPostInfoOrNull(vkPostId: String, vkPostHash: String): Article.VkPostInfo? {
-        if (vkPostId.isBlank()) return null
-        if (vkPostHash.isBlank()) return null
-        return Article.VkPostInfo(
-                id = vkPostId,
-                hash = vkPostHash
-        )
-    }
-
 
 }
 

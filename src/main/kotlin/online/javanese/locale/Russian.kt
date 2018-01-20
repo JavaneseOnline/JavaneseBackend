@@ -68,6 +68,7 @@ object Russian : Language {
     override val lessonComments: String get() = "Комментарии к уроку"
     override val nextLesson: String get() = "Следующий урок"
     override val previousLesson: String get() = "Предыдущий урок"
+    override val shareLessonButtonLabel: String get() = "Поделиться"
 
     override val articleComments: String get() = "Комментарии к статье"
 

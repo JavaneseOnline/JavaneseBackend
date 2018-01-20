@@ -32,30 +32,15 @@ class ArticlePage(
                 +article.heading
             }
 
-            script(src = "//vk.com/js/api/openapi.js?136") {
-                attributes["id"] = "vk_openapi_js"
-            }
-
             article {
                 unsafe {
                     +article.bodyMarkup
                 }
             }
 
+            vkOpenApiScript() // required also for comments
             article.vkPostInfo?.let { postInfo ->
-                section {
-                    div {
-                        id = "vk_post_${article.vkPostInfo.id}"
-                    }
-                    script {
-                        val vkPostId = postInfo.id
-                        val vkPostHash = postInfo.hash
-                        val vkPostIdParts = vkPostId.split('_')
-                        unsafe {
-                            +"""VK.Widgets.Post('vk_post_$vkPostId', '${vkPostIdParts[0]}', '${vkPostIdParts[1]}', '$vkPostHash');"""
-                        }
-                    }
-                }
+                vkEmbeddedPost(postInfo)
             }
         }
 
