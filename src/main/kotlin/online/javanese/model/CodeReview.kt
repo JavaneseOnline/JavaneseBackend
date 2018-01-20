@@ -18,7 +18,8 @@ class CodeReview( // todo: introduce BasicInfo
         val problemStatement: String,
         val reviewMarkup: Html,
         val datePublished: LocalDateTime,
-        val lastModified: LocalDateTime
+        val lastModified: LocalDateTime,
+        val vkPostInfo: VkPostInfo?
 )
 
 
@@ -34,6 +35,8 @@ object CodeReviewTable : Table<CodeReview, Uuid>("codeReviews") {
     val ReviewMarkup by col(CodeReview::reviewMarkup, name = "review")
     val DatePublished by col(CodeReview::datePublished, name = "datePublished")
     val LastModified by col(CodeReview::lastModified, name = "lastModified")
+    val VkPostId by vkPostIdCol(CodeReview::vkPostInfo)
+    val VkPostHash by vkPostHashCol(CodeReview::vkPostInfo)
 
     override fun idColumns(id: Uuid): Set<Pair<Column<CodeReview, *>, *>> =
             setOf(Id of id)
@@ -50,7 +53,11 @@ object CodeReviewTable : Table<CodeReview, Uuid>("codeReviews") {
             problemStatement = value of ProblemStatement,
             reviewMarkup = value of ReviewMarkup,
             datePublished = value of DatePublished,
-            lastModified = value of LastModified
+            lastModified = value of LastModified,
+            vkPostInfo = VkPostInfo.fromComponentsOrNull(
+                    id = value of VkPostId,
+                    hash = value of VkPostHash
+            )
     )
 
 }
@@ -82,6 +89,8 @@ CREATE TABLE public."codeReviews" (
 	"review" text NOT NULL,
 	"datePublished" timestamp NOT NULL,
 	"lastModified" timestamp NOT NULL,
+	"vkPostId" varchar(64) NOT NULL,
+    "vkPostHash" varchar(64) NOT NULL,
 	CONSTRAINT codereviews_pk PRIMARY KEY (id)
 )
 WITH (

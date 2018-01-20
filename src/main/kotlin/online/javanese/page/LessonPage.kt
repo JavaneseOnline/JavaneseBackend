@@ -63,7 +63,7 @@ class LessonPage(
                         unsafe {
                             +VkInitWidgetsScriptLine
                             +initVkWidgetJs(lesson.basicInfo.id.toString())
-                            +documentWriteShareButton(language.shareLessonButtonLabel)
+                            +documentWriteVkShareButton(language.shareLessonButtonLabel)
                         }
                     }
                 }

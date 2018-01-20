@@ -65,5 +65,5 @@ fun initVkWidgetJs(id: String) = "VK.Widgets.Like('vk_like', { type: 'button' },
 /// VK Share button ///
 
 // requires vkShareScript
-fun documentWriteShareButton(text: String) =
+fun documentWriteVkShareButton(text: String) =
         "document.write(VK.Share.button(false, { type: 'round', text: '$text' }));"

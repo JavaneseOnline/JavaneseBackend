@@ -46,6 +46,10 @@ class CodeReviewDetailsPage(
                 +codeReview.reviewMarkup
             }
 
+            codeReview.vkPostInfo?.let {
+                vkOpenApiScript()
+                vkEmbeddedPost(it)
+            }
         }
     }
 
