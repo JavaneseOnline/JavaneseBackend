@@ -96,16 +96,20 @@ pre {
 @media screen and (max-width:839px){
   /** phone and tablet */
   body {
-    padding: 5vmin 0 calc(20vmin + 56px) 0;
+    padding: 0 0 calc(20vmin + 56px) 0;
     /* big space around «up» FAB */
   }
 }
 @media screen and (min-width:840px){
   /** phone and tablet */
   body {
-    padding: 5vmin 0 10vmin 0;
+    padding: 0 0 10vmin 0;
     /* smaller space around «up» FAB */
   }
+}
+
+main {
+    margin-top: 5vmin;
 }
 
 .m-r-0 {

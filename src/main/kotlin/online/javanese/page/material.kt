@@ -4,9 +4,6 @@ package online.javanese.page
 import kotlinx.html.*
 
 
-inline fun FlowContent.contentCardDiv(noinline block: DIV.() -> Unit) =
-        div("content card mdl-shadow--8dp", block)
-
 inline fun FlowContent.contentCardMain(noinline block: MAIN.() -> Unit) =
         main("content card mdl-shadow--8dp", block)
 
@@ -55,6 +52,9 @@ inline fun DIALOG.materialDialogTitle(noinline block: H4.() -> Unit) =
 
 inline fun FlowContent.materialDialogBody(noinline block: DIV.() -> Unit) =
         div("mdl-dialog__content", block)
+
+inline fun FlowContent.materialDialogBodyUl(noinline block: UL.() -> Unit) =
+        ul("mdl-dialog__content", block)
 
 inline fun FlowContent.materialDialogActions(noinline block: DIV.() -> Unit) =
         div("mdl-dialog__actions", block)

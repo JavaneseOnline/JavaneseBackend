@@ -1,7 +1,7 @@
 @import "fonts.scss";
 
 @import "material.blue_grey-lime.min";
-@import "dialog-polyfill.min";
+@import "header";
 @import "highlight.darkula";
 
 html, body {
@@ -24,7 +24,7 @@ ul ul {
   padding-left: 20px;
 }
 
-p, li, nav, td {
+p, li, nav, td, h1, h2, h3, h4, h5, h6 {
   /* don't change <a> style in <menu> */
   a[href] {
     color: #455a64;
@@ -51,6 +51,9 @@ p img {
   max-width: 940px;
   margin: 16px auto;
   border-top: 1px solid transparent;
+}
+main.content {
+    margin-top: 5vmin;
 }
 .content > pre,
 .content > article > pre {
@@ -104,3 +107,5 @@ ul.pretty-list li:before {
 @import "indents";
 @import "sandbox";
 @import "trace";
+
+@import "dialog-polyfill.min";

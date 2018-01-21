@@ -21,7 +21,7 @@ class ErrorPage(
     override fun additionalHeadMarkup(head: HEAD) = Unit
 
     override fun bodyMarkup(body: BODY) = with(body) {
-        contentCardDiv {
+        contentCardMain {
             nav {
                 a(href ="/", titleAndText = language.siteTitle)
             }

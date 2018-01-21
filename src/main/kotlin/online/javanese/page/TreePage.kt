@@ -23,7 +23,7 @@ class TreePage(
     override fun additionalHeadMarkup(head: HEAD) = Unit
 
     override fun bodyMarkup(body: BODY) = with(body) {
-        contentCardDiv {
+        contentCardMain {
             nav {
                 pageLink.render(this, indexPage)
             }

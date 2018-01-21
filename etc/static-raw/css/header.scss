@@ -1,0 +1,49 @@
+/* header */
+header {
+  background: #75B92D url(//static.javanese.online/index-v3/bg-green.jpg) center bottom }
+header > div.content {
+  margin-top: 0 }
+header > div > h1 {
+  float: left;
+  color: #ffffff;
+  text-shadow: 0 0 8px rgba(0, 0, 0, 1);
+  margin: 30px 0 }
+header > div > ul {
+  float: right;
+  list-style-type: none;
+  margin: 24px 0 }
+header > div > ul > li {
+  display: inline-block }
+header > div > ul > li > a {
+  border-radius:2px;
+  padding: 8px;
+  display: block;
+  transition: background-color 0.3s ease-in-out }
+header > div > ul > li > a[href]:hover,
+header > div > ul > li > a[href]:focus {
+  background: rgba(238,255,65,.54);
+  outline: 0 }
+header > div > p {
+  clear: both; float: none;
+  margin: 0 }
+
+
+/* icons */
+.ic_lessons_gray128, .ic_tasks_gray128, .ic_articles_gray128, .ic_review_gray128 {
+  background: url("//static.javanese.online/index-v3/lessons-tasks-articles-review.gray128.spr4.png");
+  width: 128px; height: 128px;
+}
+.ic_lessons_gray128 { background-position: 0 0; }
+.ic_tasks_gray128 { background-position: -128px 0; }
+.ic_articles_gray128 { background-position: -256px 0; }
+.ic_review_gray128 { background-position: -384px 0; }
+
+.ic_github_white24, .ic_vk_white24, .ic_slack_white24, .ic_tg_white24, .ic_rss_white24 {
+  background: url("//static.javanese.online/index-v3/github-vk-slack-tg-rss.white24.spr5.png");
+  width: 24px;  height: 24px;
+}
+.ic_github_white24 { background-position: 0 0; }
+.ic_vk_white24 { background-position: -24px 0; }
+.ic_slack_white24 { background-position: -48px 0; }
+.ic_tg_white24 { background-position: -72px 0; }
+.ic_rss_white24 { background-position: -96px 0; }

@@ -113,10 +113,12 @@ object JavaneseServer {
 
         val language = Russian
 
+        val mainStyle = "main.min.css?2"
+
         val mainScript = "vue_zepto_mdl_dialog_scroll_unfocus_tabs_form.min.js"
         val sandboxScript = "highlight_trace_codemirror_clike_sandbox.min.js"
 
-        val layout = MainLayout(config.exposedStaticDir, mainScript, language)
+        val layout = MainLayout(config.exposedStaticDir, mainStyle, mainScript, language)
 
         // fixme: eliminate these OnePart, TwoPart, ThreePart route handlers by more generic things
         val route1 =
