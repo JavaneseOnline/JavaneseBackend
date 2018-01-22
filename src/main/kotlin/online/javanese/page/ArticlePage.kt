@@ -32,13 +32,15 @@ class ArticlePage(
                 +article.heading
             }
 
+            vkOpenApiScript() // required also for comments
+            // the script is invisible, so don't let it be :last-child, because this will eat indent
+
             article {
                 unsafe {
                     +article.bodyMarkup
                 }
             }
 
-            vkOpenApiScript() // required also for comments
             article.vkPostInfo?.let { postInfo ->
                 vkEmbeddedPost(postInfo)
             }
