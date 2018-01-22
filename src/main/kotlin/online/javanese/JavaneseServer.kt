@@ -114,6 +114,7 @@ object JavaneseServer {
         val language = Russian
 
         val mainStyle = "main.min.css?2"
+        val codeMirrorStyle = "codemirror_ambiance.min.css"
 
         val mainScript = "vue_zepto_mdl_dialog_scroll_unfocus_tabs_form.min.js"
         val sandboxScript = "highlight_trace_codemirror_clike_sandbox.min.js"
@@ -167,7 +168,8 @@ object JavaneseServer {
                                 courseDao, chapterDao, lessonDao, taskDao, pageDao, layout,
                                 { idx, tr, crs, chp, l, lt, prNx -> LessonPage(
                                         idx, tr, crs, chp, l, lt, prNx, config.exposedStaticDir,
-                                        pageLink, courseLink, chapterLink, lessonLink, language, sandboxScript
+                                        pageLink, courseLink, chapterLink, lessonLink, language, sandboxScript,
+                                        codeMirrorStyle
                                 ) }
                         )
                 )

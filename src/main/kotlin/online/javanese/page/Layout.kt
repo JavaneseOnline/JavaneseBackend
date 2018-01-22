@@ -47,6 +47,7 @@ class MainLayout(
 
         body {
 
+            // fixme: move to locale-dependent place
             header {
                 div(classes = "content content-padding-h") {
                     h1(classes = "no-pad-top") { +"Javanese Online" }

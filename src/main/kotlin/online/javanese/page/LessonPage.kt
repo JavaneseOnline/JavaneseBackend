@@ -19,13 +19,14 @@ class LessonPage(
         private val chapterLink: Link<Chapter.BasicInfo>,
         private val lessonLink: Link<Lesson.BasicInfo>,
         private val language: Language,
-        private val sandboxScript: String
+        private val sandboxScript: String,
+        private val codeMirrorStylePath: String
 ) : Layout.Page {
 
     override val meta: Meta get() = lesson.meta
 
     override fun additionalHeadMarkup(head: HEAD) = with(head) {
-        styleLink("$static/codemirror_ambiance.min.css")
+        styleLink("$static/$codeMirrorStylePath")
     }
 
     override fun bodyMarkup(body: BODY) = with(body) {

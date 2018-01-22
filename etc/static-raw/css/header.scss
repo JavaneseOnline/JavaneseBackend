@@ -1,6 +1,6 @@
 /* header */
 header {
-  background: #75B92D url(//static.javanese.online/index-v3/bg-green.jpg) center bottom }
+  background: #75B92D url(//static.javanese.online/template/bg-green.jpg) center bottom }
 header > div.content {
   margin-top: 0 }
 header > div > h1 {
@@ -27,19 +27,10 @@ header > div > p {
   clear: both; float: none;
   margin: 0 }
 
-
 /* icons */
-.ic_lessons_gray128, .ic_tasks_gray128, .ic_articles_gray128, .ic_review_gray128 {
-  background: url("//static.javanese.online/index-v3/lessons-tasks-articles-review.gray128.spr4.png");
-  width: 128px; height: 128px;
-}
-.ic_lessons_gray128 { background-position: 0 0; }
-.ic_tasks_gray128 { background-position: -128px 0; }
-.ic_articles_gray128 { background-position: -256px 0; }
-.ic_review_gray128 { background-position: -384px 0; }
 
 .ic_github_white24, .ic_vk_white24, .ic_slack_white24, .ic_tg_white24, .ic_rss_white24 {
-  background: url("//static.javanese.online/index-v3/github-vk-slack-tg-rss.white24.spr5.png");
+  background: url("//static.javanese.online/template/github-vk-slack-tg-rss.white24.spr5.png");
   width: 24px;  height: 24px;
 }
 .ic_github_white24 { background-position: 0 0; }
