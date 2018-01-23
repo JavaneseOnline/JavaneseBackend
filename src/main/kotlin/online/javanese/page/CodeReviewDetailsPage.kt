@@ -46,10 +46,7 @@ class CodeReviewDetailsPage(
                 +codeReview.reviewMarkup
             }
 
-            codeReview.vkPostInfo?.let {
-                vkOpenApiScript()
-                vkEmbeddedPost(it)
-            }
+            vkAndTgPosts(codeReview.vkPostInfo, codeReview.tgPost, true)
         }
     }
 

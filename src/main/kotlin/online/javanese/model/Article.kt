@@ -14,6 +14,7 @@ class Article(
         val bodyMarkup: Html,
         val published: Boolean,
         val vkPostInfo: VkPostInfo?,
+        val tgPost: String,
         val lastModified: LocalDateTime
 ) {
 
@@ -46,6 +47,7 @@ object ArticleTable : Table<Article, Uuid>("articles") {
 
     val VkPostId by vkPostIdCol(Article::vkPostInfo)
     val VkPostHash by vkPostHashCol(Article::vkPostInfo)
+    val TgPost by tgPostCol(Article::tgPost)
 
     val CreatedAt by col(Article.BasicInfo::createdAt, Article::basicInfo, name = "createdAt")
     val LastModified by lastModifiedCol(Article::lastModified)
@@ -77,6 +79,7 @@ object ArticleTable : Table<Article, Uuid>("articles") {
                     id = value of VkPostId,
                     hash = value of VkPostHash
             ),
+            tgPost = value of TgPost,
             lastModified = value of LastModified
     )
 
@@ -154,6 +157,7 @@ CREATE TABLE public.articles (
 	"published" bool NOT NULL,
 	"vkPostId" varchar(64) NOT NULL,
 	"vkPostHash" varchar(64) NOT NULL,
+	"tgPost" varchar(64) NOT NULL,
 	"createdAt" timestamp NOT NULL,
 	"lastModified" timestamp NOT NULL,
 	"pinned" bool NOT NULL,

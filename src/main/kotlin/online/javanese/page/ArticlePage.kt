@@ -41,9 +41,7 @@ class ArticlePage(
                 }
             }
 
-            article.vkPostInfo?.let { postInfo ->
-                vkEmbeddedPost(postInfo)
-            }
+            vkAndTgPosts(article.vkPostInfo, article.tgPost, false)
         }
 
         section(classes = "content container-margin-t") {

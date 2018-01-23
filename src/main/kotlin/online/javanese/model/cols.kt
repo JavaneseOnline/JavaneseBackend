@@ -55,3 +55,6 @@ internal inline fun <T : Any> Table<T, *>.vkPostIdCol(crossinline vkPostInfoProp
 
 internal inline fun <T : Any> Table<T, *>.vkPostHashCol(crossinline vkPostInfoProp: (T) -> VkPostInfo?) =
         col(VkPostInfo::hash, { vkPostInfoProp(it) ?: VkPostInfo.Empty }, name = "vkPostHash")
+
+internal fun <T : Any> Table<T, *>.tgPostCol(prop: KProperty1<T, String>) =
+        col(prop, name = "tgPost")

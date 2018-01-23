@@ -36,7 +36,7 @@ fun FlowContent.vkComments(pageId: String, init: Boolean, classes: String? = nul
 /// VK post embed ///
 
 // requires vkOpenApiScript
-fun FlowContent.vkEmbeddedPost(info: VkPostInfo) = section {
+fun FlowContent.vkEmbeddedPost(info: VkPostInfo, classes: String? = null) = section(classes) {
     div {
         id = "vk_post_${info.id}"
     }
@@ -67,3 +67,32 @@ fun initVkWidgetJs(id: String) = "VK.Widgets.Like('vk_like', { type: 'button' },
 // requires vkShareScript
 fun documentWriteVkShareButton(text: String) =
         "document.write(VK.Share.button(false, { type: 'round', text: '$text' }));"
+
+
+/// TG post ///
+
+fun FlowContent.tgPost(post: String, classes: String? = null) = div(classes) {
+    script(src = "https://telegram.org/js/telegram-widget.js?1") {
+        async = true
+        attributes["data-telegram-post"] = post
+        attributes["data-width"] = "100%"
+    }
+}
+
+
+/// VK and TG ///
+
+fun FlowContent.vkAndTgPosts(vkPostInfo: VkPostInfo?, tgPost: String?, initVk: Boolean) {
+    if (vkPostInfo != null || !tgPost.isNullOrBlank()) {
+        div("mdl-grid") {
+            if (vkPostInfo != null) {
+                if (initVk) vkOpenApiScript()
+                vkEmbeddedPost(vkPostInfo, "mdl-cell mdl-cell--6-col-desktop mdl-cell--4-col")
+            }
+
+            if (tgPost != null && tgPost.isNotBlank()) {
+                tgPost(tgPost, "mdl-cell mdl-cell--6-col-desktop mdl-cell--4-col")
+            }
+        }
+    }
+}
