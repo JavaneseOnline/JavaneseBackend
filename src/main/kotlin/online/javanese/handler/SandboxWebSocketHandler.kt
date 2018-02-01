@@ -155,7 +155,7 @@ private class CheckerMessage internal constructor(e: Exception) {
 fun Task.surroundSource(source: String): String {
 
     val tech = technicalInfo
-    val withAppended = if (tech.codeToAppend.isEmpty())
+    val withAppended = if (tech.codeToAppend.isNotBlank())
         "$source\n\n${tech.codeToAppend}"
     else
         source
