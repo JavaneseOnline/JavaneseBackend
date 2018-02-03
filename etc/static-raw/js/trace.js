@@ -3,7 +3,7 @@
 
     var generateDomFor = function (call, stack) {
         stack.s.push(0);
-        var callDom = $('<span/>').css('min-width', (call.name.length / 1.5) + 'em');
+        var callDom = $('<span/>').css('min-width', (0.8 + call.name.length / 1.53) + 'em');
         if (call.type && call.type === "crash") {
             callDom.addClass("crash");
         }
