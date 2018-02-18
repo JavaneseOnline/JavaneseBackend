@@ -96,17 +96,22 @@ object JavaneseServer {
                         BasicChapterInfoTable.LinkText.property
                 )
         val lessonLink =
-                ThreeSegmentDirLink( // fixme: round-tripping
-                        { courseDao.findBasicById(chapterDao.findBasicById(it.chapterId)!!.courseId)!!.urlSegment },
-                        { chapterDao.findBasicById(it.chapterId)!!.urlSegment },
+                HierarchicalThreeSegmentDirLink(
+                        { chapterDao.findBasicById(it.chapterId)!! },
+                        { courseDao.findBasicById(it.courseId)!! },
+                        BasicCourseInfoTable.UrlSegment.property,
+                        BasicChapterInfoTable.UrlSegment.property,
                         BasicLessonInfoTable.UrlSegment.property,
                         BasicLessonInfoTable.LinkText.property
                 )
         val taskLink =
-                ThreeSegmentDirLinkWithFragment(  // fixme: so ugly round-tripping
-                        { courseDao.findBasicById(chapterDao.findBasicById(lessonDao.findBasicById(it.lessonId)!!.chapterId)!!.courseId)!!.urlSegment },
-                        { chapterDao.findBasicById(lessonDao.findBasicById(it.lessonId)!!.chapterId)!!.urlSegment },
-                        { lessonDao.findBasicById(it.lessonId)!!.urlSegment },
+                HierarchicalThreeSegmentDirLinkWithFragment(
+                        { lessonDao.findBasicById(it.lessonId)!! },
+                        { chapterDao.findBasicById(it.chapterId)!! },
+                        { courseDao.findBasicById(it.courseId)!! },
+                        BasicCourseInfoTable.UrlSegment.property,
+                        BasicChapterInfoTable.UrlSegment.property,
+                        BasicLessonInfoTable.UrlSegment.property,
                         BasicTaskInfoTable.UrlPathComponent.property,
                         BasicTaskInfoTable.LinkText.property
                 )

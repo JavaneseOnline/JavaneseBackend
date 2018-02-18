@@ -101,6 +101,22 @@ class ThreeSegmentDirLink<T>(
             "/${firstSegm(obj).encodeForUrl()}/${secondSegm(obj).encodeForUrl()}/${thirdSegm(obj).encodeForUrl()}/"
 }
 
+class HierarchicalThreeSegmentDirLink<A, B, C>(
+        private val c2b: (C) -> B,
+        private val b2a: (B) -> A,
+        private val firstSegm: (A) -> String,
+        private val secondSegm: (B) -> String,
+        private val thirdSegm: (C) -> String,
+        private val linkText: (C) -> String
+) : Link<C> {
+    override fun linkText(obj: C): String = linkText.invoke(obj)
+    override fun url(obj: C): String {
+        val s = c2b(obj)
+        val f = b2a(s)
+        return "/${firstSegm(f).encodeForUrl()}/${secondSegm(s).encodeForUrl()}/${thirdSegm(obj).encodeForUrl()}/"
+    }
+}
+
 /**
  * Represents a three-segment directory path with a fragment (`/segm1/segm2/segm3/#fragment`).
  */
@@ -114,6 +130,25 @@ class ThreeSegmentDirLinkWithFragment<T>(
     override fun linkText(obj: T): String = linkText.invoke(obj)
     override fun url(obj: T): String =
             "/${firstSegm(obj).encodeForUrl()}/${secondSegm(obj).encodeForUrl()}/${thirdSegm(obj).encodeForUrl()}/#${fragment(obj).encodeForUrl()}"
+}
+
+class HierarchicalThreeSegmentDirLinkWithFragment<A, B, C, D>(
+        private val d2c: (D) -> C,
+        private val c2b: (C) -> B,
+        private val b2a: (B) -> A,
+        private val firstSegm: (A) -> String,
+        private val secondSegm: (B) -> String,
+        private val thirdSegm: (C) -> String,
+        private val fragment: (D) -> String,
+        private val linkText: (D) -> String
+) : Link<D> {
+    override fun linkText(obj: D): String = linkText.invoke(obj)
+    override fun url(obj: D): String {
+        val c = d2c(obj)
+        val b = c2b(c)
+        val a = b2a(b)
+        return "/${firstSegm(a).encodeForUrl()}/${secondSegm(b).encodeForUrl()}/${thirdSegm(c).encodeForUrl()}/#${fragment(obj).encodeForUrl()}"
+    }
 }
 
 
