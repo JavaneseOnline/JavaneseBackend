@@ -40,6 +40,7 @@ object JavaneseServer {
 
     @JvmStatic
     fun main(args: Array<String>) {
+        val singleThread = "--single-thread" in args
 
         val config = Config(
                 Properties().also {
@@ -230,7 +231,13 @@ object JavaneseServer {
             if (idx < 0) null else config.exposedStaticDir.substring(idx + hostAndPort.length)
         }
 
-        embeddedServer(Netty, port = config.listenPort, host = config.listenHost) {
+        embeddedServer(Netty, port = config.listenPort, host = config.listenHost, configure = {
+            if (singleThread) {
+                connectionGroupSize = 1
+                workerGroupSize = 1
+                callGroupSize = 1
+            }
+        }) {
             install(StatusPages) {
                 exception<NotFoundException> {
                     call.response.status(HttpStatusCode.NotFound)

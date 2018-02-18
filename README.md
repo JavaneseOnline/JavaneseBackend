@@ -24,6 +24,6 @@ Java 8 + Kotlin, Spring, Hibernate, Thymeleaf, SCSS.
     которые у себя в конструкторе делают выборку субмоделек, передавая this
   * разделить всё на модули Java 9
 
-VM options.
-  * debug: `-Xss180K -Xms16M -Xmx32M`
-  * release: `-Xss256K -Xms32M -XmxСколькоНеЖалко`
+Запуск.
+  * debug. JVM: `-Xss180K -Xms16M -Xmx32M`, app: `--single-thread`
+  * release. JVM: `-Xss256K -Xms32M -XmxСколькоНеЖалко`
