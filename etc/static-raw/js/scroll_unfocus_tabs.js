@@ -41,7 +41,10 @@ $('a').click(function() {
 });
 
 // switch to tab if location.hash set
-(function(s, u, k, a) {
+function onHashSet() {
+    var s = window.location.hash
+    var u = document
+    var k = 'is-active'
     if (s.length > 1) {
         var t = u.querySelector('a[href="' + s + '"]');
         var p = u.getElementById(s.substr(1));
@@ -49,13 +52,14 @@ $('a').click(function() {
             return;
         }
         $(p.parentNode).find('.' + k).removeClass(k);
-        $(t)[a](k);
-        $(p)[a](k);
-        document.addEventListener("DOMContentLoaded", function(event) {
-            window.location.hash = s;
-        });
+        $(t).addClass(k);
+        $(p).addClass(k);
+        window.location.hash = s;
     }
-})(window.location.hash, document, 'is-active', 'addClass');
+}
+
+window.addEventListener("hashchange", onHashSet, false);
+document.addEventListener("DOMContentLoaded", onHashSet, false);
 
 // change hash when tab selected
 $('.mdl-tabs__tab').click(function() {
