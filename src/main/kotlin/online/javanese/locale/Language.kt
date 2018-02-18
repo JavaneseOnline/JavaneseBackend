@@ -4,6 +4,15 @@ import online.javanese.model.TaskErrorReport
 
 interface Language {
 
+    val indexCardDescriptions: IndexCards
+
+    interface IndexCards {
+        val lessons: String
+        val tasks: String
+        val articles: String
+        val review: String
+    }
+
     val sandbox: SandboxLanguage
 
     interface SandboxLanguage {

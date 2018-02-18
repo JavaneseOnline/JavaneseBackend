@@ -53,6 +53,8 @@ object JavaneseServer {
                 password = config.dbPassword
         )
 
+        val language = Russian
+
         val pageDao = PageDao(session)
 
         val articleDao = ArticleDao(session)
@@ -71,6 +73,17 @@ object JavaneseServer {
                         PageTable.UrlSegment.property,
                         PageTable.MetaTitle.property
                 )
+        val lessonsLink =
+                SingleSegmentDirLinkWithFragment(
+                        PageTable.UrlSegment.property,
+                        { "lessons" }, { language.lessonsTreeTab }
+                )
+        val tasksLink =
+                SingleSegmentDirLinkWithFragment(
+                        PageTable.UrlSegment.property,
+                        { "tasks" }, { language.tasksTreeTab }
+                )
+
         val courseLink =
                 SingleSegmentDirLink(
                         BasicCourseInfoTable.UrlSegment.property,
@@ -83,7 +96,7 @@ object JavaneseServer {
                         BasicChapterInfoTable.LinkText.property
                 )
         val lessonLink =
-                ThreeSegmentDirLink( // fixme: round-trippng
+                ThreeSegmentDirLink( // fixme: round-tripping
                         { courseDao.findBasicById(chapterDao.findBasicById(it.chapterId)!!.courseId)!!.urlSegment },
                         { chapterDao.findBasicById(it.chapterId)!!.urlSegment },
                         BasicLessonInfoTable.UrlSegment.property,
@@ -111,8 +124,6 @@ object JavaneseServer {
                 )
 
 
-        val language = Russian
-
         val mainStyle = "main.min.css?2"
         val codeMirrorStyle = "codemirror_ambiance.min.css"
 
@@ -128,10 +139,10 @@ object JavaneseServer {
                         courseDao,
                         PageHandler(
                                 pageDao, courseDao, chapterDao, lessonDao, taskDao, articleDao, layout,
-                                ::IndexPage,
-                                { idx, tr, cs -> TreePage(idx, tr, cs, language, pageLink, courseLink, chapterLink, lessonLink, taskLink) },
-                                { idx, ar, articles -> ArticlesPage(idx, ar, articles, config.exposedStaticDir, pageLink, articleLink) },
-                                { idx, cr -> CodeReviewPage(idx, cr, codeReviewDao.findAll(), pageLink, language) }
+                                indexPage = { CardsPage(it, pageDao.findAll().toCards(lessonsLink, tasksLink, pageLink, language.indexCardDescriptions)) },
+                                treePage = { idx, tr, cs -> TreePage(idx, tr, cs, language, pageLink, courseLink, chapterLink, lessonLink, taskLink) },
+                                articlesPage = { idx, ar, articles -> ArticlesPage(idx, ar, articles, config.exposedStaticDir, pageLink, articleLink) },
+                                codeReview = { idx, cr -> CodeReviewPage(idx, cr, codeReviewDao.findAll(), pageLink, language) }
                         ),
                         CourseHandler(
                                 pageDao, courseDao, chapterDao, lessonDao, taskDao, layout,
@@ -280,5 +291,3 @@ object JavaneseServer {
     }
 
 }
-
-// todo: make DAO functions suspend

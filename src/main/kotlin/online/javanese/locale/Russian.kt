@@ -4,6 +4,13 @@ import online.javanese.model.TaskErrorReport
 
 object Russian : Language {
 
+    override val indexCardDescriptions: Language.IndexCards = object : Language.IndexCards {
+        override val lessons: String get() = "Теория для новичков и продвинутых"
+        override val tasks: String get() = "Практические упражнения для\u00A0проверки знаний"
+        override val articles: String get() = "Полезные\u00A0советы, решения\u00A0проблем"
+        override val review: String get() = "Пришлите нам свой\u00A0код, и\u00A0мы\u00A0постараемся вам\u00A0помочь"
+    }
+
     override val sandbox: Language.SandboxLanguage = object : Language.SandboxLanguage {
 
         override val runtimeMessages: Language.SandboxLanguage.RuntimeMessages = object : Language.SandboxLanguage.RuntimeMessages {

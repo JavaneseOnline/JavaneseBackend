@@ -17,8 +17,11 @@ interface Link<in T> {
     fun render(doc: FlowOrInteractiveOrPhrasingContent, obj: T) =
             doc.a(href = url(obj), titleAndText = linkText(obj))
 
-    fun renderCustom(doc: FlowOrInteractiveOrPhrasingContent, obj: T, block: A.(text: String) -> Unit) =
-            doc.a(href = url(obj), title = linkText(obj), block = block)
+    fun renderCustom(
+            doc: FlowOrInteractiveOrPhrasingContent, obj: T,
+            classes: String? = null, block: A.(text: String) -> Unit = {}
+    ) =
+            doc.a(href = url(obj), title = linkText(obj), classes = classes, block = block)
 
     fun linkText(obj: T): String
     fun url(obj: T): String
@@ -43,6 +46,18 @@ class SingleSegmentDirLink<T>(
 ) : Link<T> {
     override fun linkText(obj: T): String = linkText.invoke(obj)
     override fun url(obj: T): String = "/${urlSegment(obj).encodeForUrl()}/"
+}
+
+/**
+ * Represents a link to a fragment of directory located in a document root (`/someDir/#fragment`).
+ */
+class SingleSegmentDirLinkWithFragment<T>(
+        private val urlSegment: (T) -> String,
+        private val fragment: (T) -> String,
+        private val linkText: (T) -> String
+) : Link<T> {
+    override fun linkText(obj: T): String = linkText.invoke(obj)
+    override fun url(obj: T): String = "/${urlSegment(obj).encodeForUrl()}/#${fragment(obj).encodeForUrl()}"
 }
 
 /**
@@ -107,8 +122,8 @@ fun String.encodeForUrl(): String = URLEncoder.encode(this, "UTF-8").replace("+"
 fun String.decodeFromUrl(): String = URLDecoder.decode(this, "UTF-8")
 
 @Suppress("NOTHING_TO_INLINE")
-inline fun FlowOrInteractiveOrPhrasingContent.a(href: String, title: String, noinline block: A.(String) -> Unit) =
-        a(href = href) aTag@ {
+inline fun FlowOrInteractiveOrPhrasingContent.a(href: String, title: String, classes: String? = null, noinline block: A.(String) -> Unit) =
+        a(href = href, classes = classes) aTag@ {
             this@aTag.title = title
             block(title)
         }
