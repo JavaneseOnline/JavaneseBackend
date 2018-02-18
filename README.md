@@ -25,5 +25,5 @@ Java 8 + Kotlin, Spring, Hibernate, Thymeleaf, SCSS.
   * разделить всё на модули Java 9
 
 VM options.
-  * debug: `-Xss175K -Xms16M -Xmx32M`
+  * debug: `-Xss180K -Xms16M -Xmx32M`
   * release: `-Xss256K -Xms32M -XmxСколькоНеЖалко`

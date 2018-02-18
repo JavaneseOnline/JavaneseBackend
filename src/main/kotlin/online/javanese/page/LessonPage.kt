@@ -211,7 +211,7 @@ class LessonPage(
             }
         }
 
-        script(src = "$static/$sandboxScript")
+        script(src = "$static/$sandboxScript") {}
         script {
             val rt = language.sandbox.runtimeMessages
 

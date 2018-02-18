@@ -83,7 +83,7 @@ class MainLayout(
 
             // Vue.js, Zepto, Material Design Lite, dialog polyfill, highlight.js, trace, scroll to top,
             // blur link on click, mdl tabs fix to work with url #fragment, async form handling
-            script(src = "$static/$mainScript")
+            script(src = "$static/$mainScript") {}
 
             div(classes = "mdl-js-snackbar mdl-snackbar") {
                 id = "toast-container"

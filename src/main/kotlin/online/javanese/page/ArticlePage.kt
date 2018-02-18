@@ -55,7 +55,7 @@ class ArticlePage(
     }
 
     override fun scripts(body: BODY) = with(body) {
-        script(src = "$static/$highlightScript")
+        script(src = "$static/$highlightScript") {}
     }
 
 }
