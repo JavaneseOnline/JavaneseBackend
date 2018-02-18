@@ -200,7 +200,7 @@ object JavaneseServer {
 
         val articleRssHandler =
                 ArticleRssHandler(pageDao, articleDao, pageLink, articleLink, config.siteUrl, language.articlesFeedInfo)
-        // TODO: RSS for code reviews; RSS icon on index
+        // TODO: RSS for code reviews
 
         val taskErrorReportDao = TaskErrorReportDao(session)
 
