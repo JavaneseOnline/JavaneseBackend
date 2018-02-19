@@ -39,8 +39,10 @@ class ArticlesPage(
                 ul {
                     articles.forEach { article ->
                         li {
-                            if (article.pinned)
+                            if (article.pinned) {
                                 img(src = "$static/pin.png")
+                                +" "
+                            }
 
                             articleLink.render(this, article)
                         }
