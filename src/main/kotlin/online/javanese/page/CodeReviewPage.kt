@@ -1,6 +1,8 @@
 package online.javanese.page
 
 import kotlinx.html.*
+import online.javanese.link.Link
+import online.javanese.link.encodeForUrl
 import online.javanese.locale.Language
 import online.javanese.model.CodeReview
 import online.javanese.model.Meta
@@ -36,7 +38,7 @@ class CodeReviewPage(
 
                     ul {
                         reviews.forEach { review ->
-                            li {
+                            li { // fixme: link as object
                                 a(href = "/${model.urlSegment.encodeForUrl()}/${review.urlSegment}/") {
                                     +review.meta.title
                                 }

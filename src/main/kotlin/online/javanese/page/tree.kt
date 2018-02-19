@@ -3,6 +3,7 @@ package online.javanese.page
 import kotlinx.html.*
 import online.javanese.handler.Chapters
 import online.javanese.handler.Courses
+import online.javanese.link.Link
 import online.javanese.model.Chapter
 import online.javanese.model.Course
 import online.javanese.model.Lesson

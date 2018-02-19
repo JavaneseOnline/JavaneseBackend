@@ -6,7 +6,7 @@ import io.ktor.response.respondWrite
 import io.ktor.util.escapeHTML
 import online.javanese.locale.Language
 import online.javanese.model.*
-import online.javanese.page.Link
+import online.javanese.link.Link
 import java.text.SimpleDateFormat
 import java.time.ZoneId
 import java.util.*

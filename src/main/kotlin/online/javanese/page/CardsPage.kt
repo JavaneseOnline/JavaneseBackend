@@ -1,6 +1,7 @@
 package online.javanese.page
 
 import kotlinx.html.*
+import online.javanese.link.Link
 import online.javanese.model.Meta
 import online.javanese.model.Page
 

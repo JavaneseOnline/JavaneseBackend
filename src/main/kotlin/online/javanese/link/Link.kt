@@ -1,9 +1,10 @@
-package online.javanese.page
+package online.javanese.link
 
 import kotlinx.html.A
 import kotlinx.html.FlowOrInteractiveOrPhrasingContent
 import kotlinx.html.a
 import kotlinx.html.title
+import online.javanese.page.a
 import java.net.URLDecoder
 import java.net.URLEncoder
 
@@ -30,7 +31,7 @@ interface Link<in T> {
 /**
  * Represents a link to index page (`/`) of current domain.
  */
-class IndexLink<T>(
+class IndexLink<in T>(
         private val linkText: (T) -> String
 ) : Link<T> {
     override fun linkText(obj: T): String = linkText.invoke(obj)
@@ -40,7 +41,7 @@ class IndexLink<T>(
 /**
  * Represents a link to a directory located in a document root (`/someDir/`).
  */
-class SingleSegmentDirLink<T>(
+class SingleSegmentDirLink<in T>(
         private val urlSegment: (T) -> String,
         private val linkText: (T) -> String
 ) : Link<T> {
@@ -51,7 +52,7 @@ class SingleSegmentDirLink<T>(
 /**
  * Represents a link to a fragment of directory located in a document root (`/someDir/#fragment`).
  */
-class SingleSegmentDirLinkWithFragment<T>(
+class SingleSegmentDirLinkWithFragment<in T>(
         private val urlSegment: (T) -> String,
         private val fragment: (T) -> String,
         private val linkText: (T) -> String
@@ -63,7 +64,7 @@ class SingleSegmentDirLinkWithFragment<T>(
 /**
  * Represents a link to index (for [T] with empty [urlSegment]) or to a dir (otherwise).
  */
-class IndexOrSingleSegmDirLink<T>(
+class IndexOrSingleSegmDirLink<in T>(
         private val urlSegment: (T) -> String,
         linkText: (T) -> String
 ) : Link<T> {
@@ -78,7 +79,7 @@ class IndexOrSingleSegmDirLink<T>(
 /**
  * Represents a two-segment directory path (`/segm1/segm2/`).
  */
-class TwoSegmentDirLink<T>(
+class TwoSegmentDirLink<in T>(
         private val firstSegm: (T) -> String,
         private val secondSegm: (T) -> String,
         private val linkText: (T) -> String
@@ -90,7 +91,7 @@ class TwoSegmentDirLink<T>(
 /**
  * Represents a three-segment directory path (`/segm1/segm2/segm3/`).
  */
-class ThreeSegmentDirLink<T>(
+class ThreeSegmentDirLink<in T>(
         private val firstSegm: (T) -> String,
         private val secondSegm: (T) -> String,
         private val thirdSegm: (T) -> String,
@@ -101,7 +102,7 @@ class ThreeSegmentDirLink<T>(
             "/${firstSegm(obj).encodeForUrl()}/${secondSegm(obj).encodeForUrl()}/${thirdSegm(obj).encodeForUrl()}/"
 }
 
-class HierarchicalThreeSegmentDirLink<A, B, C>(
+class HierarchicalThreeSegmentDirLink<A, B, in C>(
         private val c2b: (C) -> B,
         private val b2a: (B) -> A,
         private val firstSegm: (A) -> String,
@@ -120,7 +121,7 @@ class HierarchicalThreeSegmentDirLink<A, B, C>(
 /**
  * Represents a three-segment directory path with a fragment (`/segm1/segm2/segm3/#fragment`).
  */
-class ThreeSegmentDirLinkWithFragment<T>(
+class ThreeSegmentDirLinkWithFragment<in T>(
         private val firstSegm: (T) -> String,
         private val secondSegm: (T) -> String,
         private val thirdSegm: (T) -> String,
@@ -132,7 +133,7 @@ class ThreeSegmentDirLinkWithFragment<T>(
             "/${firstSegm(obj).encodeForUrl()}/${secondSegm(obj).encodeForUrl()}/${thirdSegm(obj).encodeForUrl()}/#${fragment(obj).encodeForUrl()}"
 }
 
-class HierarchicalThreeSegmentDirLinkWithFragment<A, B, C, D>(
+class HierarchicalThreeSegmentDirLinkWithFragment<A, B, C, in D>(
         private val d2c: (D) -> C,
         private val c2b: (C) -> B,
         private val b2a: (B) -> A,

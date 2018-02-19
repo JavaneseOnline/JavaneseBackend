@@ -8,7 +8,7 @@ import io.ktor.http.ContentType
 import io.ktor.response.respondText
 import online.javanese.krud.kwery.Uuid
 import online.javanese.model.*
-import online.javanese.page.Link
+import online.javanese.link.Link
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.util.*

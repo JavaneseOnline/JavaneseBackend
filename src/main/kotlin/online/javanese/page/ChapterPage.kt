@@ -2,6 +2,7 @@ package online.javanese.page
 
 import kotlinx.html.*
 import online.javanese.handler.Lessons
+import online.javanese.link.Link
 import online.javanese.locale.Language
 import online.javanese.model.*
 
