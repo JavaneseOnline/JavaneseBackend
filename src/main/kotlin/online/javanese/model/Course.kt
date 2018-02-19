@@ -6,6 +6,7 @@ import online.javanese.Html
 import online.javanese.krud.kwery.Uuid
 import java.time.LocalDateTime
 
+
 class Course(
         val basicInfo: BasicInfo,
         val meta: Meta,
@@ -18,7 +19,9 @@ class Course(
     class BasicInfo(
             val id: Uuid,
             val urlSegment: String,
-            val linkText: String
+            val linkText: String,
+            val subtitle: String,
+            val icon: String
     )
 
 }
@@ -31,6 +34,8 @@ object CourseTable : Table<Course, Uuid>("courses"), VersionedWithTimestamp {
     val MetaDescription by metaDescriptionCol(Course::meta)
     val MetaKeywords by metaKeywordsCol(Course::meta)
     val LinkText by linkTextCol(Course.BasicInfo::linkText, Course::basicInfo)
+    val Subtitle by col(Course.BasicInfo::subtitle, Course::basicInfo, name = "subtitle")
+    val Icon by col(Course.BasicInfo::icon, Course::basicInfo, name = "icon")
     val Heading by headingCol(Course::heading)
     val Description by col(Course::description, name = "description")
     val SortIndex by sortIndexCol(Course::sortIndex)
@@ -42,7 +47,9 @@ object CourseTable : Table<Course, Uuid>("courses"), VersionedWithTimestamp {
             basicInfo = Course.BasicInfo(
                     id = value of Id,
                     urlSegment = value of UrlSegment,
-                    linkText = value of LinkText
+                    linkText = value of LinkText,
+                    subtitle = value of Subtitle,
+                    icon = value of Icon
             ),
             meta = Meta(
                     title = value of MetaTitle,
@@ -63,13 +70,17 @@ object BasicCourseInfoTable : Table<Course.BasicInfo, Uuid>("courses") {
     val Id by idCol(Course.BasicInfo::id)
     val UrlSegment by urlSegmentCol(Course.BasicInfo::urlSegment)
     val LinkText by linkTextCol(Course.BasicInfo::linkText)
+    val Subtitle by col(Course.BasicInfo::subtitle, name = "subtitle")
+    val Icon by col(Course.BasicInfo::icon, name = "icon")
 
     override fun idColumns(id: Uuid): Set<Pair<Column<Course.BasicInfo, *>, *>> = setOf(Id of id)
 
     override fun create(value: Value<Course.BasicInfo>): Course.BasicInfo = Course.BasicInfo(
             id = value of Id,
             urlSegment = value of UrlSegment,
-            linkText = value of LinkText
+            linkText = value of LinkText,
+            subtitle = value of Subtitle,
+            icon = value of Icon
     )
 
 }
@@ -83,7 +94,7 @@ class CourseDao(session: Session) : AbstractDao<Course, Uuid>(session, CourseTab
     private val sortIndexColName = CourseTable.SortIndex.name
     private val urlSegmentColName = CourseTable.UrlSegment.name
 
-    private val basicInfoColumns = """ "id", "urlSegment", "linkText" """
+    private val basicInfoColumns = """ "id", "urlSegment", "linkText", "subtitle", "icon" """
 
     override val defaultOrder: Map<Column<Course, *>, OrderByDirection> =
             mapOf(CourseTable.SortIndex to OrderByDirection.ASC)
@@ -142,6 +153,8 @@ CREATE TABLE public.courses (
 	"id" uuid NOT NULL,
 	"urlSegment" varchar(64) NOT NULL,
 	"linkText" varchar(256) NOT NULL,
+	"subtitle" varchar(64) NOT NULL,
+	"icon" varchar(64) NOT NULL,
 	"metaTitle" varchar(256) NOT NULL,
 	"metaDescription" varchar(256) NOT NULL,
 	"metaKeywords" varchar(256) NOT NULL,

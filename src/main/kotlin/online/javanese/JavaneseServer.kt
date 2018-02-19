@@ -26,8 +26,10 @@ import online.javanese.krud.stat.HitStat
 import online.javanese.krud.stat.InMemoryStatTable
 import online.javanese.krud.stat.UserAgent
 import online.javanese.krud.stat.installHitStatInterceptor
+import online.javanese.link.*
 import online.javanese.locale.Russian
 import online.javanese.model.*
+import online.javanese.model.Page.Magic.Tree
 import online.javanese.page.*
 import online.javanese.route.OnePartRoute
 import online.javanese.route.ThreePartsRoute
@@ -138,6 +140,8 @@ object JavaneseServer {
 
         val layout = MainLayout(config.exposedStaticDir, mainStyle, mainScript, language)
 
+        val breadCrumbs1 = LinkSet1(pageLink)
+
         // fixme: eliminate these OnePart, TwoPart, ThreePart route handlers by more generic things
         val route1 =
                 OnePartRoute(
@@ -145,10 +149,32 @@ object JavaneseServer {
                         courseDao,
                         PageHandler(
                                 pageDao, courseDao, chapterDao, lessonDao, taskDao, articleDao, layout,
-                                indexPage = { CardsPage(it, pageDao.findAll().toCards(lessonsLink, tasksLink, pageLink, language.indexCardDescriptions)) },
-                                treePage = { idx, tr, cs -> TreePage(idx, tr, cs, language, pageLink, courseLink, chapterLink, lessonLink, taskLink) },
-                                articlesPage = { idx, ar, articles -> ArticlesPage(idx, ar, articles, config.exposedStaticDir, pageLink, articleLink) },
-                                codeReview = { idx, cr -> CodeReviewPage(idx, cr, codeReviewDao.findAll(), pageLink, language) }
+                                indexPage = {
+                                    CardsPage(
+                                            page = it,
+                                            contents = pageDao.findAllSecondary().map {
+                                                CardsPage.Card(if (it.magic == Tree) tasksLink else pageLink, it, it.icon, it.subtitle)
+                                            }
+                                    )
+                                },
+                                coursesPage = { indexPage, coursesPage, courses ->
+                                    CardsPage(
+                                            page = coursesPage,
+                                            beforeContent = AppliedLinkSet1(breadCrumbs1, indexPage),
+                                            contents = courses.map { CardsPage.Card(courseLink, it, it.icon, it.subtitle) },
+                                            dCount = CardsPage.CountOnDesktop.Three,
+                                            tCount = CardsPage.CountOnTablet.One
+                                    )
+                                },
+                                treePage = { indexPage, coursesPage, courses ->
+                                    TreePage(indexPage, coursesPage, courses, language, pageLink, courseLink, chapterLink, lessonLink, taskLink)
+                                },
+                                articlesPage = { idx, ar, articles ->
+                                    ArticlesPage(idx, ar, articles, config.exposedStaticDir, pageLink, articleLink)
+                                },
+                                codeReview = { idx, cr ->
+                                    CodeReviewPage(idx, cr, codeReviewDao.findAll(), pageLink, language)
+                                }
                         ),
                         CourseHandler(
                                 pageDao, courseDao, chapterDao, lessonDao, taskDao, layout,

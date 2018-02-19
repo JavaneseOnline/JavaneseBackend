@@ -12,14 +12,17 @@ class Page( // todo: introduce BasicInfo
         val urlSegment: String,
         val magic: Magic,
         val meta: Meta,
+        val icon: String,
+        val subtitle: String,
         val headMarkup: Html,
         val heading: String,
         val bodyMarkup: Html,
         val beforeBodyEndMarkup: Html,
-        val lastModified: LocalDateTime
+        val lastModified: LocalDateTime,
+        val sortIndex: Int
 ) {
     enum class Magic { // todo: re-think arch & eliminate
-        Index, Tree, Articles, CodeReview
+        Index, Courses, Tree, Articles, CodeReview
     }
 }
 
@@ -31,11 +34,14 @@ object PageTable : Table<Page, Uuid>("pages"), VersionedWithTimestamp {
     val MetaTitle by metaTitleCol(Page::meta)
     val MetaDescription by metaDescriptionCol(Page::meta)
     val MetaKeywords by metaKeywordsCol(Page::meta)
+    val Icon by col(Page::icon, name = "icon")
+    val Subtitle by col(Page::subtitle, name = "subtitle")
     val HeadMarkup by col(Page::headMarkup, name = "headMarkup")
     val Heading by headingCol(Page::heading)
     val BodyMarkup by col(Page::bodyMarkup, name = "bodyMarkup")
     val BeforeBodyEndMarkup by col(Page::beforeBodyEndMarkup, name = "beforeBodyEndMarkup")
     val LastModified by lastModifiedCol(Page::lastModified)
+    val SortIndex by sortIndexCol(Page::sortIndex)
 
     override fun idColumns(id: Uuid): Set<Pair<Column<Page, *>, *>> = setOf(Id of id)
 
@@ -48,11 +54,14 @@ object PageTable : Table<Page, Uuid>("pages"), VersionedWithTimestamp {
                     description = value of MetaDescription,
                     keywords = value of MetaKeywords
             ),
+            icon = value of Icon,
+            subtitle = value of Subtitle,
             heading = value of Heading,
             bodyMarkup = value of BodyMarkup,
             headMarkup = value of HeadMarkup,
             beforeBodyEndMarkup = value of BeforeBodyEndMarkup,
-            lastModified = value of LastModified
+            lastModified = value of LastModified,
+            sortIndex = value of SortIndex
     )
 
 }
@@ -64,10 +73,11 @@ class PageDao(
     private val tableName = PageTable.name
     private val urlPathComponentColName = PageTable.UrlSegment.name
     private val magicColName = PageTable.Magic.name
+    override val defaultOrder: Map<Column<Page, *>, OrderByDirection> = mapOf(PageTable.SortIndex to OrderByDirection.ASC)
 
-    fun findAll(): List<Page> =
+    fun findAllSecondary(): List<Page> =
             session.select(
-                    sql = """SELECT * FROM $tableName""",
+                    sql = """SELECT * FROM $tableName where "$urlPathComponentColName" != '' ORDER BY "sortIndex" """,
                     mapper = PageTable.rowMapper()
             )
 
@@ -95,11 +105,14 @@ CREATE TABLE public.pages (
 	"metaTitle" varchar(256) NOT NULL,
 	"metaDescription" varchar(256) NOT NULL,
 	"metaKeywords" varchar(256) NOT NULL,
+	"icon" varchar(64) NOT NULL,
+	"subtitle" varchar(256) NOT NULL,
 	"headMarkup" text NOT NULL,
 	"heading" varchar(256) NOT NULL,
 	"bodyMarkup" text NOT NULL,
 	"beforeBodyEndMarkup" text NOT NULL,
 	"lastModified" timestamp NOT NULL,
+	"sortIndex" int4 NOT NULL,
 	CONSTRAINT pages_pk PRIMARY KEY (id)
 )
 WITH (

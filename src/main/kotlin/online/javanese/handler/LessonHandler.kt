@@ -17,7 +17,7 @@ fun LessonHandler(
     val chapter = chapterDao.findBasicById(chapterTr.id)!!
 
     val index = pageDao.findByMagic(Page.Magic.Index)!!
-    val treePg = pageDao.findByMagic(Page.Magic.Tree)!!
+    val treePg = pageDao.findByMagic(Page.Magic.Courses)!!
 
     val tasks = taskDao.findForLessonSorted(lesson.basicInfo.id)
     val prevNext = lessonDao.findPreviousAndNext(lesson)

@@ -8,7 +8,10 @@ import online.javanese.model.Page
 
 class CardsPage<T>(
         private val page: Page,
-        private val contents: List<Card<T>>
+        private val beforeContent: FlowContent.(classes: String) -> Unit = { },
+        private val contents: List<Card<T>>,
+        private val dCount: CountOnDesktop = CountOnDesktop.Four,
+        private val tCount: CountOnTablet = CountOnTablet.Two
 ): Layout.Page {
 
     override val meta: Meta get() = page.meta
@@ -20,10 +23,13 @@ class CardsPage<T>(
     override fun bodyMarkup(body: BODY) = with(body) {
         unsafe { +page.bodyMarkup }
 
+
         main(classes = "content mdl-grid") {
 
+            beforeContent("mdl-cell mdl-cell--12-col")
+
             contents.forEach { card ->
-                div(classes = "mdl-cell mdl-cell--3-col-desktop mdl-cell--4-col content-padding-v") {
+                div(classes = "mdl-cell mdl-cell--${dCount.cols}-col-desktop mdl-cell--${tCount.cols}-col content-padding-v") {
                     card.link.renderCustom(this, card.t, "card mdl-card mdl-shadow--4dp-h") { title ->
                         h5 { +title }
                         div(classes = card.iconClasses)
@@ -44,5 +50,15 @@ class CardsPage<T>(
             val iconClasses: String,
             val subtitle: String
     )
+
+    enum class CountOnDesktop(val cols: Int) {
+        Three(4),
+        Four(3)
+    }
+
+    enum class CountOnTablet(val cols: Int) {
+        One(8),
+        Two(4)
+    }
 
 }

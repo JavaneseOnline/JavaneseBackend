@@ -17,6 +17,7 @@ fun PageHandler(
         articleDao: ArticleDao,
         layout: Layout,
         indexPage: (Page) -> Layout.Page,
+        coursesPage: (idx: Page, tr: Page, List<Course.BasicInfo>) -> Layout.Page,
         treePage: (idx: Page, tr: Page, Courses) -> Layout.Page,
         articlesPage: (idx: Page, ar: Page, List<Article.BasicInfo>) -> Layout.Page,
         codeReview: (idx: Page, cr: Page) -> Layout.Page
@@ -24,6 +25,7 @@ fun PageHandler(
 
     val htmlPage = when (page.magic) {
         Index -> indexPage(page)
+        Courses -> coursesPage(pageDao.findByMagic(Index)!!, page, courseDao.findAllBasicSorted())
         Tree -> treePage(pageDao.findByMagic(Index)!!, page, courses(courseDao, chapterDao, lessonDao, taskDao))
         Articles -> articlesPage(pageDao.findByMagic(Index)!!, page, articleDao.findAllBasicPublished())
         CodeReview -> codeReview(pageDao.findByMagic(Index)!!, page)

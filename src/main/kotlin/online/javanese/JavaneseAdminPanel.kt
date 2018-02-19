@@ -34,12 +34,12 @@ fun JavaneseAdminPanel(
                             getTitleOf = TaskTable.LinkText.property,
                             transformColumn = { when (it) {
                                 TaskTable.LessonId -> EnumeratedCol(TaskTable.LessonId, KweryForeignEnumeratedColAdapter(LessonTable, lessonDao, LessonTable.LinkText.property))
-                                TaskTable.Condition -> TextCol(TaskTable.Condition, createControlFactory = online.javanese.krud.template.control.CodeMirror.Html)
+                                TaskTable.Condition -> TextCol(TaskTable.Condition, createControlFactory = CodeMirror.Html)
                                 TaskTable.InitialCode -> TextCol(TaskTable.InitialCode, createControlFactory = TextArea)
                                 TaskTable.CodeToAppend -> TextCol(TaskTable.CodeToAppend, createControlFactory = TextArea)
                                 TaskTable.CheckRules -> TextCol(TaskTable.CheckRules, createControlFactory = TextArea)
                                 TaskTable.ExpectedOutput -> TextCol(TaskTable.ExpectedOutput, createControlFactory = TextArea)
-                                TaskTable.SortIndex -> TextCol(TaskTable.SortIndex, createControlFactory = online.javanese.krud.template.control.TextInput.Editable, editControlFactory = online.javanese.krud.template.control.TextInput.ReadOnly)
+                                TaskTable.SortIndex -> TextCol(TaskTable.SortIndex, createControlFactory = TextInput.Editable, editControlFactory = TextInput.ReadOnly)
                                 else -> KweryTable.TransformKweryColumn<Task>()(it)
                             } },
                             sort = KweryExplicitSort(session, escape, TaskTable, TaskTable.SortIndex),
@@ -51,8 +51,8 @@ fun JavaneseAdminPanel(
                             getTitleOf = LessonTable.LinkText.property,
                             transformColumn = { when (it) {
                                 LessonTable.ChapterId -> EnumeratedCol(LessonTable.ChapterId, KweryForeignEnumeratedColAdapter(ChapterTable, chapterDao, ChapterTable.LinkText.property))
-                                LessonTable.BodyMarkup -> TextCol(LessonTable.BodyMarkup, createControlFactory = online.javanese.krud.template.control.CodeMirror.Html)
-                                LessonTable.SortIndex -> TextCol(LessonTable.SortIndex, createControlFactory = online.javanese.krud.template.control.TextInput.Editable, editControlFactory = online.javanese.krud.template.control.TextInput.ReadOnly)
+                                LessonTable.BodyMarkup -> TextCol(LessonTable.BodyMarkup, createControlFactory = CodeMirror.Html)
+                                LessonTable.SortIndex -> TextCol(LessonTable.SortIndex, createControlFactory = TextInput.Editable, editControlFactory = TextInput.ReadOnly)
                                 else -> KweryTable.TransformKweryColumn<Lesson>()(it)
                             } },
                             sort = KweryExplicitSort(session, escape, LessonTable, LessonTable.SortIndex),
@@ -64,8 +64,8 @@ fun JavaneseAdminPanel(
                             getTitleOf = ChapterTable.LinkText.property,
                             transformColumn = { when (it) {
                                 ChapterTable.CourseId -> EnumeratedCol(ChapterTable.CourseId, KweryForeignEnumeratedColAdapter(CourseTable, courseDao, CourseTable.LinkText.property))
-                                ChapterTable.Description -> TextCol(ChapterTable.Description, createControlFactory = online.javanese.krud.template.control.CodeMirror.Html)
-                                ChapterTable.SortIndex -> TextCol(ChapterTable.SortIndex, createControlFactory = online.javanese.krud.template.control.TextInput.Editable, editControlFactory = online.javanese.krud.template.control.TextInput.ReadOnly)
+                                ChapterTable.Description -> TextCol(ChapterTable.Description, createControlFactory = CodeMirror.Html)
+                                ChapterTable.SortIndex -> TextCol(ChapterTable.SortIndex, createControlFactory = TextInput.Editable, editControlFactory = TextInput.ReadOnly)
                                 else -> KweryTable.TransformKweryColumn<Chapter>()(it)
                             } },
                             sort = KweryExplicitSort(session, escape, ChapterTable, ChapterTable.SortIndex),
@@ -76,8 +76,8 @@ fun JavaneseAdminPanel(
                             SelectCount(session, session.dialect.escapeName(CourseTable.name)),
                             getTitleOf = CourseTable.LinkText.property,
                             transformColumn = { when (it) {
-                                CourseTable.Description -> TextCol(CourseTable.Description, createControlFactory = online.javanese.krud.template.control.CodeMirror.Html)
-                                CourseTable.SortIndex -> TextCol(CourseTable.SortIndex, createControlFactory = online.javanese.krud.template.control.TextInput.Editable, editControlFactory = online.javanese.krud.template.control.TextInput.ReadOnly)
+                                CourseTable.Description -> TextCol(CourseTable.Description, createControlFactory = CodeMirror.Html)
+                                CourseTable.SortIndex -> TextCol(CourseTable.SortIndex, createControlFactory = TextInput.Editable, editControlFactory = TextInput.ReadOnly)
                                 else -> KweryTable.TransformKweryColumn<Course>()(it)
                             } },
                             sort = KweryExplicitSort(session, escape, CourseTable, CourseTable.SortIndex),
@@ -88,7 +88,7 @@ fun JavaneseAdminPanel(
                             SelectCount(session, session.dialect.escapeName(ArticleTable.name)),
                             getTitleOf = ArticleTable.LinkText.property,
                             transformColumn = { when (it) {
-                                ArticleTable.BodyMarkup -> TextCol(ArticleTable.BodyMarkup, createControlFactory = online.javanese.krud.template.control.CodeMirror.Html)
+                                ArticleTable.BodyMarkup -> TextCol(ArticleTable.BodyMarkup, createControlFactory = CodeMirror.Html)
                                 else -> KweryTable.TransformKweryColumn<Article>()(it)
                             } },
                             fallbackSource = uuidGenerator
@@ -98,11 +98,12 @@ fun JavaneseAdminPanel(
                             SelectCount(session, session.dialect.escapeName(PageTable.name)),
                             getTitleOf = PageTable.Heading.property,
                             transformColumn = { when (it) {
-                                PageTable.BodyMarkup -> TextCol(PageTable.BodyMarkup, createControlFactory = online.javanese.krud.template.control.CodeMirror.Html)
-                                PageTable.HeadMarkup -> TextCol(PageTable.HeadMarkup, createControlFactory = online.javanese.krud.template.control.CodeMirror.Html)
-                                PageTable.BeforeBodyEndMarkup -> TextCol(PageTable.BeforeBodyEndMarkup, createControlFactory = online.javanese.krud.template.control.CodeMirror.Html)
+                                PageTable.BodyMarkup -> TextCol(PageTable.BodyMarkup, createControlFactory = CodeMirror.Html)
+                                PageTable.HeadMarkup -> TextCol(PageTable.HeadMarkup, createControlFactory = CodeMirror.Html)
+                                PageTable.BeforeBodyEndMarkup -> TextCol(PageTable.BeforeBodyEndMarkup, createControlFactory = CodeMirror.Html)
                                 else -> KweryTable.TransformKweryColumn<Page>()(it)
                             } },
+                            sort = KweryExplicitSort(session, escape, PageTable, PageTable.SortIndex),
                             fallbackSource = uuidGenerator
                     ),
                     KweryTable("taskErrorReport", // todo: make read-only

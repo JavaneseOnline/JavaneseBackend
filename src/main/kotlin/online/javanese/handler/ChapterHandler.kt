@@ -16,7 +16,7 @@ fun ChapterHandler(
 ): suspend (Course.BasicInfo, Chapter, ApplicationCall) -> Unit = { course, chapter, call ->
 
     val idxPage = pageDao.findByMagic(Page.Magic.Index)!!
-    val treePage = pageDao.findByMagic(Page.Magic.Tree)!!
+    val treePage = pageDao.findByMagic(Page.Magic.Courses)!!
 
     val lessons = lessons(chapter.basicInfo, lessonDao, taskDao)
 

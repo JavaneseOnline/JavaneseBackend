@@ -17,7 +17,7 @@ fun CourseHandler(
 ): suspend (ApplicationCall, Course) -> Unit = { call, course ->
 
     val idx = pageDao.findByMagic(Page.Magic.Index)!!
-    val treePage = pageDao.findByMagic(Page.Magic.Tree)!!
+    val treePage = pageDao.findByMagic(Page.Magic.Courses)!!
     val tree = chapters(course.basicInfo, chapterDao, lessonDao, taskDao)
     val previousAndNext = courseDao.findPreviousAndNextBasic(course)
 
