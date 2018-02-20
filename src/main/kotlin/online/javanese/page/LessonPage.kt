@@ -216,7 +216,7 @@ class LessonPage(
         script {
             val rt = language.sandbox.runtimeMessages
 
-            +"var sandboxLocale = {"
+            unsafe { +"var sandboxLocale = {" }
             pair("compiling", rt.compiling)
             pair("compiled", rt.compiled)
             pair("exitCode", rt.exitCode)
@@ -226,7 +226,7 @@ class LessonPage(
             pair("correctSolution", rt.correctSolution)
             pair("notMatches", rt.notMatches)
             pair("webSocketError", msg.webSocketError, false)
-            +"};"
+            unsafe { +"};" }
         }
     }
 
