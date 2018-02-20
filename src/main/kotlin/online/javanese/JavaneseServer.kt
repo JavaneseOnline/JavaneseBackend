@@ -173,7 +173,7 @@ object JavaneseServer {
                                     ArticlesPage(idx, ar, articles, config.exposedStaticDir, pageLink, articleLink)
                                 },
                                 codeReview = { idx, cr ->
-                                    CodeReviewPage(idx, cr, codeReviewDao.findAll(), pageLink, language)
+                                    CodeReviewPage(idx, cr, codeReviewDao.findAll(), pageLink, codeReviewLink, language)
                                 }
                         ),
                         CourseHandler(

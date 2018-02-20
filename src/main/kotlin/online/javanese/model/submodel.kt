@@ -26,4 +26,3 @@ class VkPostInfo(
 
 }
 
-// todo: after moving to HTML DSL, create LinkInfo entity with linkText, maybe title, and urlComponent
