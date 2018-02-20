@@ -40,6 +40,9 @@ import java.util.*
 
 object JavaneseServer {
 
+    /**
+     * Entry point. Satisfies all dependencies and starts web-server.
+     */
     @JvmStatic
     fun main(args: Array<String>) {
         val singleThread = "--single-thread" in args
@@ -71,65 +74,69 @@ object JavaneseServer {
         val codeReviewDao = CodeReviewDao(session)
 
 
-        val pageLink =
-                IndexOrSingleSegmDirLink(
-                        PageTable.UrlSegment.property,
-                        PageTable.MetaTitle.property
-                )
-        val lessonsLink =
-                SingleSegmentDirLinkWithFragment(
-                        PageTable.UrlSegment.property,
-                        { "lessons" }, { language.lessonsTreeTab }
-                )
-        val tasksLink =
-                SingleSegmentDirLinkWithFragment(
-                        PageTable.UrlSegment.property,
-                        { "tasks" }, { language.tasksTreeTab }
-                )
+        val pageLink = Link(
+                IndexOrSingleSegmDirAddress(PageTable.UrlSegment.property),
+                PageTable.MetaTitle.property
+        )
+        val lessonsLink = Link(
+                SingleSegmentDirAddressWithFragment(PageTable.UrlSegment.property, { "lessons" }),
+                { language.lessonsTreeTab }
+        )
+        val tasksLink = Link(
+                SingleSegmentDirAddressWithFragment(PageTable.UrlSegment.property, { "tasks" }),
+                { language.tasksTreeTab }
+        )
 
-        val courseLink =
-                SingleSegmentDirLink(
-                        BasicCourseInfoTable.UrlSegment.property,
-                        BasicCourseInfoTable.LinkText.property
-                )
-        val chapterLink =
-                TwoSegmentDirLink(
+        val courseLink = Link(
+                SingleSegmentDirAddress(BasicCourseInfoTable.UrlSegment.property),
+                BasicCourseInfoTable.LinkText.property
+        )
+        val chapterLink = Link(
+                TwoSegmentDirAddress(
                         { courseDao.findBasicById(it.courseId)!!.urlSegment },
-                        BasicChapterInfoTable.UrlSegment.property,
-                        BasicChapterInfoTable.LinkText.property
-                )
-        val lessonLink =
-                HierarchicalThreeSegmentDirLink(
+                        BasicChapterInfoTable.UrlSegment.property
+                ),
+                BasicChapterInfoTable.LinkText.property
+        )
+        val lessonLink = Link(
+                HierarchicalThreeSegmentDirAddress(
                         { chapterDao.findBasicById(it.chapterId)!! },
                         { courseDao.findBasicById(it.courseId)!! },
                         BasicCourseInfoTable.UrlSegment.property,
                         BasicChapterInfoTable.UrlSegment.property,
-                        BasicLessonInfoTable.UrlSegment.property,
-                        BasicLessonInfoTable.LinkText.property
-                )
-        val taskLink =
-                HierarchicalThreeSegmentDirLinkWithFragment(
+                        BasicLessonInfoTable.UrlSegment.property
+                ),
+                BasicLessonInfoTable.LinkText.property
+        )
+        val taskLink = Link(
+                HierarchicalThreeSegmentDirAddressWithFragment(
                         { lessonDao.findBasicById(it.lessonId)!! },
                         { chapterDao.findBasicById(it.chapterId)!! },
                         { courseDao.findBasicById(it.courseId)!! },
                         BasicCourseInfoTable.UrlSegment.property,
                         BasicChapterInfoTable.UrlSegment.property,
                         BasicLessonInfoTable.UrlSegment.property,
-                        BasicTaskInfoTable.UrlPathComponent.property,
-                        BasicTaskInfoTable.LinkText.property
-                )
-        val articleLink =
-                TwoSegmentDirLink(
+                        BasicTaskInfoTable.UrlPathComponent.property
+                ),
+                BasicTaskInfoTable.LinkText.property
+        )
+        val articleLink = Link(
+                TwoSegmentDirAddress(
                         { pageDao.findByMagic(Page.Magic.Articles)!!.urlSegment },
-                        BasicArticleInfoTable.UrlSegment.property,
-                        BasicArticleInfoTable.LinkText.property
-                )
-        val codeReviewLink =
-                TwoSegmentDirLink(
+                        BasicArticleInfoTable.UrlSegment.property
+                ),
+                BasicArticleInfoTable.LinkText.property
+        )
+        val codeReviewLink = Link(
+                TwoSegmentDirAddress(
                         { pageDao.findByMagic(Page.Magic.CodeReview)!!.urlSegment },
-                        CodeReviewTable.UrlSegment.property,
-                        CodeReviewTable.MetaTitle.property
-                )
+                        CodeReviewTable.UrlSegment.property
+                ),
+                CodeReviewTable.MetaTitle.property
+        )
+
+        val reportTaskAction =
+                Action(TwoSegmentFileAddress<Unit>({ "task" }, { "report" }))
 
 
         val mainStyle = "main.min.css?2"
@@ -211,8 +218,8 @@ object JavaneseServer {
                                 courseDao, chapterDao, lessonDao, taskDao, pageDao, layout,
                                 { idx, tr, crs, chp, l, lt, prNx -> LessonPage(
                                         idx, tr, crs, chp, l, lt, prNx, config.exposedStaticDir,
-                                        pageLink, courseLink, chapterLink, lessonLink, language, sandboxScript,
-                                        codeMirrorStyle
+                                        pageLink, courseLink, chapterLink, lessonLink, reportTaskAction, language,
+                                        sandboxScript, codeMirrorStyle
                                 ) }
                         )
                 )

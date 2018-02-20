@@ -1,6 +1,7 @@
 package online.javanese.page
 
 import kotlinx.html.*
+import online.javanese.link.Action
 import online.javanese.link.Link
 import online.javanese.locale.Language
 import online.javanese.model.*
@@ -19,6 +20,7 @@ class LessonPage(
         private val courseLink: Link<Course.BasicInfo>,
         private val chapterLink: Link<Chapter.BasicInfo>,
         private val lessonLink: Link<Lesson.BasicInfo>,
+        private val reportTaskAction: Action<Unit>,
         private val language: Language,
         private val sandboxScript: String,
         private val codeMirrorStylePath: String
@@ -172,8 +174,7 @@ class LessonPage(
                 +msg.reportError
             }
 
-            // todo: URL as object
-            form(action = "/task/report", method = FormMethod.post) {
+            reportTaskAction.renderForm(this, Unit) {
                 attributes["data-success-message"] = msg.errorReportedSuccessfully
                 attributes["data-error-message"] = msg.errorNotReported
 
@@ -191,7 +192,7 @@ class LessonPage(
                             name = "text"
                         }
                         label(classes = "mdl-textfield__label") {
-                            for_ = "sandbox_errorReport_text"
+                            htmlFor = "sandbox_errorReport_text"
                             +msg.errorDescription
                         }
                     }
