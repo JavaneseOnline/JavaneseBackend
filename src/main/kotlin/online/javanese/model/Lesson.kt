@@ -6,6 +6,7 @@ import online.javanese.Html
 import online.javanese.krud.kwery.Uuid
 import java.time.LocalDateTime
 
+
 class Lesson(
         val basicInfo: BasicInfo,
         val meta: Meta,
@@ -25,15 +26,26 @@ class Lesson(
 
 }
 
+
+private val _path = Lesson::basicInfo
+
+private val _id = Lesson.BasicInfo::id
+private val _chapterId = Lesson.BasicInfo::chapterId
+private val _urlSegment = Lesson.BasicInfo::urlSegment
+private val _linkText = Lesson.BasicInfo::linkText
+
+private val _meta = Lesson::meta
+
+
 object LessonTable : Table<Lesson, Uuid>("lessons"), VersionedWithTimestamp {
 
-    val Id by idCol(Lesson.BasicInfo::id, Lesson::basicInfo)
-    val ChapterId by uuidCol(Lesson.BasicInfo::chapterId, Lesson::basicInfo, name = "chapterId")
-    val UrlSegment by urlSegmentCol(Lesson.BasicInfo::urlSegment, Lesson::basicInfo)
-    val LinkText by linkTextCol(Lesson.BasicInfo::linkText, Lesson::basicInfo)
-    val MetaTitle by metaTitleCol(Lesson::meta)
-    val MetaDescription by metaDescriptionCol(Lesson::meta)
-    val MetaKeywords by metaKeywordsCol(Lesson::meta)
+    val Id by idCol(_id, _path)
+    val ChapterId by uuidCol(_chapterId, _path, name = "chapterId")
+    val UrlSegment by urlSegmentCol(_urlSegment, _path)
+    val LinkText by linkTextCol(_linkText, _path)
+    val MetaTitle by metaTitleCol(_meta)
+    val MetaDescription by metaDescriptionCol(_meta)
+    val MetaKeywords by metaKeywordsCol(_meta)
     val Heading by headingCol(Lesson::heading)
     val BodyMarkup by col(Lesson::bodyMarkup, name = "bodyMarkup")
     val SortIndex by sortIndexCol(Lesson::sortIndex)
@@ -64,10 +76,10 @@ object LessonTable : Table<Lesson, Uuid>("lessons"), VersionedWithTimestamp {
 
 object BasicLessonInfoTable : Table<Lesson.BasicInfo, Uuid>("lessons") {
 
-    val Id by idCol(Lesson.BasicInfo::id)
-    val ChapterId by uuidCol(Lesson.BasicInfo::chapterId, name = "chapterId")
-    val UrlSegment by urlSegmentCol(Lesson.BasicInfo::urlSegment)
-    val LinkText by linkTextCol(Lesson.BasicInfo::linkText)
+    val Id by idCol(_id)
+    val ChapterId by uuidCol(_chapterId, name = "chapterId")
+    val UrlSegment by urlSegmentCol(_urlSegment)
+    val LinkText by linkTextCol(_linkText)
 
     override fun idColumns(id: Uuid): Set<Pair<Column<Lesson.BasicInfo, *>, *>> =
             setOf(Id of id)

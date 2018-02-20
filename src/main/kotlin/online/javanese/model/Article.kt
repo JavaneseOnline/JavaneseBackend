@@ -9,19 +9,17 @@ import java.time.LocalDateTime
 
 class Article(
         val basicInfo: BasicInfo,
-        val meta: Meta,
         val heading: String,
         val bodyMarkup: Html,
         val published: Boolean,
         val vkPostInfo: VkPostInfo?,
-        val tgPost: String,
-        val lastModified: LocalDateTime
+        val tgPost: String
 ) {
 
     class BasicInfo(
             val id: Uuid,
             val linkText: String,
-            val description_duplicatesMetaDescription: String,
+            val meta: Meta,
             val urlSegment: String,
             val createdAt: LocalDateTime,
             val lastModified: LocalDateTime,
@@ -31,15 +29,32 @@ class Article(
 }
 
 
+private val _path = Article::basicInfo
+private val _id = Article.BasicInfo::id
+private val _linkText = Article.BasicInfo::linkText
+private val _urlSegment = Article.BasicInfo::urlSegment
+private val _createdAt = Article.BasicInfo::createdAt
+private val _lastModified = Article.BasicInfo::lastModified
+private val _pinned = Article.BasicInfo::pinned
+
+private val _meta = Article.BasicInfo::meta
+
+private val _metaPath = { a: Article -> a.basicInfo.meta }
+
+
 object ArticleTable : Table<Article, Uuid>("articles") {
 
-    val Id by idCol(Article.BasicInfo::id, Article::basicInfo)
-    val LinkText by linkTextCol(Article.BasicInfo::linkText, Article::basicInfo)
-    val UrlSegment by urlSegmentCol(Article.BasicInfo::urlSegment, Article::basicInfo)
+    val Id by idCol(_id, _path)
+    val LinkText by linkTextCol(_linkText, _path)
 
-    val MetaTitle by metaTitleCol(Article::meta)
-    val MetaDescription by metaDescriptionCol(Article::meta)
-    val MetaKeywords by metaKeywordsCol(Article::meta)
+    val MetaTitle by metaTitleCol(_metaPath)
+    val MetaDescription by metaDescriptionCol(_metaPath)
+    val MetaKeywords by metaKeywordsCol(_metaPath)
+
+    val UrlSegment by urlSegmentCol(_urlSegment, _path)
+    val LastModified by lastModifiedCol(_lastModified, _path)
+    val CreatedAt by col(_createdAt, _path, name = "createdAt")
+    val Pinned by col(_pinned, _path, name = "pinned")
 
     val Heading by headingCol(Article::heading)
     val BodyMarkup by col(Article::bodyMarkup, name = "bodyMarkup")
@@ -49,10 +64,6 @@ object ArticleTable : Table<Article, Uuid>("articles") {
     val VkPostHash by vkPostHashCol(Article::vkPostInfo)
     val TgPost by tgPostCol(Article::tgPost)
 
-    val CreatedAt by col(Article.BasicInfo::createdAt, Article::basicInfo, name = "createdAt")
-    val LastModified by lastModifiedCol(Article::lastModified)
-    val Pinned by col(Article.BasicInfo::pinned, Article::basicInfo, name = "pinned")
-
 
     override fun idColumns(id: Uuid): Set<Pair<Column<Article, *>, *>> =
             setOf(Id of id)
@@ -61,16 +72,15 @@ object ArticleTable : Table<Article, Uuid>("articles") {
             basicInfo = Article.BasicInfo(
                     id = value of Id,
                     linkText = value of LinkText,
-                    description_duplicatesMetaDescription = value of MetaDescription,
+                    meta = Meta(
+                            title = value of MetaTitle,
+                            description = value of MetaDescription,
+                            keywords = value of MetaKeywords
+                    ),
                     urlSegment = value of UrlSegment,
                     lastModified = value of LastModified,
                     createdAt = value of CreatedAt,
                     pinned = value of Pinned
-            ),
-            meta = Meta(
-                    title = value of MetaTitle,
-                    description = value of MetaDescription,
-                    keywords = value of MetaKeywords
             ),
             heading = value of Heading,
             bodyMarkup = value of BodyMarkup,
@@ -79,8 +89,7 @@ object ArticleTable : Table<Article, Uuid>("articles") {
                     id = value of VkPostId,
                     hash = value of VkPostHash
             ),
-            tgPost = value of TgPost,
-            lastModified = value of LastModified
+            tgPost = value of TgPost
     )
 
 }
@@ -88,13 +97,15 @@ object ArticleTable : Table<Article, Uuid>("articles") {
 
 object BasicArticleInfoTable : Table<Article.BasicInfo, Uuid>("articles") {
 
-    val Id by idCol(Article.BasicInfo::id)
-    val LinkText by linkTextCol(Article.BasicInfo::linkText)
-    val MetaDescription by col(Article.BasicInfo::description_duplicatesMetaDescription, name = "metaDescription")
-    val UrlSegment by urlSegmentCol(Article.BasicInfo::urlSegment)
-    val CreatedAt by col(Article.BasicInfo::createdAt, name = "createdAt")
-    val LastModified by lastModifiedCol(Article.BasicInfo::lastModified)
-    val Pinned by col(Article.BasicInfo::pinned, name = "pinned")
+    val Id by idCol(_id)
+    val LinkText by linkTextCol(_linkText)
+    val MetaTitle by metaTitleCol(_meta)
+    val MetaDescription by metaDescriptionCol(_meta)
+    val MetaKeywords by metaKeywordsCol(_meta)
+    val UrlSegment by urlSegmentCol(_urlSegment)
+    val CreatedAt by col(_createdAt, name = "createdAt")
+    val LastModified by lastModifiedCol(_lastModified)
+    val Pinned by col(_pinned, name = "pinned")
 
     override fun idColumns(id: Uuid): Set<Pair<Column<Article.BasicInfo, *>, *>> =
             setOf(Id of id)
@@ -102,7 +113,11 @@ object BasicArticleInfoTable : Table<Article.BasicInfo, Uuid>("articles") {
     override fun create(value: Value<Article.BasicInfo>): Article.BasicInfo = Article.BasicInfo(
             id = value of Id,
             linkText = value of LinkText,
-            description_duplicatesMetaDescription = value of MetaDescription,
+            meta = Meta(
+                    title = value of MetaTitle,
+                    description = value of MetaDescription,
+                    keywords = value of MetaKeywords
+            ),
             urlSegment = value of UrlSegment,
             createdAt = value of CreatedAt,
             lastModified = value of LastModified,
@@ -117,7 +132,7 @@ class ArticleDao(
 ) : AbstractDao<Article, Uuid>(session, ArticleTable, ArticleTable.Id.property) {
 
     private val tableName = ArticleTable.name
-    private val basicCols = """"id", "linkText", "metaDescription", "urlSegment", "createdAt", "lastModified", "pinned" """
+    private val basicCols = """"id", "linkText", "metaTitle", "metaDescription", "metaKeywords", "urlSegment", "createdAt", "lastModified", "pinned" """
     private val urlComponentColName = ArticleTable.UrlSegment.name
     private val publishedColName = ArticleTable.Published.name
     private val createdAtColName = ArticleTable.CreatedAt.name

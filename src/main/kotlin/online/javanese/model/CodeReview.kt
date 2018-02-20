@@ -24,13 +24,16 @@ class CodeReview( // todo: introduce BasicInfo
 )
 
 
+private val _meta = CodeReview::meta
+
+
 object CodeReviewTable : Table<CodeReview, Uuid>("codeReviews") {
 
     val Id by idCol(CodeReview::id)
     val UrlSegment by urlSegmentCol(CodeReview::urlSegment)
-    val MetaTitle by metaTitleCol(CodeReview::meta)
-    val MetaDescription by metaDescriptionCol(CodeReview::meta)
-    val MetaKeywords by metaKeywordsCol(CodeReview::meta)
+    val MetaTitle by metaTitleCol(_meta)
+    val MetaDescription by metaDescriptionCol(_meta)
+    val MetaKeywords by metaKeywordsCol(_meta)
     val SenderName by col(CodeReview::senderName, name = "senderName")
     val ProblemStatement by col(CodeReview::problemStatement, name = "problemStatement")
     val ReviewMarkup by col(CodeReview::reviewMarkup, name = "review")

@@ -7,6 +7,7 @@ import online.javanese.model.Article
 import online.javanese.model.Meta
 import online.javanese.model.Page
 
+
 class ArticlePage(
         private val indexPage: Page,
         private val articlesPage: Page,
@@ -17,7 +18,7 @@ class ArticlePage(
         private val highlightScript: String
 ) : Layout.Page {
 
-    override val meta: Meta get() = article.meta
+    override val meta: Meta get() = article.basicInfo.meta
 
     override fun additionalHeadMarkup(head: HEAD) = Unit
 

@@ -30,7 +30,7 @@ fun ArticleRssHandler(
             .map {
                 RssItem(
                         title = it.linkText,
-                        description = it.description_duplicatesMetaDescription,
+                        description = it.meta.description,
                         link = siteUrl + articleLink.url(it),
                         pubDate = it.createdAt
                 )

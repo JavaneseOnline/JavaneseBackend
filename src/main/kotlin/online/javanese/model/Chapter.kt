@@ -26,15 +26,24 @@ class Chapter(
 }
 
 
+private val _path = Chapter::basicInfo
+private val _id = Chapter.BasicInfo::id
+private val _courseId = Chapter.BasicInfo::courseId
+private val _urlSegment = Chapter.BasicInfo::urlSegment
+private val _linkText = Chapter.BasicInfo::linkText
+
+private val _meta = Chapter::meta
+
+
 object ChapterTable : Table<Chapter, Uuid>("chapters"), VersionedWithTimestamp {
 
-    val Id by idCol(Chapter.BasicInfo::id, Chapter::basicInfo)
-    val CourseId by uuidCol(Chapter.BasicInfo::courseId, Chapter::basicInfo, name = "courseId")
-    val UrlSegment by urlSegmentCol(Chapter.BasicInfo::urlSegment, Chapter::basicInfo)
-    val LinkText by linkTextCol(Chapter.BasicInfo::linkText, Chapter::basicInfo)
-    val MetaTitle by metaTitleCol(Chapter::meta)
-    val MetaDescription by metaDescriptionCol(Chapter::meta)
-    val MetaKeywords by metaKeywordsCol(Chapter::meta)
+    val Id by idCol(_id, _path)
+    val CourseId by uuidCol(_courseId, _path, name = "courseId")
+    val UrlSegment by urlSegmentCol(_urlSegment, _path)
+    val LinkText by linkTextCol(_linkText, _path)
+    val MetaTitle by metaTitleCol(_meta)
+    val MetaDescription by metaDescriptionCol(_meta)
+    val MetaKeywords by metaKeywordsCol(_meta)
     val Heading by headingCol(Chapter::heading)
     val Description by col(Chapter::description, name = "description")
     val SortIndex by sortIndexCol(Chapter::sortIndex)
@@ -65,10 +74,10 @@ object ChapterTable : Table<Chapter, Uuid>("chapters"), VersionedWithTimestamp {
 
 object BasicChapterInfoTable : Table<Chapter.BasicInfo, Uuid>("chapters") {
 
-    val Id by idCol(Chapter.BasicInfo::id)
-    val CourseId by uuidCol(Chapter.BasicInfo::courseId, name = "courseId")
-    val UrlSegment by urlSegmentCol(Chapter.BasicInfo::urlSegment)
-    val LinkText by linkTextCol(Chapter.BasicInfo::linkText)
+    val Id by idCol(_id)
+    val CourseId by uuidCol(_courseId, name = "courseId")
+    val UrlSegment by urlSegmentCol(_urlSegment)
+    val LinkText by linkTextCol(_linkText)
 
     override fun idColumns(id: Uuid): Set<Pair<Column<Chapter.BasicInfo, *>, *>> = setOf(Id of id)
 

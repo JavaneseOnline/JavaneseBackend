@@ -26,14 +26,18 @@ class Page( // todo: introduce BasicInfo
     }
 }
 
+
+private val _meta = Page::meta
+
+
 object PageTable : Table<Page, Uuid>("pages"), VersionedWithTimestamp {
 
     val Id by idCol(Page::id)
     val UrlSegment by urlSegmentCol(Page::urlSegment)
     val Magic by col(Page::magic, name = "magic", default = Page.Magic.Index)
-    val MetaTitle by metaTitleCol(Page::meta)
-    val MetaDescription by metaDescriptionCol(Page::meta)
-    val MetaKeywords by metaKeywordsCol(Page::meta)
+    val MetaTitle by metaTitleCol(_meta)
+    val MetaDescription by metaDescriptionCol(_meta)
+    val MetaKeywords by metaKeywordsCol(_meta)
     val Icon by col(Page::icon, name = "icon")
     val Subtitle by col(Page::subtitle, name = "subtitle")
     val HeadMarkup by col(Page::headMarkup, name = "headMarkup")

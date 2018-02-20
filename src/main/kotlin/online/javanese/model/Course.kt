@@ -26,16 +26,28 @@ class Course(
 
 }
 
+
+private val _path = Course::basicInfo
+
+private val _id = Course.BasicInfo::id
+private val _urlSegment = Course.BasicInfo::urlSegment
+private val _linkText = Course.BasicInfo::linkText
+private val _subtitle = Course.BasicInfo::subtitle
+private val _icon = Course.BasicInfo::icon
+
+private val _meta = Course::meta
+
+
 object CourseTable : Table<Course, Uuid>("courses"), VersionedWithTimestamp {
 
-    val Id by idCol(Course.BasicInfo::id, Course::basicInfo)
-    val UrlSegment by urlSegmentCol(Course.BasicInfo::urlSegment, Course::basicInfo)
-    val MetaTitle by metaTitleCol(Course::meta)
-    val MetaDescription by metaDescriptionCol(Course::meta)
-    val MetaKeywords by metaKeywordsCol(Course::meta)
-    val LinkText by linkTextCol(Course.BasicInfo::linkText, Course::basicInfo)
-    val Subtitle by col(Course.BasicInfo::subtitle, Course::basicInfo, name = "subtitle")
-    val Icon by col(Course.BasicInfo::icon, Course::basicInfo, name = "icon")
+    val Id by idCol(_id, _path)
+    val UrlSegment by urlSegmentCol(_urlSegment, _path)
+    val MetaTitle by metaTitleCol(_meta)
+    val MetaDescription by metaDescriptionCol(_meta)
+    val MetaKeywords by metaKeywordsCol(_meta)
+    val LinkText by linkTextCol(_linkText, _path)
+    val Subtitle by col(_subtitle, _path, name = "subtitle")
+    val Icon by col(_icon, Course::basicInfo, name = "icon")
     val Heading by headingCol(Course::heading)
     val Description by col(Course::description, name = "description")
     val SortIndex by sortIndexCol(Course::sortIndex)
@@ -67,11 +79,11 @@ object CourseTable : Table<Course, Uuid>("courses"), VersionedWithTimestamp {
 
 object BasicCourseInfoTable : Table<Course.BasicInfo, Uuid>("courses") {
 
-    val Id by idCol(Course.BasicInfo::id)
-    val UrlSegment by urlSegmentCol(Course.BasicInfo::urlSegment)
-    val LinkText by linkTextCol(Course.BasicInfo::linkText)
-    val Subtitle by col(Course.BasicInfo::subtitle, name = "subtitle")
-    val Icon by col(Course.BasicInfo::icon, name = "icon")
+    val Id by idCol(_id)
+    val UrlSegment by urlSegmentCol(_urlSegment)
+    val LinkText by linkTextCol(_linkText)
+    val Subtitle by col(_subtitle, name = "subtitle")
+    val Icon by col(_icon, name = "icon")
 
     override fun idColumns(id: Uuid): Set<Pair<Column<Course.BasicInfo, *>, *>> = setOf(Id of id)
 

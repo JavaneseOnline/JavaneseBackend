@@ -40,34 +40,36 @@ class Task(
 
 }
 
+
+private val _basic = Task::basicInfo
+
+private val _id = Task.BasicInfo::id
+private val _lessonId = Task.BasicInfo::lessonId
+private val _linkText = Task.BasicInfo::linkText
+private val _urlPathComponent = Task.BasicInfo::urlPathComponent
+
+private val _tech = Task::technicalInfo
+
+
 object TaskTable : Table<Task, Uuid>("tasks") {
 
-    val Id by idCol(Task.BasicInfo::id, Task::basicInfo)
-    val LessonId by uuidCol(Task.BasicInfo::lessonId, Task::basicInfo, name = "lessonId")
-    val LinkText by linkTextCol(Task.BasicInfo::linkText, Task::basicInfo)
-    val UrlPathComponent by urlSegmentCol(Task.BasicInfo::urlPathComponent, Task::basicInfo)
+    val Id by idCol(_id, _basic)
+    val LessonId by uuidCol(_lessonId, _basic, name = "lessonId")
+    val LinkText by linkTextCol(_linkText, _basic)
+    val UrlPathComponent by urlSegmentCol(_urlPathComponent, _basic)
 
     val Heading by col(Task::heading, name = "heading")
     val Condition by col(Task::condition, name = "condition")
 
-    val CompiledClassName by col(Task.TechnicalInfo::compiledClassName, Task::technicalInfo,
-            name = "compiledClassName")
-    val InputMethod by col(Task.TechnicalInfo::inputMethod, Task::technicalInfo,
-            name = "inputMethod", default = Task.InputMethod.MethodBody)
-    val InitialCode by col(Task.TechnicalInfo::initialCode, Task::technicalInfo,
-            name = "initialCode")
-    val CodeToAppend by col(Task.TechnicalInfo::codeToAppend, Task::technicalInfo,
-            name = "codeToAppend")
-    val AllowSystemIn by col(Task.TechnicalInfo::allowSystemIn, Task::technicalInfo,
-            name = "allowSystemIn")
-    val CheckRules by col(Task.TechnicalInfo::checkRules, Task::technicalInfo,
-            name = "checkRules")
-    val ExpectedOutput by col(Task.TechnicalInfo::expectedOutput, Task::technicalInfo,
-            name = "expectedOutput")
-    val TimeLimit by col(Task.TechnicalInfo::timeLimit, Task::technicalInfo,
-            name = "timeLimit")
-    val MemoryLimit by col(Task.TechnicalInfo::memoryLimit, Task::technicalInfo,
-            name = "memoryLimit")
+    val CompiledClassName by col(Task.TechnicalInfo::compiledClassName, _tech, name = "compiledClassName")
+    val InputMethod by col(Task.TechnicalInfo::inputMethod, _tech, name = "inputMethod", default = Task.InputMethod.MethodBody)
+    val InitialCode by col(Task.TechnicalInfo::initialCode, _tech, name = "initialCode")
+    val CodeToAppend by col(Task.TechnicalInfo::codeToAppend, _tech, name = "codeToAppend")
+    val AllowSystemIn by col(Task.TechnicalInfo::allowSystemIn, _tech, name = "allowSystemIn")
+    val CheckRules by col(Task.TechnicalInfo::checkRules, _tech, name = "checkRules")
+    val ExpectedOutput by col(Task.TechnicalInfo::expectedOutput, _tech, name = "expectedOutput")
+    val TimeLimit by col(Task.TechnicalInfo::timeLimit, _tech, name = "timeLimit")
+    val MemoryLimit by col(Task.TechnicalInfo::memoryLimit, _tech, name = "memoryLimit")
 
     val SortIndex by sortIndexCol(Task::sortIndex)
 
@@ -103,10 +105,10 @@ object TaskTable : Table<Task, Uuid>("tasks") {
 
 object BasicTaskInfoTable : Table<Task.BasicInfo, Uuid>("tasks") {
 
-    val Id by idCol(Task.BasicInfo::id)
-    val LessonId by uuidCol(Task.BasicInfo::lessonId, name = "lessonId")
-    val LinkText by linkTextCol(Task.BasicInfo::linkText)
-    val UrlPathComponent by urlSegmentCol(Task.BasicInfo::urlPathComponent)
+    val Id by idCol(_id)
+    val LessonId by uuidCol(_lessonId, name = "lessonId")
+    val LinkText by linkTextCol(_linkText)
+    val UrlPathComponent by urlSegmentCol(_urlPathComponent)
 
     override fun idColumns(id: Uuid): Set<Pair<Column<Task.BasicInfo, *>, *>> =
             setOf(Id of id)

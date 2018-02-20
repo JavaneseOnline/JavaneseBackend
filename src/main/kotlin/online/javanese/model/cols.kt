@@ -47,6 +47,9 @@ internal fun <T : Any> Table<T, *>.headingCol(headingProp: KProperty1<T, String>
 internal fun <T : Any> Table<T, *>.lastModifiedCol(lastModifiedProp: KProperty1<T, LocalDateTime>) =
         col(lastModifiedProp, name = "lastModified", version = true)
 
+internal fun <T : Any, C> Table<T, *>.lastModifiedCol(lastModifiedProp: KProperty1<C, LocalDateTime>, path: (T) -> C) =
+        col(lastModifiedProp, path, name = "lastModified", version = true)
+
 internal fun <T : Any> Table<T, *>.sortIndexCol(sortIndexProp: KProperty1<T, Int>) =
         col(sortIndexProp, name = "sortIndex")
 
