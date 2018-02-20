@@ -2,17 +2,18 @@ package online.javanese.page
 
 import kotlinx.html.*
 import online.javanese.link.Link
-import online.javanese.link.encodeForUrl
 import online.javanese.locale.Language
 import online.javanese.model.CodeReview
 import online.javanese.model.Meta
 import online.javanese.model.Page
+
 
 class CodeReviewPage(
         private val indexPage: Page,
         private val model: Page,
         private val reviews: List<CodeReview>,
         private val pageLink: Link<Page>,
+        private val codeReviewLink: Link<CodeReview>,
         private val language: Language
 ) : Layout.Page {
 
@@ -38,10 +39,8 @@ class CodeReviewPage(
 
                     ul {
                         reviews.forEach { review ->
-                            li { // fixme: link as object
-                                a(href = "/${model.urlSegment.encodeForUrl()}/${review.urlSegment}/") {
-                                    +review.meta.title
-                                }
+                            li {
+                                codeReviewLink.render(this, review)
                             }
                         }
                     }
