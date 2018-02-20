@@ -1,14 +1,16 @@
 package online.javanese.page
 
 import kotlinx.html.*
+import online.javanese.link.HtmlBlock
 import online.javanese.link.Link
+import online.javanese.link.NoHtmlBlock
 import online.javanese.model.Meta
 import online.javanese.model.Page
 
 
 class CardsPage<T>(
         private val page: Page,
-        private val beforeContent: FlowContent.(classes: String) -> Unit = { },
+        private val beforeContent: HtmlBlock = NoHtmlBlock,
         private val contents: List<Card<T>>,
         private val dCount: CountOnDesktop = CountOnDesktop.Four,
         private val tCount: CountOnTablet = CountOnTablet.Two
@@ -26,7 +28,7 @@ class CardsPage<T>(
 
         main(classes = "content mdl-grid") {
 
-            beforeContent("mdl-cell mdl-cell--12-col")
+            beforeContent.render(this, "mdl-cell mdl-cell--12-col")
 
             contents.forEach { card ->
                 div(classes = "mdl-cell mdl-cell--${dCount.cols}-col-desktop mdl-cell--${tCount.cols}-col content-padding-v") {

@@ -1,9 +1,6 @@
 package online.javanese.link
 
-import kotlinx.html.A
-import kotlinx.html.FlowOrInteractiveOrPhrasingContent
-import kotlinx.html.a
-import kotlinx.html.title
+import kotlinx.html.*
 import online.javanese.page.a
 
 /**
@@ -12,9 +9,15 @@ import online.javanese.page.a
 class Link<T>(
         private val address: Address<T>,
         private val linkText: (T) -> String
-) {
-    fun render(doc: FlowOrInteractiveOrPhrasingContent, obj: T) =
-            doc.a(href = address.url(obj), titleAndText = linkText.invoke(obj))
+) : HtmlBlock1<T> {
+
+    override fun render(where: FlowContent, param: T, classes: String?) {
+        val upCasted: FlowOrInteractiveOrPhrasingContent = where
+        render(upCasted, param, classes)
+    }
+
+    fun render(doc: FlowOrInteractiveOrPhrasingContent, obj: T, classes: String? = null) =
+            doc.a(href = address.url(obj), titleAndText = linkText.invoke(obj), classes = classes)
 
     fun renderCustom(
             doc: FlowOrInteractiveOrPhrasingContent,

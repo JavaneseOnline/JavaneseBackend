@@ -1,21 +1,18 @@
 package online.javanese.page
 
 import kotlinx.html.*
-import online.javanese.link.Link
+import online.javanese.link.HtmlBlock
 import online.javanese.locale.Language
 import online.javanese.model.Article
 import online.javanese.model.Meta
-import online.javanese.model.Page
 
 
 class ArticlePage(
-        private val indexPage: Page,
-        private val articlesPage: Page,
         private val article: Article,
         private val language: Language,
-        private val pageLink: Link<Page>,
         private val static: String,
-        private val highlightScript: String
+        private val highlightScript: String,
+        private val beforeContent: HtmlBlock
 ) : Layout.Page {
 
     override val meta: Meta get() = article.basicInfo.meta
@@ -24,11 +21,8 @@ class ArticlePage(
 
     override fun bodyMarkup(body: BODY) = with(body) {
         contentCardMain {
-            nav {
-                pageLink.render(this, indexPage)
-                +" / "
-                pageLink.render(this, articlesPage)
-            }
+
+            beforeContent.render(this)
 
             h1(classes = "content-padding-v") {
                 +article.heading

@@ -2,28 +2,23 @@ package online.javanese.page
 
 import kotlinx.html.*
 import online.javanese.link.Action
+import online.javanese.link.HtmlBlock
 import online.javanese.link.Link
 import online.javanese.locale.Language
 import online.javanese.model.*
 
 
 class LessonPage(
-        private val index: Page,
-        private val treePage: Page,
-        private val course: Course.BasicInfo,
-        private val chapter: Chapter.BasicInfo,
         private val lesson: Lesson,
         private val tasks: List<Task>,
         private val previousAndNext: Pair<Lesson.BasicInfo?, Lesson.BasicInfo?>,
         private val static: String,
-        private val pageLink: Link<Page>,
-        private val courseLink: Link<Course.BasicInfo>,
-        private val chapterLink: Link<Chapter.BasicInfo>,
         private val lessonLink: Link<Lesson.BasicInfo>,
         private val reportTaskAction: Action<Unit>,
         private val language: Language,
         private val sandboxScript: String,
-        private val codeMirrorStylePath: String
+        private val codeMirrorStylePath: String,
+        private val beforeContent: HtmlBlock
 ) : Layout.Page {
 
     override val meta: Meta get() = lesson.meta
@@ -34,15 +29,8 @@ class LessonPage(
 
     override fun bodyMarkup(body: BODY) = with(body) {
         contentCardMain {
-            nav {
-                pageLink.render(this, index)
-                +" / "
-                pageLink.render(this, treePage)
-                +" / "
-                courseLink.render(this, course)
-                +" / "
-                chapterLink.render(this, chapter)
-            }
+
+            beforeContent.render(this)
 
             h1(classes = "content-padding-v") {
                 +lesson.heading

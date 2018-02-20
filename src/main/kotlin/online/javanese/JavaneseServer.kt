@@ -147,7 +147,11 @@ object JavaneseServer {
 
         val layout = MainLayout(config.exposedStaticDir, mainStyle, mainScript, language)
 
-        val breadCrumbs1 = LinkSet1(pageLink)
+        val betweenLinks: BetweenBlocks = { +" / " }
+        val breadCrumbsToIndex = navOf(pageLink)
+        val breadCrumbsToPage = betweenLinks.navOf(pageLink, pageLink)
+        val breadCrumbsToCourse = betweenLinks.navOf(pageLink, pageLink, courseLink)
+        val breadCrumbsToChapter = betweenLinks.navOf(pageLink, pageLink, courseLink, chapterLink)
 
         // fixme: eliminate these OnePart, TwoPart, ThreePart route handlers by more generic things
         val route1 =
@@ -167,28 +171,33 @@ object JavaneseServer {
                                 coursesPage = { indexPage, coursesPage, courses ->
                                     CardsPage(
                                             page = coursesPage,
-                                            beforeContent = AppliedLinkSet1(breadCrumbs1, indexPage),
+                                            beforeContent = breadCrumbsToIndex(indexPage),
                                             contents = courses.map { CardsPage.Card(courseLink, it, it.icon, it.subtitle) },
                                             dCount = CardsPage.CountOnDesktop.Three,
                                             tCount = CardsPage.CountOnTablet.One
                                     )
                                 },
                                 treePage = { indexPage, coursesPage, courses ->
-                                    TreePage(indexPage, coursesPage, courses, language, pageLink, courseLink, chapterLink, lessonLink, taskLink)
+                                    TreePage(
+                                            coursesPage, courses, language, courseLink, chapterLink, lessonLink, taskLink,
+                                            breadCrumbsToIndex(indexPage)
+                                    )
                                 },
                                 articlesPage = { idx, ar, articles ->
-                                    ArticlesPage(idx, ar, articles, config.exposedStaticDir, pageLink, articleLink)
+                                    ArticlesPage(ar, articles, config.exposedStaticDir, articleLink, breadCrumbsToIndex(idx))
                                 },
                                 codeReview = { idx, cr ->
-                                    CodeReviewPage(idx, cr, codeReviewDao.findAll(), pageLink, codeReviewLink, language)
+                                    CodeReviewPage(cr, codeReviewDao.findAll(), codeReviewLink, language, breadCrumbsToIndex(idx))
                                 }
                         ),
                         CourseHandler(
                                 pageDao, courseDao, chapterDao, lessonDao, taskDao, layout,
-                                { idx, tr, c, ct, pn -> CoursePage(
-                                        idx, tr, c, ct, pn,
-                                        pageLink, courseLink, chapterLink, lessonLink, taskLink, language
-                                ) }
+                                coursePage = { idx, tr, c, ct, pn ->
+                                    CoursePage(
+                                            c, ct, pn, courseLink, chapterLink,
+                                            lessonLink, taskLink, language, breadCrumbsToPage(idx, tr)
+                                    )
+                                }
                         )
                 )
 
@@ -196,18 +205,17 @@ object JavaneseServer {
                 TwoPartsRoute(
                         pageDao, articleDao, courseDao, chapterDao, codeReviewDao,
                         { idx, ar, ars, call -> call.respondHtml { layout(this, ArticlePage(
-                                idx, ar, ars, language, pageLink,
-                                config.exposedStaticDir, highlightScript = sandboxScript
+                                ars, language, config.exposedStaticDir, highlightScript = sandboxScript, beforeContent = breadCrumbsToPage(idx, ar)
                         )) } },
                         ChapterHandler(
                                 pageDao, chapterDao, lessonDao, taskDao, layout,
                                 { idx, tr, crs, chp, chpt, prevNext -> ChapterPage(
-                                        idx, tr, crs, chp, chpt,
-                                        prevNext, pageLink, courseLink, chapterLink, lessonLink, taskLink, language
+                                        chp, chpt, prevNext, chapterLink, lessonLink, taskLink,
+                                        language, breadCrumbsToCourse(idx, tr, crs)
                                 ) }
                         ),
                         { idx, cr, review, call -> call.respondHtml { layout(this, CodeReviewDetailsPage(
-                                idx, cr, review, pageLink, config.exposedStaticDir, highlightScript = sandboxScript
+                                review, config.exposedStaticDir, highlightScript = sandboxScript, beforeContent = breadCrumbsToPage(idx, cr)
                         )) } }
                 )
 
@@ -217,9 +225,8 @@ object JavaneseServer {
                         LessonHandler(
                                 courseDao, chapterDao, lessonDao, taskDao, pageDao, layout,
                                 { idx, tr, crs, chp, l, lt, prNx -> LessonPage(
-                                        idx, tr, crs, chp, l, lt, prNx, config.exposedStaticDir,
-                                        pageLink, courseLink, chapterLink, lessonLink, reportTaskAction, language,
-                                        sandboxScript, codeMirrorStyle
+                                        l, lt, prNx, config.exposedStaticDir, lessonLink, reportTaskAction, language, sandboxScript,
+                                        codeMirrorStyle, breadCrumbsToChapter(idx, tr, crs, chp)
                                 ) }
                         )
                 )

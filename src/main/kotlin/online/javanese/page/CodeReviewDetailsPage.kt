@@ -1,18 +1,16 @@
 package online.javanese.page
 
 import kotlinx.html.*
-import online.javanese.link.Link
+import online.javanese.link.HtmlBlock
 import online.javanese.model.CodeReview
 import online.javanese.model.Meta
-import online.javanese.model.Page
+
 
 class CodeReviewDetailsPage(
-        private val indexPage: Page,
-        private val codeReviewsPage: Page,
         private val codeReview: CodeReview,
-        private val pageLink: Link<Page>,
         private val static: String,
-        private val highlightScript: String
+        private val highlightScript: String,
+        private val beforeContent: HtmlBlock
 ) : Layout.Page {
 
     override val meta: Meta get() = codeReview.meta
@@ -22,11 +20,7 @@ class CodeReviewDetailsPage(
     override fun bodyMarkup(body: BODY) = with(body) {
         contentCardMain {
 
-            nav {
-                pageLink.render(this, indexPage)
-                +" / "
-                pageLink.render(this, codeReviewsPage)
-            }
+            beforeContent.render(this)
 
             h1 {
                 +codeReview.meta.title
