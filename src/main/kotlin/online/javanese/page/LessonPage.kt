@@ -114,8 +114,9 @@ class LessonPage(
                                 div(classes = "mdl-cell mdl-cell--12-col-tablet mdl-cell--5-col ") {
                                     div(classes = "content-padding-top messages") {
                                         onClick = "$(this).closest('.sandbox').find('.cin').focus();"
-                                        pre(classes = "content-padding runtime-{{ message.type | lowercase }}") {
+                                        pre {
                                             attributes["v-for"] = "message in messages"
+                                            attributes["v-bind:class"] = "'content-padding runtime-' + message.type.toLowerCase()"
 
                                             +"{{ message.data }}"
                                         }

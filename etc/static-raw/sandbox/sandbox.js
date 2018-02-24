@@ -1,27 +1,6 @@
 $('.sandbox').each(function() {
     'use strict';
     var $sandbox = $(this);
-    
-    /*var editor = ace.edit($sandbox.find('.editor')[0]);
-    editor.setTheme('ace/theme/twilight');
-    editor.setOptions({
-        enableBasicAutocompletion: true,
-        enableSnippets: true,
-        enableLiveAutocompletion: false
-    });
-    editor.getSession().setMode('ace/mode/java');*/
-
-    var textarea = $sandbox.find('.editor')[0];
-    var editor = CodeMirror(function(elt) {
-        textarea.parentNode.replaceChild(elt, textarea);
-    }, {
-        value: textarea.value,
-        lineNumbers: true,
-        matchBrackets: true,
-        indentUnit: 4,
-        mode: "text/x-java",
-        theme: "ambiance"
-    });
 
     var dialog = document.getElementById('sandbox_reportError');
     if (!dialog.showModal) {
@@ -32,10 +11,11 @@ $('.sandbox').each(function() {
     });
 
     /*var sandbox = */new Vue({
-        el: $sandbox[0],
+        el: this, // .sandbox
         data: {
-            /**/code: null,
+            code: null,
             systemIn: null,
+            editor: null,
 
             /**
              * enum class MessageType {
@@ -54,6 +34,19 @@ $('.sandbox').each(function() {
             running: false,
             connection: null
         },
+        mounted: function() {
+            var textarea = this.$el.getElementsByClassName('editor')[0];
+            this.editor = CodeMirror(function(elt) {
+                textarea.parentNode.replaceChild(elt, textarea);
+            }, {
+                value: textarea.value,
+                lineNumbers: true,
+                matchBrackets: true,
+                indentUnit: 4,
+                mode: "text/x-java",
+                theme: "ambiance"
+            });
+        },
         methods: {
             run: function () {
                 var app = this;
@@ -61,7 +54,7 @@ $('.sandbox').each(function() {
                 this.connection = new WebSocket('ws://' + location.host + '/sandbox/ws?task=' + $sandbox.data('task'));
                 this.connection.onopen = function() {
                     app.running = true;
-                    this.send(editor.getValue());
+                    this.send(app.editor.getValue());
                 };
                 this.connection.onclose = function() {
                     app.running = false;
@@ -107,7 +100,7 @@ $('.sandbox').each(function() {
             reportError: function() {
                 var form = dialog.getElementsByTagName('form')[0]
                 form.taskId.value = $sandbox.data('task');
-                form.code.value = editor.getValue();
+                form.code.value = this.editor.getValue();
                 dialog.showModal();
             },
             send: function(e) {

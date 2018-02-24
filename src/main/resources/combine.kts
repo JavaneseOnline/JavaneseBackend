@@ -22,23 +22,23 @@ scssAndCsso(codeMirrorStyle)
 
 fun combineAndUglifyMain(fileName: String) {
     jsFile(prepared + fileName).assertNotExists().create().writer().use {
-                appendFrom(URL("https://cdnjs.cloudflare.com/ajax/libs/vue/1.0.25/vue.min.js"), it) //todo: upgrade
-                appendFrom(URL("http://zeptojs.com/zepto.min.js"), it)
-                appendFrom(URL("https://raw.githubusercontent.com/madrobby/zepto/master/src/fx.js"), it)
-                appendFrom(URL("https://raw.githubusercontent.com/madrobby/zepto/master/src/fx_methods.js"), it)
+        appendFrom(URL("https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.13/vue.min.js"), it)
+        appendFrom(URL("http://zeptojs.com/zepto.min.js"), it)
+        appendFrom(URL("https://raw.githubusercontent.com/madrobby/zepto/master/src/fx.js"), it)
+        appendFrom(URL("https://raw.githubusercontent.com/madrobby/zepto/master/src/fx_methods.js"), it)
 
-                it.write(
-                        URL("https://raw.githubusercontent.com/suprMax/ZeptoScroll/master/static/zepto.scroll.js")
-                                .openConnection().getInputStream().reader().readText()
-                                .replace("$.os.android ? 1 : 0", "0") // we're not using Zepto.detect
-                )
-                it.write(nl)
+        it.write(
+                URL("https://raw.githubusercontent.com/suprMax/ZeptoScroll/master/static/zepto.scroll.js")
+                        .openConnection().getInputStream().reader().readText()
+                        .replace("$.os.android ? 1 : 0", "0") // we're not using Zepto.detect
+        )
+        it.write(nl)
 
-                appendFrom(URL("https://code.getmdl.io/1.1.3/material.min.js"), it) // TODO: upgrade whole MDL
-                appendFrom(URL("https://raw.githubusercontent.com/GoogleChrome/dialog-polyfill/master/dialog-polyfill.js"), it)
-                appendFrom(File(raw + "js/scroll_unfocus_tabs.js"), it)
-                appendFrom(File(raw + "js/form.js"), it)
-            }
+        appendFrom(URL("https://code.getmdl.io/1.1.3/material.min.js"), it) // TODO: upgrade whole MDL
+        appendFrom(URL("https://raw.githubusercontent.com/GoogleChrome/dialog-polyfill/master/dialog-polyfill.js"), it)
+        appendFrom(File(raw + "js/scroll_unfocus_tabs.js"), it)
+        appendFrom(File(raw + "js/form.js"), it)
+    }
     minifyJs(prepared + fileName)
 }
 
@@ -107,7 +107,16 @@ fun minifyJs(name: String) {
     }
     val cmd = arrayOf("uglifyjs", "-o", minified.path, src.path)
     printSh(cmd)
-    check(Runtime.getRuntime().exec(cmd).waitFor() == 0)
+    Runtime.getRuntime().exec(cmd).run {
+        val out = inputStream.reader().readLines()
+        val err = errorStream.reader().readLines()
+        val code = waitFor()
+        if (code != 0) {
+            System.err.println("Uglify exited with code $code")
+            out.forEach(System.out::println)
+            err.forEach(System.err::println)
+        }
+    }
 
     print(minified.name)
     println(" has been created.\n")
