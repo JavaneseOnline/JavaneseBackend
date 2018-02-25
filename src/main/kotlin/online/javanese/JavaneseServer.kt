@@ -143,7 +143,7 @@ object JavaneseServer {
         val codeMirrorStyle = "codemirror_ambiance.min.css"
 
         val mainScript = "vue_zepto_mdl_dialog_scroll_unfocus_tabs_form.min.js?1"
-        val sandboxScript = "highlight_trace_codemirror_clike_sandbox_switcher.min.js"
+        val sandboxScript = "highlight_trace_codemirror_clike_sandbox_switcher.min.js?1"
 
         val layout = MainLayout(config.exposedStaticDir, mainStyle, mainScript, language)
 

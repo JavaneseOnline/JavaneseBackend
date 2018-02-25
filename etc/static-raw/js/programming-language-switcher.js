@@ -2,7 +2,7 @@
     var sw = document.getElementById("languageSwitcher");
     if (!sw) return;
 
-    var languages = $(sw).data("languages")
+    var languages = $(sw).data("languages").split('|')
 
     new Vue({
        el: sw,
@@ -22,7 +22,6 @@
 
                var preBlocks = this.$el.parentNode.getElementsByTagName('article')[0].getElementsByTagName('pre');
                for (var i = 0; i < preBlocks.length; i++) {
-                   console.log(preBlocks[i]);
                    var codeBlock = preBlocks[i].getElementsByTagName('code');
                    if (codeBlock.length === 1) {
                        var block = $(preBlocks[i])
