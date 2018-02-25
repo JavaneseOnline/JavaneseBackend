@@ -1,11 +1,11 @@
 
 buildscript {
-    ext.kotlin_version = '1.2.21'
+    ext.kotlin_version = '1.2.30-eap-47'
     ext.ktor_version = '0.9.1'
     ext.kwery_version = '0.17'
 
     repositories {
-        maven { url 'http://dl.bintray.com/kotlin/kotlin-eap-1.2' }
+        maven { url 'http://dl.bintray.com/kotlin/kotlin-eap/' }
         mavenCentral()
         jcenter()
     }
@@ -30,7 +30,7 @@ jar {
 sourceCompatibility = 1.8
 
 repositories {
-    maven { url 'http://dl.bintray.com/kotlin/kotlin-eap-1.2' }
+    maven { url 'http://dl.bintray.com/kotlin/kotlin-eap/' }
     mavenCentral()
     maven { url  "http://dl.bintray.com/kotlin/ktor" }
     maven { url "https://dl.bintray.com/kotlin/kotlinx" }
