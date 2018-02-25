@@ -61,13 +61,19 @@ inline fun FlowContent.materialDialogActions(noinline block: DIV.() -> Unit) =
 
 // form components
 
-fun FlowContent.radio(name: String, value: String, label: LABEL.() -> Unit) =
-        label(classes = "mdl-radio mdl-js-radio") {
-            input(type = InputType.radio, name = name, classes = "mdl-radio__button") {
-                this.value = value
-            }
-            label()
-        }
+fun FlowContent.radio(
+        name: String? = null, value: String? = null,
+        beginLabel: LABEL.() -> Unit = {}, input: INPUT.() -> Unit = {}, label: LABEL.() -> Unit
+) = label(classes = "mdl-radio mdl-js-radio") {
+    beginLabel()
+
+    input(type = InputType.radio, name = name, classes = "mdl-radio__button") {
+        input()
+        value?.let { this.value = it }
+    }
+
+    label()
+}
 
 inline fun FlowOrInteractiveOrPhrasingContent
         .materialButton(type: ButtonType, moreClasses: String? = null, noinline block: BUTTON.() -> Unit) =

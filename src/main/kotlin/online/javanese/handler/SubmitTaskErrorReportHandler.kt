@@ -5,7 +5,6 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.request.receiveParameters
 import io.ktor.response.respond
 import online.javanese.krud.kwery.kweryEntityMapping.MapToKweryEntityMapper
-import online.javanese.krud.toStringMap
 import online.javanese.model.TaskErrorReportDao
 import online.javanese.model.TaskErrorReportTable
 
@@ -21,7 +20,7 @@ fun SubmitTaskErrorReportHandler(
 
     return { call ->
         val valuesMap = call.receiveParameters()
-        val report = valuesToTaskErrorReport(valuesMap.toStringMap())
+        val report = valuesToTaskErrorReport(valuesMap)
         taskErrorReportDao.insert(report)
         call.respond(HttpStatusCode.NoContent, "")
     }

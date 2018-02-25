@@ -7,17 +7,11 @@ val nl = charArrayOf('\n')
 val raw = "/home/miha/IdeaProjects/javanese/etc/static-raw/"
 val prepared = "/home/miha/IdeaProjects/javanese/etc/static-prepared/"
 
-val mainScript = "vue_zepto_mdl_dialog_scroll_unfocus_tabs_form"
-val sandboxScript = "highlight_trace_codemirror_clike_sandbox"
 
-val mainStyle = "css/main"
-val codeMirrorStyle = "sandbox/codemirror_ambiance"
-
-
-combineAndUglifyMain(mainScript)
-combineAndUglifySandbox(sandboxScript)
-scssAndCsso(mainStyle)
-scssAndCsso(codeMirrorStyle)
+combineAndUglifyMain("vue_zepto_mdl_dialog_scroll_unfocus_tabs_form")
+combineAndUglifySandbox("highlight_trace_codemirror_clike_sandbox_switcher")
+scssAndCsso("css/main")
+scssAndCsso("sandbox/codemirror_ambiance")
 
 
 fun combineAndUglifyMain(fileName: String) {
@@ -44,12 +38,14 @@ fun combineAndUglifyMain(fileName: String) {
 
 fun combineAndUglifySandbox(fileName: String) {
     jsFile(prepared + fileName).assertNotExists().create().writer().use {
-                appendFrom(File(raw + "js/highlight.pack.js"), it)
-                appendFrom(File(raw + "js/trace.js"), it)
-                appendFrom(URL("https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.33.0/codemirror.min.js"), it)
-                appendFrom(URL("https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.33.0/mode/clike/clike.min.js"), it)
-                appendFrom(File(raw + "sandbox/sandbox.js"), it)
-            }
+        appendFrom(File(raw + "js/highlight.pack.js"), it)
+        appendFrom(File(raw + "js/trace.js"), it)
+        appendFrom(URL("https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.33.0/codemirror.min.js"), it)
+        appendFrom(URL("https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.33.0/mode/clike/clike.min.js"), it)
+        appendFrom(File(raw + "sandbox/sandbox.js"), it)
+        appendFrom(URL("https://raw.githubusercontent.com/dcompute/Zepto-Cookie/master/zepto.cookie.min.js"), it)
+        appendFrom(File(raw + "js/programming-language-switcher.js"), it)
+    }
     minifyJs(prepared + fileName)
 }
 

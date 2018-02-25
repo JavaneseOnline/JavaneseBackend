@@ -5,7 +5,6 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.request.receiveParameters
 import io.ktor.response.respond
 import online.javanese.krud.kwery.kweryEntityMapping.MapToKweryEntityMapper
-import online.javanese.krud.toStringMap
 import online.javanese.model.CodeReviewCandidateDao
 import online.javanese.model.CodeReviewCandidateTable
 
@@ -30,7 +29,7 @@ fun SubmitCodeReviewCandidateHandler(
 
     return { call ->
         val valuesMap = call.receiveParameters()
-        val reviewCandidate = valuesToTaskErrorReport(valuesMap.toStringMap())
+        val reviewCandidate = valuesToTaskErrorReport(valuesMap)
         reviewCandidateDao.insert(reviewCandidate)
         call.respond(HttpStatusCode.NoContent, "")
     }

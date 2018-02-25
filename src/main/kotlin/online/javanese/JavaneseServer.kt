@@ -139,11 +139,11 @@ object JavaneseServer {
                 Action(TwoSegmentFileAddress<Unit>({ "task" }, { "report" }))
 
 
-        val mainStyle = "main.min.css?2"
+        val mainStyle = "main.min.css?3"
         val codeMirrorStyle = "codemirror_ambiance.min.css"
 
-        val mainScript = "vue_zepto_mdl_dialog_scroll_unfocus_tabs_form.min.js"
-        val sandboxScript = "highlight_trace_codemirror_clike_sandbox.min.js"
+        val mainScript = "vue_zepto_mdl_dialog_scroll_unfocus_tabs_form.min.js?1"
+        val sandboxScript = "highlight_trace_codemirror_clike_sandbox_switcher.min.js"
 
         val layout = MainLayout(config.exposedStaticDir, mainStyle, mainScript, language)
 

@@ -12,6 +12,7 @@ class Lesson(
         val meta: Meta,
         val heading: String,
         val bodyMarkup: Html,
+        val programmingLanguages: Set<Language>,
         val sortIndex: Int,
         val lastModified: LocalDateTime
 
@@ -23,6 +24,10 @@ class Lesson(
             val urlSegment: String,
             val linkText: String
     )
+
+    enum class Language {
+        Java, Kotlin
+    }
 
 }
 
@@ -48,6 +53,7 @@ object LessonTable : Table<Lesson, Uuid>("lessons"), VersionedWithTimestamp {
     val MetaKeywords by metaKeywordsCol(_meta)
     val Heading by headingCol(Lesson::heading)
     val BodyMarkup by col(Lesson::bodyMarkup, name = "bodyMarkup")
+    val ProgrammingLanguages by col(Lesson::programmingLanguages, name = "programmingLanguages", default = emptySet())
     val SortIndex by sortIndexCol(Lesson::sortIndex)
     val LastModified by lastModifiedCol(Lesson::lastModified)
 
@@ -68,6 +74,7 @@ object LessonTable : Table<Lesson, Uuid>("lessons"), VersionedWithTimestamp {
             ),
             heading = value of Heading,
             bodyMarkup = value of BodyMarkup,
+            programmingLanguages = value of ProgrammingLanguages,
             sortIndex = value of SortIndex,
             lastModified = value of LastModified
     )
@@ -161,6 +168,7 @@ CREATE TABLE public.lessons (
 	"metaKeywords" varchar(256) NOT NULL,
 	"heading" varchar(256) NOT NULL,
 	"bodyMarkup" text NOT NULL,
+	"programmingLanguages" varchar(64) NOT NULL,
 	"sortIndex" int4 NOT NULL,
 	"lastModified" timestamp NOT NULL,
 	CONSTRAINT lessons_pk PRIMARY KEY (id),

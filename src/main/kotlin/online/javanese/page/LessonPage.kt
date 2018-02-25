@@ -36,7 +36,25 @@ class LessonPage(
                 +lesson.heading
             }
 
-            article {
+            if (lesson.programmingLanguages.size > 1) {
+                fieldSet(classes = "content-padding-v") {
+                    id = "languageSwitcher"
+                    attributes["data-languages"] = lesson.programmingLanguages.joinToString("|")
+
+                    legend { +"Язык примеров" }
+                    form {
+                        lesson.programmingLanguages.forEach {
+                            radio("code-language", input = {
+                                attributes["v-model"] = "codeLanguage"
+                                attributes["v-on:change"] = "codeLanguageChanged"
+                                value = it.name
+                            }) { +it.name }
+                        }
+                    }
+                }
+            }
+
+            article { // language chooser depends on this element
                 unsafe {
                     +lesson.bodyMarkup
                 }

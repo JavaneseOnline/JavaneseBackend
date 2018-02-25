@@ -24,7 +24,7 @@ fun JavaneseAdminPanel(
 ): AdminPanel {
 
     val escape = session.dialect::escapeName
-    val uuidGenerator = UuidGeneratingSource("id")
+    val uuidGenerator = UuidGeneratingMap("id")
 
     return AdminPanel("/$adminRoute", MaterialTemplate("/$adminRoute/", "/admin-static"),
             RoutedModule("crud", Crud(
@@ -43,7 +43,7 @@ fun JavaneseAdminPanel(
                                 else -> KweryTable.TransformKweryColumn<Task>()(it)
                             } },
                             sort = KweryExplicitSort(session, escape, TaskTable, TaskTable.SortIndex),
-                            fallbackSource = uuidGenerator
+                            fallback = uuidGenerator
                     ),
                     KweryTable("lesson",
                             LessonTable, lessonDao,
@@ -56,7 +56,7 @@ fun JavaneseAdminPanel(
                                 else -> KweryTable.TransformKweryColumn<Lesson>()(it)
                             } },
                             sort = KweryExplicitSort(session, escape, LessonTable, LessonTable.SortIndex),
-                            fallbackSource = uuidGenerator
+                            fallback = uuidGenerator
                     ),
                     KweryTable("chapter",
                             ChapterTable, chapterDao,
@@ -69,7 +69,7 @@ fun JavaneseAdminPanel(
                                 else -> KweryTable.TransformKweryColumn<Chapter>()(it)
                             } },
                             sort = KweryExplicitSort(session, escape, ChapterTable, ChapterTable.SortIndex),
-                            fallbackSource = uuidGenerator
+                            fallback = uuidGenerator
                     ),
                     KweryTable("course",
                             CourseTable, courseDao,
@@ -81,7 +81,7 @@ fun JavaneseAdminPanel(
                                 else -> KweryTable.TransformKweryColumn<Course>()(it)
                             } },
                             sort = KweryExplicitSort(session, escape, CourseTable, CourseTable.SortIndex),
-                            fallbackSource = uuidGenerator
+                            fallback = uuidGenerator
                     ),
                     KweryTable("article",
                             ArticleTable, articleDao,
@@ -91,7 +91,7 @@ fun JavaneseAdminPanel(
                                 ArticleTable.BodyMarkup -> TextCol(ArticleTable.BodyMarkup, createControlFactory = CodeMirror.Html)
                                 else -> KweryTable.TransformKweryColumn<Article>()(it)
                             } },
-                            fallbackSource = uuidGenerator
+                            fallback = uuidGenerator
                     ),
                     KweryTable("page",
                             PageTable, pageDao,
@@ -104,7 +104,7 @@ fun JavaneseAdminPanel(
                                 else -> KweryTable.TransformKweryColumn<Page>()(it)
                             } },
                             sort = KweryExplicitSort(session, escape, PageTable, PageTable.SortIndex),
-                            fallbackSource = uuidGenerator
+                            fallback = uuidGenerator
                     ),
                     KweryTable("taskErrorReport", // todo: make read-only
                             TaskErrorReportTable, taskErrorReportDao,
@@ -115,7 +115,7 @@ fun JavaneseAdminPanel(
                                 TaskErrorReportTable.Text -> TextCol(TaskErrorReportTable.Text, createControlFactory = TextArea)
                                 else -> KweryTable.TransformKweryColumn<TaskErrorReport>()(it)
                             } },
-                            fallbackSource = uuidGenerator
+                            fallback = uuidGenerator
                     ),
                     KweryTable("codeReviewCandidate", // todo: make read-only
                             CodeReviewCandidateTable, codeReviewCandidateDao,
@@ -126,7 +126,7 @@ fun JavaneseAdminPanel(
                                 CodeReviewCandidateTable.Code -> TextCol(CodeReviewCandidateTable.Code, createControlFactory = TextArea)
                                 else -> KweryTable.TransformKweryColumn<CodeReviewCandidate>()(it)
                             } },
-                            fallbackSource = uuidGenerator
+                            fallback = uuidGenerator
                     ),
                     KweryTable("codeReview",
                             CodeReviewTable, codeReviewDao,
@@ -137,7 +137,7 @@ fun JavaneseAdminPanel(
                                 CodeReviewTable.ReviewMarkup -> TextCol(CodeReviewTable.ReviewMarkup, createControlFactory = CodeMirror.Html)
                                 else -> KweryTable.TransformKweryColumn<CodeReview>()(it)
                             } },
-                            fallbackSource = uuidGenerator
+                            fallback = uuidGenerator
                     )
             )),
             RoutedModule("hw", HardwareStat()),
