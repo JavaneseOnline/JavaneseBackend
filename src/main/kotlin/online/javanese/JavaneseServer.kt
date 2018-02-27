@@ -79,12 +79,12 @@ object JavaneseServer {
                 PageTable.MetaTitle.property
         )
         val lessonsLink = Link(
-                SingleSegmentDirAddressWithFragment(PageTable.UrlSegment.property, { "lessons" }),
-                { language.lessonsTreeTab }
+                SingleSegmentDirAddress(PageTable.UrlSegment.property),
+                { language.lessonsTreeTab }, { "lessons" }
         )
         val tasksLink = Link(
-                SingleSegmentDirAddressWithFragment(PageTable.UrlSegment.property, { "tasks" }),
-                { language.tasksTreeTab }
+                SingleSegmentDirAddress(PageTable.UrlSegment.property),
+                { language.tasksTreeTab }, { "tasks" }
         )
 
         val courseLink = Link(
@@ -100,6 +100,7 @@ object JavaneseServer {
         )
         val lessonLink = Link(
                 HierarchicalThreeSegmentDirAddress(
+                        { it },
                         { chapterDao.findBasicById(it.chapterId)!! },
                         { courseDao.findBasicById(it.courseId)!! },
                         BasicCourseInfoTable.UrlSegment.property,
@@ -109,16 +110,16 @@ object JavaneseServer {
                 BasicLessonInfoTable.LinkText.property
         )
         val taskLink = Link(
-                HierarchicalThreeSegmentDirAddressWithFragment(
+                HierarchicalThreeSegmentDirAddress(
                         { lessonDao.findBasicById(it.lessonId)!! },
                         { chapterDao.findBasicById(it.chapterId)!! },
                         { courseDao.findBasicById(it.courseId)!! },
                         BasicCourseInfoTable.UrlSegment.property,
                         BasicChapterInfoTable.UrlSegment.property,
-                        BasicLessonInfoTable.UrlSegment.property,
-                        BasicTaskInfoTable.UrlPathComponent.property
+                        BasicLessonInfoTable.UrlSegment.property
                 ),
-                BasicTaskInfoTable.LinkText.property
+                BasicTaskInfoTable.LinkText.property,
+                BasicTaskInfoTable.UrlPathComponent.property
         )
         val articleLink = Link(
                 TwoSegmentDirAddress(

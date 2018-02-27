@@ -8,7 +8,8 @@ import online.javanese.page.a
  */
 class Link<T>(
         private val address: Address<T>,
-        private val linkText: (T) -> String
+        private val linkText: (T) -> String,
+        private val fragment: (T) -> String? = { null }
 ) : HtmlBlock1<T> {
 
     override fun render(where: FlowContent, param: T, classes: String?) {
@@ -17,7 +18,7 @@ class Link<T>(
     }
 
     fun render(doc: FlowOrInteractiveOrPhrasingContent, obj: T, classes: String? = null) =
-            doc.a(href = address.url(obj), titleAndText = linkText.invoke(obj), classes = classes)
+            doc.a(href = url(obj), titleAndText = linkText.invoke(obj), classes = classes)
 
     fun renderCustom(
             doc: FlowOrInteractiveOrPhrasingContent,
@@ -25,10 +26,15 @@ class Link<T>(
             classes: String? = null,
             block: A.(text: String) -> Unit = {}
     ) =
-            doc.a(href = address.url(obj), title = linkText.invoke(obj), classes = classes, block = block)
+            doc.a(href = url(obj), title = linkText.invoke(obj), classes = classes, block = block)
 
     fun linkText(obj: T): String = linkText.invoke(obj)
-    fun url(obj: T): String = address.url(obj)
+    fun url(obj: T): String {
+        val addr = address.url(obj)
+        val fragment = fragment(obj)
+        return fragment?.let { addr + '#' + fragment } ?: addr
+    }
+
 }
 
 @Suppress("NOTHING_TO_INLINE")
