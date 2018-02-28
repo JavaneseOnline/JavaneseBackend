@@ -75,26 +75,31 @@ object JavaneseServer {
 
 
         val pageLink = Link(
-                IndexOrSingleSegmDirAddress(PageTable.UrlSegment.property),
+                IndexOrSingleSegmDirAddress(PageTable.UrlSegment.property) { addr ->
+                    if (addr == null) pageDao.findByMagic(Page.Magic.Index)
+                    else pageDao.findByUrlSegment(addr)
+                },
                 PageTable.MetaTitle.property
         )
+        val findPageBySegm = pageDao::findByUrlSegment
         val lessonsLink = Link(
-                SingleSegmentDirAddress(PageTable.UrlSegment.property),
+                SingleSegmentDirAddress(PageTable.UrlSegment.property, findPageBySegm),
                 { language.lessonsTreeTab }, { "lessons" }
         )
         val tasksLink = Link(
-                SingleSegmentDirAddress(PageTable.UrlSegment.property),
+                SingleSegmentDirAddress(PageTable.UrlSegment.property, findPageBySegm),
                 { language.tasksTreeTab }, { "tasks" }
         )
 
         val courseLink = Link(
-                SingleSegmentDirAddress(BasicCourseInfoTable.UrlSegment.property),
+                SingleSegmentDirAddress(BasicCourseInfoTable.UrlSegment.property, courseDao::findBasicByUrlSegment),
                 BasicCourseInfoTable.LinkText.property
         )
         val chapterLink = Link(
                 TwoSegmentDirAddress(
                         { courseDao.findBasicById(it.courseId)!!.urlSegment },
-                        BasicChapterInfoTable.UrlSegment.property
+                        BasicChapterInfoTable.UrlSegment.property,
+                        { crs, chp -> courseDao.findBasicByUrlSegment(crs)?.let { chapterDao.findBasicByUrlSegment(it.id, chp) } }
                 ),
                 BasicChapterInfoTable.LinkText.property
         )
@@ -105,7 +110,10 @@ object JavaneseServer {
                         { courseDao.findBasicById(it.courseId)!! },
                         BasicCourseInfoTable.UrlSegment.property,
                         BasicChapterInfoTable.UrlSegment.property,
-                        BasicLessonInfoTable.UrlSegment.property
+                        BasicLessonInfoTable.UrlSegment.property,
+                        courseDao::findBasicByUrlSegment,
+                        { crs, chp -> chapterDao.findBasicByUrlSegment(crs.id, chp) },
+                        { _, chp, les -> lessonDao.findByUrlSegment(chp.id, les)?.basicInfo /* fixme */ }
                 ),
                 BasicLessonInfoTable.LinkText.property
         )
@@ -116,7 +124,10 @@ object JavaneseServer {
                         { courseDao.findBasicById(it.courseId)!! },
                         BasicCourseInfoTable.UrlSegment.property,
                         BasicChapterInfoTable.UrlSegment.property,
-                        BasicLessonInfoTable.UrlSegment.property
+                        BasicLessonInfoTable.UrlSegment.property,
+                        courseDao::findBasicByUrlSegment,
+                        { crs, chp -> chapterDao.findBasicByUrlSegment(crs.id, chp) },
+                        { _, chp, les -> lessonDao.findByUrlSegment(chp.id, les)?.basicInfo /* fixme */ }
                 ),
                 BasicTaskInfoTable.LinkText.property,
                 BasicTaskInfoTable.UrlPathComponent.property
@@ -124,20 +135,22 @@ object JavaneseServer {
         val articleLink = Link(
                 TwoSegmentDirAddress(
                         { pageDao.findByMagic(Page.Magic.Articles)!!.urlSegment },
-                        BasicArticleInfoTable.UrlSegment.property
+                        BasicArticleInfoTable.UrlSegment.property,
+                        { _, article -> articleDao.findByUrlSegment(article)?.basicInfo }
                 ),
                 BasicArticleInfoTable.LinkText.property
         )
         val codeReviewLink = Link(
                 TwoSegmentDirAddress(
                         { pageDao.findByMagic(Page.Magic.CodeReview)!!.urlSegment },
-                        CodeReviewTable.UrlSegment.property
+                        CodeReviewTable.UrlSegment.property,
+                        { _, review -> codeReviewDao.findByUrlSegment(review) }
                 ),
                 CodeReviewTable.MetaTitle.property
         )
 
         val reportTaskAction =
-                Action(TwoSegmentFileAddress<Unit>({ "task" }, { "report" }))
+                Action(TwoSegmentFileAddress({ "task" }, { "report" }, { _, _ -> Unit }))
 
 
         val mainStyle = "main.min.css?3"

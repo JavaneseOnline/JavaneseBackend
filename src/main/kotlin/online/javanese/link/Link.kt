@@ -6,8 +6,8 @@ import online.javanese.page.a
 /**
  * Represents a web link to an object.
  */
-class Link<T>(
-        private val address: Address<T>,
+class Link<T, HANDLER/* : suspend Function<Unit>*/>(
+        private val address: Address<T, HANDLER>,
         private val linkText: (T) -> String,
         private val fragment: (T) -> String? = { null }
 ) : HtmlBlock1<T> {
@@ -34,6 +34,9 @@ class Link<T>(
         val fragment = fragment(obj)
         return fragment?.let { addr + '#' + fragment } ?: addr
     }
+
+    suspend fun handle(urlParts: List<String>, handler: HANDLER): Boolean =
+            address.handle(urlParts, handler)
 
 }
 
