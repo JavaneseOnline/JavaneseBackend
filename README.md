@@ -1,27 +1,20 @@
 
-Это исходники новой версии Javanese.Online.
+[Javanese.Online](http://javanese.online/) website source code.
 
-Старая версия была написана на
-Java 8 + Kotlin, Spring, Hibernate, Thymeleaf, SCSS.
-
-Стек новой версии:
-* JVM/JDK 9
+Stack:
+* JVM/JDK 9..10
 * [Kotlin](https://github.com/JetBrains/kotlin)
-* [Ktor — каноничный веб-фреймворк от JetBrains](https://github.com/kotlin/ktor)
-* [kwery — обёртка над JDBC для Kotlin](https://github.com/andrewoma/kwery/)
-* [kotlinx.html](https://github.com/Kotlin/kotlinx.html) в качестве быстрого и гибкого шаблонизатора
-* SCSS (временно)
+* [Ktor](https://github.com/kotlin/ktor) — idiomatic web-framework by JetBrains
+* [kwery](https://github.com/andrewoma/kwery/) — JDBC wrapper for Kotlin
+* [kotlinx.html](https://github.com/Kotlin/kotlinx.html) — fast template engine
+* SCSS
 * PostgreSQL
 
-Сделано:
-* Сайт переписан на этом стеке и работает так же, как старая версия;
-* сделаны новые фичи, в частности, кодревью и закреплённые статьи.
+Running.
+  * debug.
+    * VM options: `-Xss180K -Xms16M -Xmx32M`
+    * program arguments: `--single-thread`
+  * release. VM options: `-Xss256K -Xms32M -XmxAsMuchAsYouCanGive`
 
-Ещё предстоит сделать:
-* вычистить код
-  * отказаться от SCSS в пользу типобезопасного DSL;
-  * новые фичи :)
-
-Запуск.
-  * debug. JVM: `-Xss180K -Xms16M -Xmx32M`, app: `--single-thread`
-  * release. JVM: `-Xss256K -Xms32M -XmxСколькоНеЖалко`
+You can find database structure in `model` package;
+database contents are not publicly available.
