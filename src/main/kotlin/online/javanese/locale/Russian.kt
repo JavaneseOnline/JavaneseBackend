@@ -14,7 +14,7 @@ object Russian : Language {
             override val varNotFound: String get() = "Переменная {0} типа {1} не найдена в коде."
             override val eqNotFound: String get() = "Присвоение переменной {0} значения {1} не найдено в коде."
             override val notMatches: String get() = "Решение не подходит."
-            override val illegalOutput: String get() = "Решение неверно. Ожидалось, что код выведет:"
+            override val illegalOutput: String get() = "Решение неверно."
             override val correctSolution: String get() = "Решение верно."
         }
 

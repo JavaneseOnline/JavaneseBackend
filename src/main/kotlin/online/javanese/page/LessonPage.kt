@@ -4,7 +4,6 @@ import kotlinx.html.*
 import online.javanese.link.Action
 import online.javanese.link.HtmlBlock
 import online.javanese.link.Link
-import online.javanese.link.LinkWithFragment
 import online.javanese.locale.Language
 import online.javanese.model.*
 
@@ -136,8 +135,7 @@ class LessonPage(
                                         pre {
                                             attributes["v-for"] = "message in messages"
                                             attributes["v-bind:class"] = "'content-padding runtime-' + message.type.toLowerCase()"
-
-                                            +"{{ message.data }}"
+                                            attributes["v-html"] = "message.data"
                                         }
                                     }
 

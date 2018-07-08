@@ -3,6 +3,7 @@ package online.javanese.handler
 import checker.*
 import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.github.difflib.text.DiffRow
 import io.ktor.websocket.DefaultWebSocketSession
 import io.ktor.websocket.Frame
 import io.ktor.websocket.WebSocketSession
@@ -15,6 +16,8 @@ import online.javanese.model.TaskDao
 import online.javanese.sandbox.SandboxRunner
 import java.io.IOException
 import java.nio.ByteBuffer
+import com.github.difflib.text.DiffRowGenerator
+import io.ktor.util.escapeHTML
 
 
 fun SandboxWebSocketHandler(
@@ -33,6 +36,8 @@ fun SandboxWebSocketHandler(
 
         val output = StringBuilder()
 
+        val expected = technical.expectedOutput.split("\r\n")
+        var linesWritten = 0
         SandboxRunner(
                 javaLocation = config.sandboxJavaLocation,
                 sandboxLocation = config.sandboxLocation,
@@ -43,19 +48,25 @@ fun SandboxWebSocketHandler(
                 timeLimit = technical.timeLimit,
                 allowIn = technical.allowSystemIn,
                 onProcessEvent = { type, payload ->
-                    sendMessage(RuntimeMessage(type, payload))
 
-                    when (type) {
-                        SandboxRunner.EventType.Exit -> if (payload == "0") {
-                            sendMessage(
-                                    if (task.isOutputCorrect(output))
-                                        RuntimeMessage.CORRECT_SOLUTION
-                                    else
-                                        RuntimeMessage(RuntimeMessage.MessageType.IllegalOutput, technical.expectedOutput)
-                            )
+                    if (type == SandboxRunner.EventType.Out) {
+                        output.append(payload).append('\n')
+                        val expectedIdx = linesWritten++
+                        if (expectedIdx in expected.indices) {
+                            sendMessage(RuntimeMessage(type, diff(expected[expectedIdx], payload)))
+                        } else {
+                            sendMessage(RuntimeMessage(type, "<span class=\"editNewInline\">$payload</span>"))
                         }
-                        SandboxRunner.EventType.Out -> output.append(payload).append('\n')
-                        else -> { /* nothing special */ }
+                    } else if (type == SandboxRunner.EventType.Exit && payload == "0") {
+                        sendMessage(RuntimeMessage(type, payload.escapeHTML()))
+                        sendMessage(
+                                if (task.isOutputCorrect(output))
+                                    RuntimeMessage.CORRECT_SOLUTION
+                                else
+                                    RuntimeMessage.ILLEGAL_OUTPUT
+                        )
+                    } else {
+                        sendMessage(RuntimeMessage(type, payload.escapeHTML()))
                     }
                 }
         ).run()
@@ -66,6 +77,21 @@ fun SandboxWebSocketHandler(
         sendMessage(RuntimeMessage(SandboxRunner.EventType.Err, e.message ?: e.toString()))
     }
 
+}
+
+private val diffGenerator =
+        DiffRowGenerator.create()
+                .showInlineDiffs(true)
+                .mergeOriginalRevised(true)
+                .inlineDiffByWord(false)
+                .newTag { if (it) "<s><span class=\"editNewInline\">" else "</span></s>" }
+                .build()
+
+private fun diff(expected: String, actual: String): String {
+    val diff = diffGenerator
+            .generateDiffRows(listOf(expected), listOf(actual))
+
+    return diff.joinToString("\n", transform = DiffRow::getOldLine)
 }
 
 private val mapper = ObjectMapper()
@@ -117,6 +143,7 @@ private class RuntimeMessage internal constructor(
 
     internal companion object {
         internal val CORRECT_SOLUTION = RuntimeMessage(MessageType.CorrectSolution, null)
+        internal val ILLEGAL_OUTPUT = RuntimeMessage(MessageType.IllegalOutput, null)
     }
 }
 

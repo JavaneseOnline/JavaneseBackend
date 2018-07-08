@@ -55,6 +55,8 @@ dependencies {
 
     compile 'com.fasterxml.jackson.core:jackson-databind:2.9.2'
 
+    compile 'com.github.wumpz:diffutils:2.2'
+
     compile 'ch.qos.logback:logback-classic:1.2.1'
 
     testCompile group: 'junit', name: 'junit', version: '4.12'

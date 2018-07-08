@@ -83,7 +83,7 @@ $('.sandbox').each(function() {
                         data.data = sandboxLocale.notMatches;
                         app.messages.push(data);
                     } else if (data.type === 'IllegalOutput') {
-                        data.data = sandboxLocale.illegalOutput + ' ' + data.data;
+                        data.data = sandboxLocale.illegalOutput;
                         app.messages.push(data);
                     } else if (data.type === 'CorrectSolution') {
                         data.data = sandboxLocale.correctSolution;
