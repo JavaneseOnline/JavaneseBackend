@@ -11,7 +11,7 @@ import online.javanese.model.CodeReviewCandidateTable
 
 fun SubmitCodeReviewCandidateHandler(
         reviewCandidateDao: CodeReviewCandidateDao
-): suspend (ApplicationCall) -> Unit {
+): suspend (ApplicationCall, Unit) -> Unit {
 
     val valuesToTaskErrorReport =
             MapToKweryEntityMapper(CodeReviewCandidateTable) {
@@ -27,7 +27,7 @@ fun SubmitCodeReviewCandidateHandler(
 
     // todo: validate
 
-    return { call ->
+    return { call, _ ->
         val valuesMap = call.receiveParameters()
         val reviewCandidate = valuesToTaskErrorReport(valuesMap)
         reviewCandidateDao.insert(reviewCandidate)

@@ -8,17 +8,20 @@ import online.javanese.page.Layout
 
 fun ChapterHandler(
         pageDao: PageDao,
+        courseDao: CourseDao,
         chapterDao: ChapterDao,
         lessonDao: LessonDao,
         taskDao: TaskDao,
         layout: Layout,
         page: (idxPage: Page, treePage: Page, Course.BasicInfo, Chapter, Lessons, prevAndNext: Pair<Chapter.BasicInfo?, Chapter.BasicInfo?>) -> Layout.Page
-): suspend (Course.BasicInfo, Chapter, ApplicationCall) -> Unit = { course, chapter, call ->
+): suspend (ApplicationCall, Chapter.BasicInfo) -> Unit = { call, basicChapter ->
 
     val idxPage = pageDao.findByMagic(Page.Magic.Index)!!
     val treePage = pageDao.findByMagic(Page.Magic.Courses)!!
+    val chapter = chapterDao.findById(basicChapter.id)!!
+    val course = courseDao.findBasicById(basicChapter.courseId)!!
 
-    val lessons = lessons(chapter.basicInfo, lessonDao, taskDao)
+    val lessons = lessons(basicChapter, lessonDao, taskDao)
 
     val prevAndNext = chapterDao.findPreviousAndNextBasic(chapter)
 

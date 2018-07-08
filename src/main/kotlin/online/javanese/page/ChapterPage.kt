@@ -12,9 +12,9 @@ class ChapterPage(
         private val chapter: Chapter,
         private val lessons: Lessons,
         private val previousAndNext: Pair<Chapter.BasicInfo?, Chapter.BasicInfo?>,
-        private val chapterLink: Link<Chapter.BasicInfo>,
-        private val lessonLink: Link<Lesson.BasicInfo>,
-        private val taskLink: Link<Task.BasicInfo>,
+        private val chapterLink: Link<Chapter.BasicInfo, *>,
+        private val lessonLink: Link<Lesson.BasicInfo, *>,
+        private val taskLink: Link<Task.BasicInfo, *>,
         private val language: Language,
         private val beforeContent: HtmlBlock
 ) : Layout.Page {

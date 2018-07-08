@@ -1,5 +1,6 @@
 package online.javanese.link
 
+import io.ktor.application.ApplicationCall
 import io.ktor.http.HttpMethod
 import java.net.URLDecoder
 import java.net.URLEncoder
@@ -15,7 +16,7 @@ import java.net.URLEncoder
  */
 interface Address</* nope. we need inout */ T, HANDLER/* : suspend Function<Unit>*/> {
     fun url(obj: T): String
-    suspend fun handle(urlParts: List<String>, handler: HANDLER): Boolean
+    suspend fun handle(call: ApplicationCall, urlParts: List<String>, handler: HANDLER): Boolean
 }
 
 /**
@@ -24,14 +25,14 @@ interface Address</* nope. we need inout */ T, HANDLER/* : suspend Function<Unit
 class IndexOrSingleSegmDirAddress<T : Any>(
         private val urlSegment: (T) -> String,
         private val bySegment: (String?) -> T?
-) : Address<T, suspend (T) -> Unit> {
+) : Address<T, suspend ApplicationCall.(T) -> Unit> {
     private val sng = SingleSegmentDirAddress(urlSegment, bySegment)
     override fun url(obj: T): String =
             if (urlSegment(obj).isEmpty()) IndexAddress.url(obj) else sng.url(obj)
 
-    override suspend fun handle(urlParts: List<String>, handler: suspend (T) -> Unit): Boolean = when (urlParts.size) {
-        0 -> bySegment(null).letOrFalse(handler)
-        1 -> bySegment(urlParts[0]).letOrFalse(handler)
+    override suspend fun handle(call: ApplicationCall, urlParts: List<String>, handler: suspend ApplicationCall.(T) -> Unit): Boolean = when (urlParts.size) {
+        0 -> bySegment(null).letOrFalse(call, handler)
+        1 -> bySegment(urlParts[0]).letOrFalse(call, handler)
         else -> false
     }
 }
@@ -43,10 +44,10 @@ class IndexOrSingleSegmDirAddress<T : Any>(
 /**
  * Represents an address to index page (`/`) of current domain.
  */
-object IndexAddress : Address<Any?, suspend () -> Unit> {
+object IndexAddress : Address<Any?, suspend ApplicationCall.() -> Unit> {
     override fun url(obj: Any?): String = "/"
-    override suspend fun handle(urlParts: List<String>, handler: suspend () -> Unit): Boolean =
-            urlParts.isEmpty() && handler().let { true }
+    override suspend fun handle(call: ApplicationCall, urlParts: List<String>, handler: suspend ApplicationCall.() -> Unit): Boolean =
+            urlParts.isEmpty() && handler(call).let { true }
 }
 
 /**
@@ -55,10 +56,10 @@ object IndexAddress : Address<Any?, suspend () -> Unit> {
 class SingleSegmentFileAddress<T : Any>(
         private val urlSegment: (T) -> String,
         private val bySegment: (String) -> T?
-) : Address<T, suspend (T) -> Unit> {
+) : Address<T, suspend ApplicationCall.(T) -> Unit> {
     override fun url(obj: T): String = "/${urlSegment(obj).encodeForUrl()}"
-    override suspend fun handle(urlParts: List<String>, handler: suspend (T) -> Unit): Boolean =
-            urlParts.size == 1 && bySegment(urlParts[0]).letOrFalse(handler)
+    override suspend fun handle(call: ApplicationCall, urlParts: List<String>, handler: suspend ApplicationCall.(T) -> Unit): Boolean =
+            urlParts.size == 1 && bySegment(urlParts[0]).letOrFalse(call, handler)
 }
 
 
@@ -71,10 +72,10 @@ class SingleSegmentFileAddress<T : Any>(
 class SingleSegmentDirAddress<T : Any>(
         private val urlSegment: (T) -> String,
         private val bySegment: (String) -> T?
-) : Address<T, suspend (T) -> Unit> {
+) : Address<T, suspend ApplicationCall.(T) -> Unit> {
     override fun url(obj: T): String = "/${urlSegment(obj).encodeForUrl()}/"
-    override suspend fun handle(urlParts: List<String>, handler: suspend (T) -> Unit): Boolean =
-            urlParts.size == 1 && bySegment(urlParts[0]).letOrFalse(handler)
+    override suspend fun handle(call: ApplicationCall, urlParts: List<String>, handler: suspend ApplicationCall.(T) -> Unit): Boolean =
+            urlParts.size == 1 && bySegment(urlParts[0]).letOrFalse(call, handler)
 }
 
 /**
@@ -84,10 +85,10 @@ class TwoSegmentFileAddress<T : Any>(
         private val dirUrlSegment: (T) -> String,
         private val fileUrlSegment: (T) -> String,
         private val bySegments: (dir: String, file: String) -> T?
-) : Address<T, suspend (T) -> Unit> {
+) : Address<T, suspend ApplicationCall.(T) -> Unit> {
     override fun url(obj: T): String = "/${dirUrlSegment(obj).encodeForUrl()}/${fileUrlSegment(obj).encodeForUrl()}"
-    override suspend fun handle(urlParts: List<String>, handler: suspend (T) -> Unit): Boolean =
-            urlParts.size == 2 && bySegments(urlParts[0], urlParts[1]).letOrFalse(handler)
+    override suspend fun handle(call: ApplicationCall, urlParts: List<String>, handler: suspend ApplicationCall.(T) -> Unit): Boolean =
+            urlParts.size == 2 && bySegments(urlParts[0], urlParts[1]).letOrFalse(call, handler)
 }
 
 
@@ -101,10 +102,10 @@ class TwoSegmentDirAddress<T : Any>(
         private val firstSegm: (T) -> String,
         private val secondSegm: (T) -> String,
         private val bySegments: (first: String, second: String) -> T?
-) : Address<T, suspend (T) -> Unit> {
+) : Address<T, suspend ApplicationCall.(T) -> Unit> {
     override fun url(obj: T): String = "/${firstSegm(obj).encodeForUrl()}/${secondSegm(obj).encodeForUrl()}/"
-    override suspend fun handle(urlParts: List<String>, handler: suspend (T) -> Unit): Boolean =
-            urlParts.size == 2 && bySegments(urlParts[0], urlParts[1]).letOrFalse(handler)
+    override suspend fun handle(call: ApplicationCall, urlParts: List<String>, handler: suspend ApplicationCall.(T) -> Unit): Boolean =
+            urlParts.size == 2 && bySegments(urlParts[0], urlParts[1]).letOrFalse(call, handler)
 }
 
 
@@ -119,11 +120,11 @@ class ThreeSegmentDirAddress<T : Any>(
         private val secondSegm: (T) -> String,
         private val thirdSegm: (T) -> String,
         private val bySegments: (first: String, second: String, third: String) -> T?
-) : Address<T, suspend (T) -> Unit> {
+) : Address<T, suspend ApplicationCall.(T) -> Unit> {
     override fun url(obj: T): String =
             "/${firstSegm(obj).encodeForUrl()}/${secondSegm(obj).encodeForUrl()}/${thirdSegm(obj).encodeForUrl()}/"
-    override suspend fun handle(urlParts: List<String>, handler: suspend (T) -> Unit): Boolean =
-            urlParts.size == 3 && bySegments(urlParts[0], urlParts[1], urlParts[2]).letOrFalse(handler)
+    override suspend fun handle(call: ApplicationCall, urlParts: List<String>, handler: suspend ApplicationCall.(T) -> Unit): Boolean =
+            urlParts.size == 3 && bySegments(urlParts[0], urlParts[1], urlParts[2]).letOrFalse(call, handler)
 }
 
 /**
@@ -139,7 +140,7 @@ class HierarchicalThreeSegmentDirAddress<A, B, C, IN>(
         private val first: (String) -> A?,
         private val second: (A, String) -> B?,
         private val third: (A, B, String) -> C?
-) : Address<IN, suspend (A, B, C) -> Unit> {
+) : Address<IN, suspend ApplicationCall.(A, B, C) -> Unit> {
     override fun url(obj: IN): String {
         val c = in2c(obj)
         val b = c2b(c)
@@ -147,7 +148,7 @@ class HierarchicalThreeSegmentDirAddress<A, B, C, IN>(
         return "/${firstSegm(a).encodeForUrl()}/${secondSegm(b).encodeForUrl()}/${thirdSegm(c).encodeForUrl()}/"
     }
 
-    override suspend fun handle(urlParts: List<String>, handler: suspend (A, B, C) -> Unit): Boolean {
+    override suspend fun handle(call: ApplicationCall, urlParts: List<String>, handler: suspend ApplicationCall.(A, B, C) -> Unit): Boolean {
         if (urlParts.size != 3)
             return false
 
@@ -155,7 +156,7 @@ class HierarchicalThreeSegmentDirAddress<A, B, C, IN>(
         val s = second(f, urlParts[1]) ?: return false
         val t = third(f, s, urlParts[2]) ?: return false
 
-        handler(f, s, t)
+        handler(call, f, s, t)
         return true
     }
 }
@@ -164,5 +165,5 @@ class HierarchicalThreeSegmentDirAddress<A, B, C, IN>(
 fun String.encodeForUrl(): String = URLEncoder.encode(this, "UTF-8").replace("+", "%20")
 fun String.decodeFromUrl(): String = URLDecoder.decode(this, "UTF-8")
 
-private suspend /*inline*/ fun <T : Any> T?.letOrFalse(func: suspend (T) -> Unit) =
-        if (this == null) false else { func(this); true }
+private suspend /*inline*/ fun <T : Any> T?.letOrFalse(call: ApplicationCall, func: suspend ApplicationCall.(T) -> Unit) =
+        if (this == null) false else { func(call, this); true }

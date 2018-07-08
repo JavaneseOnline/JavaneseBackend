@@ -17,8 +17,8 @@ private val timeFormat = SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z", Locale.
 fun ArticleRssHandler(
         pageDao: PageDao,
         articleDao: ArticleDao,
-        pageLink: Link<Page>,
-        articleLink: Link<Article.BasicInfo>,
+        pageLink: Link<Page, *>,
+        articleLink: Link<Article.BasicInfo, *>,
         siteUrl: String,
         feedInfo: Language.FeedInfo
 ): suspend (ApplicationCall) -> Unit = { call ->

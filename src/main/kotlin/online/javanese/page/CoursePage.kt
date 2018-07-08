@@ -12,10 +12,10 @@ class CoursePage(
         private val course: Course,
         private val chapters: Chapters,
         private val previousAndNext: Pair<Course.BasicInfo?, Course.BasicInfo?>,
-        private val courseLink: Link<Course.BasicInfo>,
-        private val chapterLink: Link<Chapter.BasicInfo>,
-        private val lessonLink: Link<Lesson.BasicInfo>,
-        private val taskLink: Link<Task.BasicInfo>,
+        private val courseLink: Link<Course.BasicInfo, *>,
+        private val chapterLink: Link<Chapter.BasicInfo, *>,
+        private val lessonLink: Link<Lesson.BasicInfo, *>,
+        private val taskLink: Link<Task.BasicInfo, *>,
         private val language: Language,
         private val beforeContent: HtmlBlock
 ) : Layout.Page {

@@ -20,7 +20,7 @@ class Nav1<in T>(
 }
 
 @Suppress("NOTHING_TO_INLINE")
-inline fun <T> navOf(block1: Link<T>) = Nav1(block1)
+inline fun <T> navOf(block1: Link<T, *>) = Nav1(block1)
 
 
 
@@ -41,15 +41,15 @@ class Nav2<in T, in U>(
 }
 
 @Suppress("NOTHING_TO_INLINE")
-inline fun <T, U> BetweenBlocks.navOf(block1: Link<T>, block2: Link<U>) =
+inline fun <T, U> BetweenBlocks.navOf(block1: Link<T, *>, block2: Link<U, *>) =
         Nav2(block1, block2, this)
 
 
 
 class Nav3<in T, in U, in V>(
-        private val block1: Link<T>,
-        private val block2: Link<U>,
-        private val block3: Link<V>,
+        private val block1: Link<T, *>,
+        private val block2: Link<U, *>,
+        private val block3: Link<V, *>,
         private val betweenBlocks: BetweenBlocks
 ) : HtmlBlock3<T, U, V> {
 
@@ -66,16 +66,16 @@ class Nav3<in T, in U, in V>(
 }
 
 @Suppress("NOTHING_TO_INLINE")
-inline fun <T, U, V> BetweenBlocks.navOf(block1: Link<T>, block2: Link<U>, block3: Link<V>) =
+inline fun <T, U, V> BetweenBlocks.navOf(block1: Link<T, *>, block2: Link<U, *>, block3: Link<V, *>) =
         Nav3(block1, block2, block3, this)
 
 
 
 class Nav4<in T, in U, in V, in W>(
-        private val block1: Link<T>,
-        private val block2: Link<U>,
-        private val block3: Link<V>,
-        private val block4: Link<W>,
+        private val block1: Link<T, *>,
+        private val block2: Link<U, *>,
+        private val block3: Link<V, *>,
+        private val block4: Link<W, *>,
         private val betweenBlocks: BetweenBlocks
 ) : HtmlBlock4<T, U, V, W> {
 
@@ -94,5 +94,5 @@ class Nav4<in T, in U, in V, in W>(
 }
 
 @Suppress("NOTHING_TO_INLINE")
-inline fun <T, U, V, W> BetweenBlocks.navOf(block1: Link<T>, block2: Link<U>, block3: Link<V>, block4: Link<W>) =
+inline fun <T, U, V, W> BetweenBlocks.navOf(block1: Link<T, *>, block2: Link<U, *>, block3: Link<V, *>, block4: Link<W, *>) =
         Nav4(block1, block2, block3, block4, this)

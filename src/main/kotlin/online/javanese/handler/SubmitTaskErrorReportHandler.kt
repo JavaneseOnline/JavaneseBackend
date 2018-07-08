@@ -11,14 +11,14 @@ import online.javanese.model.TaskErrorReportTable
 
 fun SubmitTaskErrorReportHandler(
         taskErrorReportDao: TaskErrorReportDao
-): suspend (ApplicationCall) -> Unit {
+): suspend (ApplicationCall, Unit) -> Unit {
 
     val valuesToTaskErrorReport =
             MapToKweryEntityMapper(TaskErrorReportTable)
 
     // todo: validate input data
 
-    return { call ->
+    return { call, _ ->
         val valuesMap = call.receiveParameters()
         val report = valuesToTaskErrorReport(valuesMap)
         taskErrorReportDao.insert(report)

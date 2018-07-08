@@ -22,7 +22,7 @@ class CodeReview( // todo: introduce BasicInfo
         val vkPostInfo: VkPostInfo?,
         val tgPost: String
 )
-
+// todo: ordering
 
 private val _meta = CodeReview::meta
 

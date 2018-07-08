@@ -13,10 +13,10 @@ import online.javanese.handler.Lessons as MLessons
 
 fun FlowContent.coursesTree(
         courses: Courses,
-        courseLink: Link<Course.BasicInfo>,
-        chapterLink: Link<Chapter.BasicInfo>,
-        lessonLink: Link<Lesson.BasicInfo>,
-        taskLink: Link<Task.BasicInfo>,
+        courseLink: Link<Course.BasicInfo, *>,
+        chapterLink: Link<Chapter.BasicInfo, *>,
+        lessonLink: Link<Lesson.BasicInfo, *>,
+        taskLink: Link<Task.BasicInfo, *>,
         mode: TreeMode
 ) = ul {
     courses.forEach { (course, chapters) ->
@@ -30,9 +30,9 @@ fun FlowContent.coursesTree(
 
 fun FlowContent.chaptersTree(
         chapters: Chapters,
-        chapterLink: Link<Chapter.BasicInfo>,
-        lessonLink: Link<Lesson.BasicInfo>,
-        taskLink: Link<Task.BasicInfo>,
+        chapterLink: Link<Chapter.BasicInfo, *>,
+        lessonLink: Link<Lesson.BasicInfo, *>,
+        taskLink: Link<Task.BasicInfo, *>,
         mode: TreeMode
 ) = ul {
     chapters.forEach { (chapter, lessons) ->
@@ -48,7 +48,7 @@ enum class TreeMode {
     Lessons {
         override fun lessonsTree(
                 doc: FlowContent, lessons: MLessons,
-                lessonLink: Link<Lesson.BasicInfo>, taskLink: Link<Task.BasicInfo>
+                lessonLink: Link<Lesson.BasicInfo, *>, taskLink: Link<Task.BasicInfo, *>
         ) = with (doc) {
             ul {
                 lessons.forEach { (lesson, _) ->
@@ -61,7 +61,7 @@ enum class TreeMode {
     }, Tasks {
         override fun lessonsTree(
                 doc: FlowContent, lessons: MLessons,
-                lessonLink: Link<Lesson.BasicInfo>, taskLink: Link<Task.BasicInfo>
+                lessonLink: Link<Lesson.BasicInfo, *>, taskLink: Link<Task.BasicInfo, *>
         ) = with(doc) {
             ul {
                 lessons.forEach { (lesson, tasks) ->
@@ -77,11 +77,11 @@ enum class TreeMode {
 
     abstract fun lessonsTree(
             doc: FlowContent, lessons: MLessons,
-            lessonLink: Link<Lesson.BasicInfo>, taskLink: Link<Task.BasicInfo>
+            lessonLink: Link<Lesson.BasicInfo, *>, taskLink: Link<Task.BasicInfo, *>
     )
 }
 
-fun FlowContent.tasksTree(tasks: List<Task.BasicInfo>, linkToTask: Link<Task.BasicInfo>) = ul {
+fun FlowContent.tasksTree(tasks: List<Task.BasicInfo>, linkToTask: Link<Task.BasicInfo, *>) = ul {
     tasks.forEach { task ->
         li {
             linkToTask.render(this, task)
@@ -90,7 +90,7 @@ fun FlowContent.tasksTree(tasks: List<Task.BasicInfo>, linkToTask: Link<Task.Bas
 }
 
 fun <T : Any> FlowContent.prevNextPane(
-        previousAndNext: Pair<T?, T?>, tLink: Link<T>, prevText: String, nextText: String, moreClasses: String? = null
+        previousAndNext: Pair<T?, T?>, tLink: Link<T, *>, prevText: String, nextText: String, moreClasses: String? = null
 ) {
     val (previous, next) = previousAndNext
     if (previous != null || next != null) {

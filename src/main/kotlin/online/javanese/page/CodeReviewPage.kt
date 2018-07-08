@@ -12,7 +12,7 @@ import online.javanese.model.Page
 class CodeReviewPage(
         private val model: Page,
         private val reviews: List<CodeReview>,
-        private val codeReviewLink: Link<CodeReview>,
+        private val codeReviewLink: Link<CodeReview, *>,
         private val language: Language,
         private val beforeContent: HtmlBlock
 ) : Layout.Page {

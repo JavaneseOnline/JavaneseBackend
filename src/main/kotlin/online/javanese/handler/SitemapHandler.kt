@@ -16,12 +16,12 @@ import java.util.*
 
 fun SitemapHandler(
         siteUrl: String,
-        pageLink: Link<Page>,
-        courseLink: Link<Course.BasicInfo>,
-        chapterLink: Link<Chapter.BasicInfo>,
-        lessonLink: Link<Lesson.BasicInfo>,
-        articleLink: Link<Article.BasicInfo>,
-        codeReviewLink: Link<CodeReview>,
+        pageLink: Link<Page, *>,
+        courseLink: Link<Course.BasicInfo, *>,
+        chapterLink: Link<Chapter.BasicInfo, *>,
+        lessonLink: Link<Lesson.BasicInfo, *>,
+        articleLink: Link<Article.BasicInfo, *>,
+        codeReviewLink: Link<CodeReview, *>,
         pageDao: PageDao,
         courseDao: CourseDao,
         chapterDao: ChapterDao,

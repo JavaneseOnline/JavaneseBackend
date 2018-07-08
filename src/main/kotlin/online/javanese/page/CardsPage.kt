@@ -47,7 +47,7 @@ class CardsPage<T>(
     }
 
     class Card<T>(
-            val link: Link<T>,
+            val link: Link<T, *>,
             val t: T,
             val iconClasses: String,
             val subtitle: String

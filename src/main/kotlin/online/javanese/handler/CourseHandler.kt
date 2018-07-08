@@ -14,11 +14,13 @@ fun CourseHandler(
         taskDao: TaskDao,
         layout: Layout,
         coursePage: (idx: Page, treePage: Page, Course, Chapters, prevNext: Pair<Course.BasicInfo?, Course.BasicInfo?>) -> Layout.Page
-): suspend (ApplicationCall, Course) -> Unit = { call, course ->
+): suspend (ApplicationCall, Course.BasicInfo) -> Unit = { call, basicCourse ->
 
     val idx = pageDao.findByMagic(Page.Magic.Index)!!
     val treePage = pageDao.findByMagic(Page.Magic.Courses)!!
-    val tree = chapters(course.basicInfo, chapterDao, lessonDao, taskDao)
+    val tree = chapters(basicCourse, chapterDao, lessonDao, taskDao)
+
+    val course = courseDao.findById(basicCourse.id)!!
     val previousAndNext = courseDao.findPreviousAndNextBasic(course)
 
     call.respondHtml {

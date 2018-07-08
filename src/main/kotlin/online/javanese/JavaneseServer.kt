@@ -12,6 +12,7 @@ import io.ktor.features.StatusPages
 import io.ktor.html.respondHtml
 import io.ktor.http.HttpStatusCode
 import io.ktor.routing.get
+import io.ktor.routing.post
 import io.ktor.routing.route
 import io.ktor.routing.routing
 import io.ktor.server.engine.embeddedServer
@@ -31,9 +32,6 @@ import online.javanese.locale.Russian
 import online.javanese.model.*
 import online.javanese.model.Page.Magic.Tree
 import online.javanese.page.*
-import online.javanese.route.OnePartRoute
-import online.javanese.route.ThreePartsRoute
-import online.javanese.route.TwoPartsRoute
 import java.io.FileInputStream
 import java.util.*
 
@@ -73,6 +71,8 @@ object JavaneseServer {
         val codeReviewCandidateDao = CodeReviewCandidateDao(session)
         val codeReviewDao = CodeReviewDao(session)
 
+        val taskErrorReportDao = TaskErrorReportDao(session)
+
 
         val pageLink = Link(
                 IndexOrSingleSegmDirAddress(PageTable.UrlSegment.property) { addr ->
@@ -84,11 +84,11 @@ object JavaneseServer {
         val findPageBySegm = pageDao::findByUrlSegment
         val lessonsLink = Link(
                 SingleSegmentDirAddress(PageTable.UrlSegment.property, findPageBySegm),
-                { language.lessonsTreeTab }, { "lessons" }
+                Just(language.lessonsTreeTab), Just("lessons")
         )
         val tasksLink = Link(
                 SingleSegmentDirAddress(PageTable.UrlSegment.property, findPageBySegm),
-                { language.tasksTreeTab }, { "tasks" }
+                Just(language.tasksTreeTab), Just("tasks")
         )
 
         val courseLink = Link(
@@ -150,7 +150,16 @@ object JavaneseServer {
         )
 
         val reportTaskAction =
-                Action(TwoSegmentFileAddress({ "task" }, { "report" }, { _, _ -> Unit }))
+                Action(TwoSegmentFileAddress(Just("task"), Just("report")) { dir, file ->
+                    if (dir == "task" && file == "report") Unit else null
+                })
+
+        // fixme: returning Unit from Action bySegments may become a common pitfall
+
+        val codeReviewAction =
+                Action(TwoSegmentFileAddress(Just("codeReview"), Just("add")) { dir, file ->
+                    if (dir == "codeReview" && file == "add") Unit else null }
+                )
 
 
         val mainStyle = "main.min.css?3"
@@ -167,83 +176,89 @@ object JavaneseServer {
         val breadCrumbsToCourse = betweenLinks.navOf(pageLink, pageLink, courseLink)
         val breadCrumbsToChapter = betweenLinks.navOf(pageLink, pageLink, courseLink, chapterLink)
 
-        // fixme: eliminate these OnePart, TwoPart, ThreePart route handlers by more generic things
-        val route1 =
-                OnePartRoute(
-                        pageDao,
-                        courseDao,
-                        PageHandler(
-                                pageDao, courseDao, chapterDao, lessonDao, taskDao, articleDao, layout,
-                                indexPage = {
-                                    CardsPage(
-                                            page = it,
-                                            contents = pageDao.findAllSecondary().map {
-                                                CardsPage.Card(if (it.magic == Tree) tasksLink else pageLink, it, it.icon, it.subtitle)
-                                            }
-                                    )
-                                },
-                                coursesPage = { indexPage, coursesPage, courses ->
-                                    CardsPage(
-                                            page = coursesPage,
-                                            beforeContent = breadCrumbsToIndex(indexPage),
-                                            contents = courses.map { CardsPage.Card(courseLink, it, it.icon, it.subtitle) },
-                                            dCount = CardsPage.CountOnDesktop.Three,
-                                            tCount = CardsPage.CountOnTablet.One
-                                    )
-                                },
-                                treePage = { indexPage, coursesPage, courses ->
-                                    TreePage(
-                                            coursesPage, courses, language, courseLink, chapterLink, lessonLink, taskLink,
-                                            breadCrumbsToIndex(indexPage)
-                                    )
-                                },
-                                articlesPage = { idx, ar, articles ->
-                                    ArticlesPage(ar, articles, config.exposedStaticDir, articleLink, breadCrumbsToIndex(idx))
-                                },
-                                codeReview = { idx, cr ->
-                                    CodeReviewPage(cr, codeReviewDao.findAll(), codeReviewLink, language, breadCrumbsToIndex(idx))
-                                }
-                        ),
-                        CourseHandler(
-                                pageDao, courseDao, chapterDao, lessonDao, taskDao, layout,
-                                coursePage = { idx, tr, c, ct, pn ->
-                                    CoursePage(
-                                            c, ct, pn, courseLink, chapterLink,
-                                            lessonLink, taskLink, language, breadCrumbsToPage(idx, tr)
-                                    )
+        val routing = Routing("parts") {
+            pageLink x PageHandler(
+                    pageDao, courseDao, chapterDao, lessonDao, taskDao, articleDao, layout,
+                    indexPage = {
+                        CardsPage(
+                                page = it,
+                                contents = pageDao.findAllSecondary().map {
+                                    CardsPage.Card(if (it.magic == Tree) tasksLink else pageLink, it, it.icon, it.subtitle)
                                 }
                         )
-                )
-
-        val route2 =
-                TwoPartsRoute(
-                        pageDao, articleDao, courseDao, chapterDao, codeReviewDao,
-                        { idx, ar, ars, call -> call.respondHtml { layout(this, ArticlePage(
-                                ars, language, config.exposedStaticDir, highlightScript = sandboxScript, beforeContent = breadCrumbsToPage(idx, ar)
-                        )) } },
-                        ChapterHandler(
-                                pageDao, chapterDao, lessonDao, taskDao, layout,
-                                { idx, tr, crs, chp, chpt, prevNext -> ChapterPage(
-                                        chp, chpt, prevNext, chapterLink, lessonLink, taskLink,
-                                        language, breadCrumbsToCourse(idx, tr, crs)
-                                ) }
-                        ),
-                        { idx, cr, review, call -> call.respondHtml { layout(this, CodeReviewDetailsPage(
-                                review, config.exposedStaticDir, highlightScript = sandboxScript, beforeContent = breadCrumbsToPage(idx, cr)
-                        )) } }
-                )
-
-        val route3 =
-                ThreePartsRoute(
-                        courseDao, chapterDao, lessonDao,
-                        LessonHandler(
-                                courseDao, chapterDao, lessonDao, taskDao, pageDao, layout,
-                                { idx, tr, crs, chp, l, lt, prNx -> LessonPage(
-                                        l, lt, prNx, config.exposedStaticDir, lessonLink, reportTaskAction, language, sandboxScript,
-                                        codeMirrorStyle, breadCrumbsToChapter(idx, tr, crs, chp)
-                                ) }
+                    },
+                    coursesPage = { indexPage, coursesPage, courses ->
+                        CardsPage(
+                                page = coursesPage,
+                                beforeContent = breadCrumbsToIndex(indexPage),
+                                contents = courses.map { CardsPage.Card(courseLink, it, it.icon, it.subtitle) },
+                                dCount = CardsPage.CountOnDesktop.Three,
+                                tCount = CardsPage.CountOnTablet.One
                         )
+                    },
+                    treePage = { indexPage, coursesPage, courses ->
+                        TreePage(
+                                coursesPage, courses, language, courseLink, chapterLink, lessonLink, taskLink,
+                                breadCrumbsToIndex(indexPage), lessonsLink, tasksLink
+                        )
+                    },
+                    articlesPage = { idx, ar, articles ->
+                        ArticlesPage(ar, articles, config.exposedStaticDir, articleLink, breadCrumbsToIndex(idx))
+                    },
+                    codeReview = { idx, cr ->
+                        CodeReviewPage(cr, codeReviewDao.findAll(), codeReviewLink, language, breadCrumbsToIndex(idx))
+                    }
+            )
+
+            courseLink x CourseHandler(
+                    pageDao, courseDao, chapterDao, lessonDao, taskDao, layout,
+                    coursePage = { idx, tr, c, ct, pn ->
+                        CoursePage(
+                                c, ct, pn, courseLink, chapterLink,
+                                lessonLink, taskLink, language, breadCrumbsToPage(idx, tr)
+                        )
+                    }
+            )
+
+            articleLink x { basicArticle ->
+                val article = articleDao.findById(basicArticle.id)!!
+                val index = pageDao.findByMagic(Page.Magic.Index)!!
+                val articles = pageDao.findByMagic(Page.Magic.Articles)!!
+                respondHtml { layout(this, ArticlePage(
+                    article, language, config.exposedStaticDir, highlightScript = sandboxScript, beforeContent = breadCrumbsToPage(index, articles)
+                )) }
+            }
+
+            chapterLink x ChapterHandler(
+                    pageDao, courseDao, chapterDao, lessonDao, taskDao, layout
+            ) { idx, tr, crs, chp, chpt, prevNext ->
+                ChapterPage(
+                        chp, chpt, prevNext, chapterLink, lessonLink, taskLink,
+                        language, breadCrumbsToCourse(idx, tr, crs)
                 )
+            }
+
+            codeReviewLink x { review ->
+                val idx = pageDao.findByMagic(Page.Magic.Index)!!
+                val cr = pageDao.findByMagic(Page.Magic.CodeReview)!!
+                respondHtml {
+                    layout(this, CodeReviewDetailsPage(
+                            review, config.exposedStaticDir, highlightScript = sandboxScript, beforeContent = breadCrumbsToPage(idx, cr)
+                    ))
+                }
+            }
+
+            lessonLink x LessonHandler(
+                    courseDao, chapterDao, lessonDao, taskDao, pageDao, layout
+            ) { idx, tr, crs, chp, l, lt, prNx -> LessonPage(
+                    l, lt, prNx, config.exposedStaticDir, lessonLink, reportTaskAction, language, sandboxScript,
+                    codeMirrorStyle, breadCrumbsToChapter(idx, tr, crs, chp)
+            ) }
+
+            reportTaskAction x SubmitTaskErrorReportHandler(taskErrorReportDao)
+
+            codeReviewAction x SubmitCodeReviewCandidateHandler(codeReviewCandidateDao)
+        }
 
         val errorHandler: suspend (ApplicationCall) -> Unit = { call ->
             val status = call.response.status()!!
@@ -255,14 +270,6 @@ object JavaneseServer {
         val articleRssHandler =
                 ArticleRssHandler(pageDao, articleDao, pageLink, articleLink, config.siteUrl, language.articlesFeedInfo)
         // TODO: RSS for code reviews
-
-        val taskErrorReportDao = TaskErrorReportDao(session)
-
-        val submitTaskErrorReport =
-                SubmitTaskErrorReportHandler(taskErrorReportDao)
-
-        val submitCodeReviewCandidate =
-                SubmitCodeReviewCandidateHandler(codeReviewCandidateDao)
 
         val sitemap =
                 SitemapHandler(config.siteUrl,
@@ -307,22 +314,19 @@ object JavaneseServer {
 
             routing {
 
-                // todo: addresses as objects
-
                 installHitStatInterceptor(stat)
 
-                get("/") { route1(call, "") }
-                get1(route1)
-                get2(route2)
-                get3(route3)
+                get("/{parts...}/") {
+                    routing.get(call)
+                }
+                post("/{parts...}/") {
+                    routing.post(call)
+                }
 
-                get("/articles.rss", articleRssHandler)
+                get("/articles.rss") { articleRssHandler(call) }
 
-                post("/task/report", submitTaskErrorReport)
-                post("/codeReview/add", submitCodeReviewCandidate)
-
-                get("/sitemap.xml", sitemap)
-                get("/robots.txt", robots)
+                get("/sitemap.xml") { sitemap(call) }
+                get("/robots.txt") { robots(call) }
 
                 webSocket(path = "/sandbox/ws", handler = sandboxWebSocketHandler)
 

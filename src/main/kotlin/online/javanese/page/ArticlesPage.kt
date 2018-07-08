@@ -12,7 +12,7 @@ class ArticlesPage(
         private val page: Page,
         private val articles: List<Article.BasicInfo>,
         private val static: String,
-        private val articleLink: Link<Article.BasicInfo>,
+        private val articleLink: Link<Article.BasicInfo, *>,
         private val beforeContent: HtmlBlock
 ) : Layout.Page {
 

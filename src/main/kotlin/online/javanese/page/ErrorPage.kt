@@ -13,7 +13,7 @@ class ErrorPage(
     private val reason = language.httpErrors[statusCode] ?: reason
 
     override val meta: Meta = Meta(
-            reason,
+            reason, // todo: move to Locale
             "Страница ошибки $statusCode.",
             "Шутите? Какие ключевые слова могут быть у страницы ошибки?"
     )

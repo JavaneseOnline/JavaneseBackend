@@ -4,6 +4,7 @@ import kotlinx.html.*
 import online.javanese.link.Action
 import online.javanese.link.HtmlBlock
 import online.javanese.link.Link
+import online.javanese.link.LinkWithFragment
 import online.javanese.locale.Language
 import online.javanese.model.*
 
@@ -13,8 +14,8 @@ class LessonPage(
         private val tasks: List<Task>,
         private val previousAndNext: Pair<Lesson.BasicInfo?, Lesson.BasicInfo?>,
         private val static: String,
-        private val lessonLink: Link<Lesson.BasicInfo>,
-        private val reportTaskAction: Action<Unit>,
+        private val lessonLink: Link<Lesson.BasicInfo, *>,
+        private val reportTaskAction: Action<Unit, *>,
         private val language: Language,
         private val sandboxScript: String,
         private val codeMirrorStylePath: String,

@@ -4,6 +4,7 @@ import kotlinx.html.*
 import online.javanese.handler.Courses
 import online.javanese.link.HtmlBlock
 import online.javanese.link.Link
+import online.javanese.link.LinkWithFragment
 import online.javanese.locale.Language
 import online.javanese.model.*
 
@@ -12,11 +13,13 @@ class TreePage(
         private val page: Page,
         private val courses: Courses,
         private val language: Language,
-        private val courseLink: Link<Course.BasicInfo>,
-        private val chapterLink: Link<Chapter.BasicInfo>,
-        private val lessonLink: Link<Lesson.BasicInfo>,
-        private val taskLink: Link<Task.BasicInfo>,
-        private val beforeContent: HtmlBlock
+        private val courseLink: Link<Course.BasicInfo, *>,
+        private val chapterLink: Link<Chapter.BasicInfo, *>,
+        private val lessonLink: Link<Lesson.BasicInfo, *>,
+        private val taskLink: Link<Task.BasicInfo, *>,
+        private val beforeContent: HtmlBlock,
+        private val lessonsLink: LinkWithFragment<Page, *>,
+        private val tasksLink: LinkWithFragment<Page, *>
 ): Layout.Page {
 
     override val meta: Meta get() = page.meta
@@ -37,16 +40,19 @@ class TreePage(
             }
 
             tabs {
+                val lessonsFrag = lessonsLink.fragment(page)
+                val tasksFrag = tasksLink.fragment(page)
+
                 tabBar {
-                    tabLink("lessons", language.lessonsTreeTab, true)
-                    tabLink("tasks", language.tasksTreeTab)
+                    tabLink(lessonsFrag, language.lessonsTreeTab, true)
+                    tabLink(tasksFrag, language.tasksTreeTab)
                 }
 
-                tabPanelNav("lessons", true) {
+                tabPanelNav(lessonsFrag, true) {
                     coursesTree(courses, courseLink, chapterLink, lessonLink, taskLink, TreeMode.Lessons)
                 }
 
-                tabPanelNav("tasks") {
+                tabPanelNav(tasksFrag) {
                     coursesTree(courses, courseLink, chapterLink, lessonLink, taskLink, TreeMode.Tasks)
                 }
             }
