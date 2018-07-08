@@ -24,6 +24,9 @@ class MainLayout(
         private val language: Language
 ) : Layout {
 
+    private val favIcons = arrayOf("16", "32", "96", "192")
+            .map { "$static/favicon/$it.png" to (it + 'x' + it) }.toTypedArray()
+
     override fun invoke(root: HTML, page: Layout.Page) = with(root) {
         head {
             unsafe {
@@ -37,7 +40,13 @@ class MainLayout(
             styleLink("$static/$mainStyle")
 
             link(rel = "alternate", type = "application/rss+xml", href = "/articles.rss") {
-                attributes["title"] = "Статьи"
+                attributes["title"] = "Статьи" // fixme
+            }
+
+            favIcons.forEach { (path, size) ->
+                link(rel = "icon", type = "image/png", href = path) {
+                    attributes["sizes"] = size
+                }
             }
 
             meta(name = "description", content = page.meta.description)
