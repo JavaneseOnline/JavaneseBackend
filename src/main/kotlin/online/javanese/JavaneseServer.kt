@@ -105,7 +105,7 @@ object JavaneseServer {
         )
         val lessonLink = Link(
                 HierarchicalThreeSegmentDirAddress(
-                        { it },
+                        Identity(),
                         { chapterDao.findBasicById(it.chapterId)!! },
                         { courseDao.findBasicById(it.courseId)!! },
                         BasicCourseInfoTable.UrlSegment.property,
@@ -284,7 +284,7 @@ object JavaneseServer {
                 SandboxWebSocketHandler(config, taskDao)
 
         val noUa = UserAgent("", "", "")
-        val stat = HitStat(InMemoryStatTable({ noUa }))
+        val stat = HitStat(InMemoryStatTable(Just(noUa)))
 
         val serveResourcesAs = (config.listenHost + ":" + config.listenPort).let { hostAndPort ->
             val idx = config.exposedStaticDir.indexOf(hostAndPort)
