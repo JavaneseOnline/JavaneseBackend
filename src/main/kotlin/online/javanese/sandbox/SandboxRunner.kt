@@ -1,6 +1,6 @@
 package online.javanese.sandbox
 
-import kotlinx.coroutines.experimental.*
+import kotlinx.coroutines.*
 import online.javanese.deleteDirectory
 import java.io.*
 import java.nio.file.Files
@@ -54,7 +54,7 @@ class SandboxRunner(
             val stderr = proc.errorStream.bufferedReader()
             procStdin = proc.outputStream.writer()
 
-            withTimeout((VM_START_TIME + timeLimit).toLong(), TimeUnit.SECONDS) {
+            withTimeout(TimeUnit.SECONDS.toMillis((VM_START_TIME + timeLimit).toLong())) {
                 // talk with process
                 while (proc.isAlive || stdout.ready() || stderr.ready()) {
                     try {
@@ -62,7 +62,7 @@ class SandboxRunner(
                     } catch (e: CancellationException) {
                         proc.destroyForcibly()
                         onProcessEvent(EventType.Deadline, "")
-                        run(NonCancellable) {
+                        withContext(NonCancellable) {
                             communicate(stdout, stderr)
                         }
                     }
@@ -86,14 +86,14 @@ class SandboxRunner(
             val l = stderr.readLine()
             onProcessEvent(EventType.Err, l)
         }
-        delay(100, TimeUnit.MILLISECONDS)
+        delay(100)
     }
 
     @Throws(IOException::class)
     private suspend fun compile(): CompiledClassFile {
         onProcessEvent(EventType.Compiling, "")
 
-        val sourceFileName = className + ".java"
+        val sourceFileName = "$className.java"
 
         val compilationDir = File(sandboxLocation + "/" + UUID.randomUUID())
         if (!compilationDir.mkdir()) {

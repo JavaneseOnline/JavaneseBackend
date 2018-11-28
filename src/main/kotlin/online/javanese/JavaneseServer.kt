@@ -5,12 +5,12 @@ import io.ktor.application.call
 import io.ktor.application.install
 import io.ktor.auth.UserIdPrincipal
 import io.ktor.auth.authentication
-import io.ktor.auth.basicAuthentication
-import io.ktor.content.files
-import io.ktor.content.static
+import io.ktor.auth.basic
 import io.ktor.features.StatusPages
 import io.ktor.html.respondHtml
 import io.ktor.http.HttpStatusCode
+import io.ktor.http.content.files
+import io.ktor.http.content.static
 import io.ktor.routing.get
 import io.ktor.routing.post
 import io.ktor.routing.route
@@ -225,7 +225,8 @@ object JavaneseServer {
                 val index = pageDao.findByMagic(Page.Magic.Index)!!
                 val articles = pageDao.findByMagic(Page.Magic.Articles)!!
                 respondHtml { layout(this, ArticlePage(
-                    article, language, config.exposedStaticDir, highlightScript = sandboxScript, beforeContent = breadCrumbsToPage(index, articles)
+                        config.siteUrl, articleLink, article, language, config.exposedStaticDir,
+                        highlightScript = sandboxScript, beforeContent = breadCrumbsToPage(index, articles)
                 )) }
             }
 
@@ -251,7 +252,7 @@ object JavaneseServer {
             lessonLink x LessonHandler(
                     courseDao, chapterDao, lessonDao, taskDao, pageDao, layout
             ) { idx, tr, crs, chp, l, lt, prNx -> LessonPage(
-                    l, lt, prNx, config.exposedStaticDir, lessonLink, reportTaskAction, language, sandboxScript,
+                    config.siteUrl, l, lt, prNx, config.exposedStaticDir, lessonLink, reportTaskAction, language, sandboxScript,
                     codeMirrorStyle, breadCrumbsToChapter(idx, tr, crs, chp)
             ) }
 
@@ -339,10 +340,13 @@ object JavaneseServer {
                     ))
 
                     authentication {
-                        basicAuthentication("Admin") { cred ->
-                            if (cred.name == config.adminUsername && cred.password == config.adminPassword)
-                                UserIdPrincipal("admin")
-                            else null
+                        basic {
+                            realm = "Admin"
+                            validate { cred ->
+                                if (cred.name == config.adminUsername && cred.password == config.adminPassword)
+                                    UserIdPrincipal("admin")
+                                else null
+                            }
                         }
                     }
                 }

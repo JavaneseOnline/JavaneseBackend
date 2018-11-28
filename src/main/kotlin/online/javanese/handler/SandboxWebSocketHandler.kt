@@ -4,11 +4,13 @@ import checker.*
 import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.difflib.text.DiffRow
-import io.ktor.websocket.DefaultWebSocketSession
-import io.ktor.websocket.Frame
-import io.ktor.websocket.WebSocketSession
-import io.ktor.websocket.readText
-import kotlinx.coroutines.experimental.CancellationException
+import com.github.difflib.text.DiffRowGenerator
+import io.ktor.http.cio.websocket.Frame
+import io.ktor.http.cio.websocket.WebSocketSession
+import io.ktor.http.cio.websocket.readText
+import io.ktor.util.escapeHTML
+import io.ktor.websocket.DefaultWebSocketServerSession
+import kotlinx.coroutines.CancellationException
 import online.javanese.Config
 import online.javanese.krud.kwery.Uuid
 import online.javanese.model.Task
@@ -16,14 +18,12 @@ import online.javanese.model.TaskDao
 import online.javanese.sandbox.SandboxRunner
 import java.io.IOException
 import java.nio.ByteBuffer
-import com.github.difflib.text.DiffRowGenerator
-import io.ktor.util.escapeHTML
 
 
 fun SandboxWebSocketHandler(
         config: Config,
         taskDao: TaskDao
-): suspend DefaultWebSocketSession.() -> Unit = func@ {
+): suspend DefaultWebSocketServerSession.() -> Unit = func@ {
 
     val task = taskDao.findById(Uuid.fromString(call.parameters["task"]!!))!!
 
@@ -170,7 +170,7 @@ private class CheckerMessage internal constructor(e: Exception) {
                 name = null
                 value = null
             }
-            else -> throw IllegalArgumentException("given exception of unsupported subtype of CheckerMessage: " + e)
+            else -> throw IllegalArgumentException("given exception of unsupported subtype of CheckerMessage: $e")
         }
     }
 

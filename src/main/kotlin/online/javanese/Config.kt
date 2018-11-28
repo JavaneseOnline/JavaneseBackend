@@ -18,7 +18,7 @@ class Config(
     val listenHost: String = props.getProperty("listenHost")
     val listenPort: Int = props.getProperty("listenPort").toInt()
     val siteHost: String = props.getProperty("siteHost")
-    val siteUrl: String = "http://" + siteHost
+    val siteUrl: String = "http://$siteHost"
 
     // /usr/lib/jvm/java-9-oracle/bin/java
     val sandboxJavaLocation: String = props.getProperty("sandbox.javaLocation")

@@ -2,17 +2,19 @@ package online.javanese.handler
 
 import io.ktor.application.ApplicationCall
 import io.ktor.http.ContentType
-import io.ktor.response.respondWrite
+import io.ktor.response.respondTextWriter
 import io.ktor.util.escapeHTML
+import online.javanese.link.Link
 import online.javanese.locale.Language
 import online.javanese.model.*
-import online.javanese.link.Link
 import java.text.SimpleDateFormat
 import java.time.ZoneId
 import java.util.*
+import kotlin.concurrent.getOrSet
 
 
-private val timeFormat = SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z", Locale.US)
+private fun createFormat() = SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z", Locale.US)
+private val timeFormat = ThreadLocal<SimpleDateFormat>()
 
 fun ArticleRssHandler(
         pageDao: PageDao,
@@ -36,7 +38,7 @@ fun ArticleRssHandler(
                 )
             }
 
-    call.respondWrite(contentType = ContentType.Application.Rss) {
+    call.respondTextWriter(contentType = ContentType.Application.Rss, writer = {
         write("""<?xml version="1.0" encoding="utf-8"?>""")
         write("""<rss version="2.0">""")
 
@@ -51,13 +53,13 @@ fun ArticleRssHandler(
             write("<description>"); write(it.description.escapeHTML()); write("</description>")
             write("<link>"); write(it.link.escapeHTML()); write("</link>")
             write("<pubDate>")
-            write(timeFormat.format(Date.from(it.pubDate.atZone(ZoneId.systemDefault()).toInstant())))
+            write(timeFormat.getOrSet(::createFormat).format(Date.from(it.pubDate.atZone(ZoneId.systemDefault()).toInstant())))
             write("</pubDate>")
             write("</item>")
         }
 
         write("</channel>")
         write("</rss>")
-    }
+    })
 
 }
