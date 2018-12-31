@@ -3,9 +3,10 @@ package online.javanese
 import io.ktor.application.ApplicationCall
 import io.ktor.application.call
 import io.ktor.application.install
-import io.ktor.auth.UserIdPrincipal
+import io.ktor.auth.OAuthServerSettings
+import io.ktor.auth.authenticate
 import io.ktor.auth.authentication
-import io.ktor.auth.basic
+import io.ktor.auth.digest
 import io.ktor.features.StatusPages
 import io.ktor.html.respondHtml
 import io.ktor.http.HttpStatusCode
@@ -332,22 +333,29 @@ object JavaneseServer {
                 webSocket(path = "/sandbox/ws", handler = sandboxWebSocketHandler)
 
                 route("/${config.adminRoute}/") {
-                    installAdmin(JavaneseAdminPanel(
-                            config.adminRoute, session,
-                            taskDao, lessonDao, chapterDao, courseDao, articleDao,
-                            pageDao, taskErrorReportDao, codeReviewCandidateDao, codeReviewDao,
-                            stat
-                    ))
-
                     authentication {
-                        basic {
+                        digest(name = "admin") {
                             realm = "Admin"
-                            validate { cred ->
-                                if (cred.name == config.adminUsername && cred.password == config.adminPassword)
-                                    UserIdPrincipal("admin")
-                                else null
+                            userNameRealmPasswordDigestProvider = { userName, realm ->
+                                when (userName) {
+                                    config.adminUsername -> {
+                                        digester.reset()
+                                        digester.update("$userName:$realm:${config.adminPassword}".toByteArray())
+                                        digester.digest()
+                                    }
+                                    else -> null
+                                }
                             }
                         }
+                    }
+
+                    authenticate("admin") {
+                        installAdmin(JavaneseAdminPanel(
+                                config.adminRoute, session,
+                                taskDao, lessonDao, chapterDao, courseDao, articleDao,
+                                pageDao, taskErrorReportDao, codeReviewCandidateDao, codeReviewDao,
+                                stat
+                        ))
                     }
                 }
 
