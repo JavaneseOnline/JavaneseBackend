@@ -1,7 +1,9 @@
 package online.javanese.page
 
+import com.fasterxml.jackson.core.JsonFactory
 import kotlinx.html.*
 import online.javanese.model.VkPostInfo
+import java.io.CharArrayWriter
 
 
 fun FlowOrPhrasingOrMetaDataContent.vkOpenApiScript() = script(src = "https://vk.com/js/api/openapi.js?136") {
@@ -15,10 +17,15 @@ fun FlowOrPhrasingOrMetaDataContent.vkShareScript() = script(src = "https://vk.c
 
 /// VK comments ///
 
-val VkInitWidgetsScriptLine = """VK.init({ apiId: 5748800, onlyWidgets: true });"""
+const val VkInitWidgetsScriptLine = """VK.init({ apiId: 5748800, onlyWidgets: true });"""
 
+val json = JsonFactory()
 // requires vkOpenApiScript
-fun FlowContent.vkComments(pageId: String, init: Boolean, classes: String? = null) {
+fun FlowContent.vkComments(siteUrl: String, pageUrl: String, pageId: String, init: Boolean, classes: String? = null) {
+    val w = CharArrayWriter()
+    json.createGenerator(w).apply { writeString(siteUrl + pageUrl); flush() }
+    val escapedPageUrl = w.toString()
+
     div(classes = classes) {
         id = "vk_comments"
     }
@@ -27,7 +34,7 @@ fun FlowContent.vkComments(pageId: String, init: Boolean, classes: String? = nul
             if (init)
                 +VkInitWidgetsScriptLine
 
-            +"""VK.Widgets.Comments("vk_comments", {}, '$pageId');"""
+            +"""VK.Widgets.Comments('vk_comments', { limit: 20, attach: "graffiti,photo,link", pageUrl: $escapedPageUrl }, '$pageId');"""
         }
     }
 }

@@ -2,12 +2,15 @@ package online.javanese.page
 
 import kotlinx.html.*
 import online.javanese.link.HtmlBlock
+import online.javanese.link.Link
 import online.javanese.locale.Language
 import online.javanese.model.Article
 import online.javanese.model.Meta
 
 
 class ArticlePage(
+        private val siteUrl: String,
+        private val articleLink: Link<Article.BasicInfo, *>,
         private val article: Article,
         private val language: Language,
         private val static: String,
@@ -45,7 +48,8 @@ class ArticlePage(
                 +language.articleComments
             }
             vkComments(
-                    article.basicInfo.id.toString(), init = true, classes = "no-pad container-margin-t mdl-shadow--8dp"
+                    siteUrl, articleLink.url(article.basicInfo), article.basicInfo.id.toString(),
+                    init = true, classes = "no-pad container-margin-t mdl-shadow--8dp"
             )
         }
     }

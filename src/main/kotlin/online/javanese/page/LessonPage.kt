@@ -9,6 +9,7 @@ import online.javanese.model.*
 
 
 class LessonPage(
+        private val siteUrl: String,
         private val lesson: Lesson,
         private val tasks: List<Task>,
         private val previousAndNext: Pair<Lesson.BasicInfo?, Lesson.BasicInfo?>,
@@ -164,7 +165,10 @@ class LessonPage(
             }
 
             tabPanelSection(id = "comments", active = !hasTasks, moreClasses = "no-pad content-padding-v") {
-                vkComments(lesson.basicInfo.id.toString(), init = false)
+                vkComments(
+                        siteUrl, lessonLink.url(lesson.basicInfo), lesson.basicInfo.id.toString(),
+                        init = false
+                )
             }
 
             prevNextPane(previousAndNext, lessonLink, language.previousLesson, language.nextLesson)
