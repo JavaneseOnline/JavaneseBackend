@@ -14,7 +14,7 @@ Running.
   * debug.
     * VM options: `-Xss180K -Xms16M -Xmx32M`
     * program arguments: `--single-thread`
-  * release. VM options: `-Xss256K -Xms32M -XmxAsMuchAsYouCanGive`
+  * release. VM options: `-Xss256K -Xms32M -XmxAsMuchAsYouCanGive -XX:+UnlockExperimentalVMOptions -XX:+TrustFinalNonStaticFields`
 
 You can find database structure in `model` package;
 database contents are not publicly available.

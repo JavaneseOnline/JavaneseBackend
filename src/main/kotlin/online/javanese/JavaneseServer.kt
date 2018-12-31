@@ -39,7 +39,7 @@ import java.util.*
 object JavaneseServer {
 
     /**
-     * Entry point. Satisfies all dependencies and starts web-server.
+     * Entry point. Satisfies all dependencies and starts the web-server.
      */
     @JvmStatic
     fun main(args: Array<String>) {
