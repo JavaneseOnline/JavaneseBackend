@@ -18,6 +18,7 @@ import io.ktor.routing.route
 import io.ktor.routing.routing
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
+import io.ktor.util.pipeline.PipelineContext
 import io.ktor.websocket.WebSockets
 import io.ktor.websocket.webSocket
 import online.javanese.exception.NotFoundException
@@ -302,14 +303,12 @@ object JavaneseServer {
             }
         }) {
             install(StatusPages) {
-                exception<NotFoundException> {
+                val errHandler: suspend PipelineContext<*, ApplicationCall>.(Any?) -> Unit = {
                     call.response.status(HttpStatusCode.NotFound)
                     errorHandler(call)
                 }
-                status(HttpStatusCode.NotFound) {
-                    call.response.status(HttpStatusCode.NotFound)
-                    errorHandler(call)
-                }
+                exception<NotFoundException>(errHandler)
+                status(HttpStatusCode.NotFound, handler = errHandler)
             }
 
             install(WebSockets)
