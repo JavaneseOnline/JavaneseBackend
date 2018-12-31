@@ -2,6 +2,7 @@ package online.javanese.sandbox
 
 import kotlinx.coroutines.*
 import online.javanese.deleteDirectory
+import org.slf4j.LoggerFactory
 import java.io.*
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -35,6 +36,7 @@ class SandboxRunner(
         // todo: Java 9 contains REPL. Is there any API to evaluate arbitrary code?
 
         val classFile = compile()
+        logger.info("created {}", classFile.dir)
         try {
 
             /*Process javap = Runtime.getRuntime().exec(
@@ -73,6 +75,7 @@ class SandboxRunner(
             // exit
             onProcessEvent(EventType.Exit, proc.exitValue().toString())
         } finally {
+            logger.info("clearing {}", classFile.dir)
             classFile.clear()
         }
     }
@@ -165,6 +168,8 @@ class SandboxRunner(
         private val ENDL = charArrayOf('\n')
         private const val VM_MIN_MEMORY = 4
         private const val VM_START_TIME = 5
+
+        internal val logger = LoggerFactory.getLogger(SandboxRunner::class.java)
     }
 
 }

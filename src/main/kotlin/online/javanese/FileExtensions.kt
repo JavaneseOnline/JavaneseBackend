@@ -1,14 +1,18 @@
 package online.javanese
 
+import org.slf4j.LoggerFactory
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.IOException
 
 // almost copy of org.apache.tomcat.util.http.fileupload.
 
+private val logger = LoggerFactory.getLogger("FileExtensions")
+
 @Throws(IOException::class)
 fun File.deleteDirectory() {
     if (!exists()) {
+        logger.warn("deleteDirectory(): {} does not exist", this)
         return
     }
 
@@ -17,7 +21,7 @@ fun File.deleteDirectory() {
     }
 
     if (!delete()) {
-        throw IOException("Unable to delete directory $this.")
+        logger.error("deleteDirectory(): can't delete {}", this)
     }
 }
 
@@ -40,17 +44,15 @@ fun File.isSymlink(): Boolean {
 @Throws(IOException::class)
 fun File.cleanDirectory() {
     if (!exists()) {
-        val message = toString() + " does not exist"
-        throw IllegalArgumentException(message)
+        throw IllegalArgumentException("$this does not exist")
     }
 
     if (!isDirectory) {
-        val message = toString() + " is not a directory"
-        throw IllegalArgumentException(message)
+        throw IllegalArgumentException(toString() + " is not a directory")
     }
 
     val files = listFiles() ?: // null if security restricted
-            throw IOException("Failed to list contents of " + this)
+            throw IOException("Failed to list contents of $this")
 
     var exception: IOException? = null
     for (file in files) {
