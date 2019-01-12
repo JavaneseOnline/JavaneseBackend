@@ -9,9 +9,9 @@ val prepared = "/home/miha/IdeaProjects/javanese/etc/static-prepared/"
 
 
 combineAndUglifyMain("vue_zepto_mdl_dialog_scroll_unfocus_tabs_form_marked_comments")
-//combineAndUglifySandbox("highlight_trace_codemirror_clike_sandbox_switcher")
-//scssAndCsso("css/main")
-//scssAndCsso("sandbox/codemirror_ambiance")
+combineAndUglifySandbox("highlight_trace_codemirror_clike_sandbox_switcher")
+scssAndCsso("css/main")
+scssAndCsso("sandbox/codemirror_ambiance")
 
 
 fun combineAndUglifyMain(fileName: String) {
