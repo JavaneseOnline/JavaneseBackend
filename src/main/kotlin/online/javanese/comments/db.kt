@@ -102,15 +102,15 @@ class CommentDao(session: Session, table: CommentTable) : AbstractDao<Comment, U
 
 /*
 CREATE TABLE public.comments (
-	id uuid NOT NULL,
-	parentId uuid NULL,
-	authorSource varchar(16) NOT NULL,
-	authorId varchar(256) NOT NULL,
-	text text NOT NULL,
-	addedAt timestamp NOT NULL,
-	removed bool NOT NULL,
-	CONSTRAINT comments_pk PRIMARY KEY (id)
-    CONSTRAINT comments_parent_fk FOREIGN KEY (parentId) REFERENCES public.comments(id)
+	"id" uuid NOT NULL,
+	"parentId" uuid NULL,
+	"authorSource" varchar(16) NOT NULL,
+	"authorId" varchar(256) NOT NULL,
+	"text" text NOT NULL,
+	"addedAt" timestamp NOT NULL,
+	"removed" bool NOT NULL,
+	CONSTRAINT comments_pk PRIMARY KEY (id),
+    CONSTRAINT comments_parent_fk FOREIGN KEY ("parentId") REFERENCES public.comments("id")
 );
-CREATE INDEX comments_parentId_idx ON public.comments (parentId) WHERE parentId is not null;
+CREATE INDEX comments_parentId_idx ON public.comments ("parentId") WHERE "parentId" IS NOT NULL;
 */

@@ -261,19 +261,19 @@ val forArticle = CommentsFor("articleComments", ArticleTable.Id.property)
 val forLesson = CommentsFor("lessonComments", LessonTable.Id.property)
 
 /*
-CREATE TABLE public.articleComments (
-	entityId uuid NOT NULL,
-	commentId uuid NOT NULL,
-	CONSTRAINT articleComments_articles_fk FOREIGN KEY (entityId) REFERENCES public.articles(id),
-	CONSTRAINT articleComments_comments_fk FOREIGN KEY (commentId) REFERENCES public.comments(id)
+CREATE TABLE public."articleComments" (
+	"entityId" uuid NOT NULL,
+	"commentId" uuid NOT NULL,
+	CONSTRAINT "articleComments_articles_fk" FOREIGN KEY ("entityId") REFERENCES public.articles("id"),
+	CONSTRAINT "articleComments_comments_fk" FOREIGN KEY ("commentId") REFERENCES public.comments("id")
 );
-CREATE UNIQUE INDEX articleComments_articleId_idx ON public.articleComments (entityId, commentId);
+CREATE UNIQUE INDEX "articleComments_articleId_idx" ON public."articleComments" ("entityId", "commentId");
 
-CREATE TABLE public.lessonComments (
-	entityId uuid NOT NULL,
-	commentId uuid NOT NULL,
-	CONSTRAINT lessonComments_lessons_fk FOREIGN KEY (entityId) REFERENCES public.lessons(id),
-	CONSTRAINT lessonComments_comments_fk FOREIGN KEY (commentId) REFERENCES public.comments(id)
+CREATE TABLE public."lessonComments" (
+	"entityId" uuid NOT NULL,
+	"commentId" uuid NOT NULL,
+	CONSTRAINT "lessonComments_lessons_fk" FOREIGN KEY ("entityId") REFERENCES public.lessons("id"),
+	CONSTRAINT "lessonComments_comments_fk" FOREIGN KEY ("commentId") REFERENCES public.comments("id")
 );
-CREATE UNIQUE INDEX lessonComments_lessonId_idx ON public.lessonComments (entityId, commentId);
+CREATE UNIQUE INDEX lessonComments_lessonId_idx ON public."lessonComments" ("entityId", "commentId");
  */
