@@ -70,6 +70,10 @@
         }
     });
 
+    function lz(n) {
+        return n >= 0 && n < 10 ? ('0' + n) : n;
+    }
+
     var now = new Date();
     Vue.component('v-comment', {
         props: ['vComment', 'vType', 'vId', 'vUsers'],
@@ -86,8 +90,9 @@
             },
             readableCreationDate: function() {
                 var d = new Date(this.vComment.added);
+                var time = lz(d.getHours()) + ':' + lz(d.getMinutes());
                 return d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth() && d.getDate() === now.getDate()
-                    ? d.toLocaleTimeString() : d.toLocaleDateString() + ' ' + d.toLocaleTimeString();
+                    ? time : time + ' ' + lz(d.getDate()) + '.' + lz(1 + d.getMonth()) + '.' + d.getFullYear();
             },
             commenterAvatarUrl: function() {
                 var comment = this.vComment;
