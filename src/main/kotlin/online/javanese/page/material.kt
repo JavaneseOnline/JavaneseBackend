@@ -16,6 +16,9 @@ inline fun FlowContent.tabs(noinline block: DIV.() -> Unit) =
 inline fun FlowContent.cardWithTabs(noinline block: DIV.() -> Unit) =
         div("content card mdl-shadow--8dp mdl-tabs mdl-js-tabs mdl-js-ripple-effect container-margin-t", block)
 
+inline fun FlowContent.card(moreClasses: String? = null, noinline block: DIV.() -> Unit) =
+        div(classes("content card mdl-shadow--8dp container-margin-t", moreClasses), block)
+
 inline fun DIV.tabBar(noinline block: MENU.() -> Unit) =
         menu("mdl-tabs__tab-bar mdl-color-text--grey-600", block)
 
@@ -61,6 +64,26 @@ inline fun FlowContent.materialDialogActions(noinline block: DIV.() -> Unit) =
 
 // form components
 
+fun FlowContent.materialTextArea(
+        areaId: String?, areaName: String, labelBlock: LABEL.() -> Unit,
+        areaVId: String? = null, areaVModel: String? = null, areaOnInput: String? = null
+) {
+    div(classes = "mdl-textfield mdl-js-textfield") {
+        textArea(classes = "mdl-textfield__input") {
+            if (areaId != null) id = areaId else if (areaVId != null) attributes["v-bind:id"] = areaVId
+            if (areaVModel != null) attributes["v-model"] = areaVModel
+            if (areaOnInput != null) attributes["v-on:input"] = areaOnInput
+
+            name = areaName
+        }
+        label(classes = "mdl-textfield__label") {
+            if (areaId != null) htmlFor = areaId else if (areaVId != null) attributes["v-bind:for"] = areaVId
+
+            labelBlock()
+        }
+    }
+}
+
 fun FlowContent.radio(
         name: String? = null, value: String? = null,
         beginLabel: LABEL.() -> Unit = {}, input: INPUT.() -> Unit = {}, label: LABEL.() -> Unit
@@ -98,6 +121,17 @@ inline fun FlowOrInteractiveOrPhrasingContent
                 classes = classes("mdl-button mdl-button--raised mdl-js-button mdl-js-ripple-effect", moreClasses),
                 block = block
         )
+
+fun FlowOrInteractiveOrPhrasingContent
+        .materialIconButton(type: ButtonType, moreClasses: String? = null, icon: String, block: BUTTON.() -> Unit) =
+        button(type = type,
+                classes = classes("mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect", moreClasses)) {
+            block()
+
+            i(classes = "material-icons") {
+                +icon
+            }
+        }
 
 
 

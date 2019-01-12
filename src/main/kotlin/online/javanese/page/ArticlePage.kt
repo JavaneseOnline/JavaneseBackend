@@ -1,21 +1,28 @@
 package online.javanese.page
 
-import kotlinx.html.*
+import kotlinx.html.BODY
+import kotlinx.html.FlowContent
+import kotlinx.html.HEAD
+import kotlinx.html.article
+import kotlinx.html.h1
+import kotlinx.html.h4
+import kotlinx.html.id
+import kotlinx.html.script
+import kotlinx.html.section
+import kotlinx.html.unsafe
 import online.javanese.link.HtmlBlock
-import online.javanese.link.Link
 import online.javanese.locale.Language
 import online.javanese.model.Article
 import online.javanese.model.Meta
 
 
 class ArticlePage(
-        private val siteUrl: String,
-        private val articleLink: Link<Article.BasicInfo, *>,
         private val article: Article,
         private val language: Language,
         private val static: String,
         private val highlightScript: String,
-        private val beforeContent: HtmlBlock
+        private val beforeContent: HtmlBlock,
+        private val renderComments: FlowContent.(fragment: String) -> Unit
 ) : Layout.Page {
 
     override val meta: Meta get() = article.basicInfo.meta
@@ -27,9 +34,7 @@ class ArticlePage(
 
             beforeContent.render(this)
 
-            h1(classes = "content-padding-v") {
-                +article.heading
-            }
+            h1(classes = "content-padding-v") { +article.heading }
 
             vkOpenApiScript() // required also for comments
             // the script is invisible, so don't let it be :last-child, because this will eat indent
@@ -45,12 +50,12 @@ class ArticlePage(
 
         section(classes = "content container-margin-t") {
             h4 {
+                id = "comments_section"
                 +language.articleComments
             }
-            vkComments(
-                    siteUrl, articleLink.url(article.basicInfo), article.basicInfo.id.toString(),
-                    init = true, classes = "no-pad container-margin-t mdl-shadow--8dp"
-            )
+            card(moreClasses = "no-pad") {
+                renderComments("#comments_section")
+            }
         }
     }
 

@@ -18,7 +18,7 @@ class Config(
     val listenHost: String = props.getProperty("listenHost")
     val listenPort: Int = props.getProperty("listenPort").toInt()
     val siteHost: String = props.getProperty("siteHost")
-    val siteUrl: String = "http://$siteHost"
+    val siteUrl: String = "http://$siteHost".let { if (listenPort == 80) it else "$it:$listenPort" }
 
     // /usr/lib/jvm/java-9-oracle/bin/java
     val sandboxJavaLocation: String = props.getProperty("sandbox.javaLocation")
@@ -30,5 +30,8 @@ class Config(
     val adminRoute: String = props.getProperty("admin.route")
     val adminUsername: String = props.getProperty("admin.username")
     val adminPassword: String = props.getProperty("admin.password")
+
+    val gitHubClientId: String = props.getProperty("github.oauth.clientId")
+    val gitHubClientSecret: String = props.getProperty("github.oauth.clientSecret")
 
 }

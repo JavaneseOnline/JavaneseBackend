@@ -42,12 +42,13 @@ $('a').click(function() {
 
 // switch to tab if location.hash set
 function onHashSet() {
-    var s = window.location.hash
-    var u = document
-    var k = 'is-active'
-    if (s.length > 1) {
-        var t = u.querySelector('a[href="' + s + '"]');
-        var p = u.getElementById(s.substr(1));
+    var s = window.location.hash;
+    var u = document;
+    var k = 'is-active';
+    if (s.length > 1) { // todo: highlight referenced element?..
+        var target = s.split('/')[0];
+        var t = u.querySelector('a[href="' + target + '"]');
+        var p = u.getElementById(target.substr(1));
         if (t == null || p == null) {
             return;
         }

@@ -13,26 +13,33 @@ import online.javanese.link.Link
 class Routing private constructor(
         private val partsParamName: String,
         private val getRoutes: Array<GetRoute<*, *>>,
-        private val postRoutes: Array<PostRoute<*, *>>
+        private val postRoutes: Array<PostRoute<*, *>>,
+        private val deleteRoutes: Array<DeleteRoute<*, *>>
 ) {
 
     class Builder {
         private val getRoutes = ArrayList<GetRoute<*, *>>()
         private val postRoutes = ArrayList<PostRoute<*, *>>()
+        private val deleteRoutes = ArrayList<DeleteRoute<*, *>>()
 
-        infix fun <T, HANDLER> Link<T, HANDLER>.x(handler: HANDLER) {
+        infix fun <T, HANDLER> Link<T, HANDLER>.x(handler: HANDLER) { // TODO: maybe rename to invoke()?
             getRoutes.add(GetRoute(this, handler))
         }
 
-        infix fun <T, HANDLER> Action<T, HANDLER>.x(handler: HANDLER) {
+        infix fun <T, HANDLER> Action<T, HANDLER>.post(handler: HANDLER) {
             postRoutes.add(PostRoute(this, handler))
         }
 
+        infix fun <T, HANDLER> Action<T, HANDLER>.delete(handler: HANDLER) {
+            deleteRoutes.add(DeleteRoute(this, handler))
+        }
+
         fun build(partsParamName: String) =
-                Routing(partsParamName, getRoutes.toTypedArray(), postRoutes.toTypedArray())
+                Routing(partsParamName, getRoutes.toTypedArray(), postRoutes.toTypedArray(), deleteRoutes.toTypedArray())
     }
 
 
+    // todo: commonify
 
     suspend fun get(call: ApplicationCall) {
         val parts = call.parameters.getAll(partsParamName)!!
@@ -44,7 +51,14 @@ class Routing private constructor(
     suspend fun post(call: ApplicationCall) {
         val parts = call.parameters.getAll(partsParamName)!!
         if (!postRoutes.any { it.handle(call, parts) }) {
-            throw NotFoundException("No handler found for GET-request on URI ${call.request.uri}, URL parts are $parts")
+            throw NotFoundException("No handler found for POST-request on URI ${call.request.uri}, URL parts are $parts")
+        }
+    }
+
+    suspend fun delete(call: ApplicationCall) {
+        val parts = call.parameters.getAll(partsParamName)!!
+        if (!deleteRoutes.any { it.handle(call, parts) }) {
+            throw NotFoundException("No handler found for DELETE-request on URI ${call.request.uri}, URL parts are $parts")
         }
     }
 
@@ -68,5 +82,13 @@ private class PostRoute<T, HANDLER>(
         private val handler: HANDLER
 ) {
     suspend fun handle(call: ApplicationCall, urlParts: List<String>) =
-            action.handlePost(call, urlParts, handler)
+            action.handle(call, urlParts, handler)
+}
+
+private class DeleteRoute<T, HANDLER>(
+        private val action: Action<T, HANDLER>,
+        private val handler: HANDLER
+) {
+    suspend fun handle(call: ApplicationCall, urlParts: List<String>) =
+            action.handle(call, urlParts, handler)
 }

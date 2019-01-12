@@ -13,7 +13,7 @@ pre {
     padding-left: 10px;
     padding-right: 10px;
   }
-  .content > :first-child:not(.no-pad):not(.no-pad-top) {
+  .content > nav {
     padding-top: 10px;
   }
   .content > :last-child:not(.no-pad) {
@@ -47,6 +47,11 @@ pre {
   .container-margin-t {
     margin-top:20px;
   }
+
+  .comment {
+    margin-top: 8px;
+    margin-bottom: 8px
+  }
 }
 
 @media screen and (min-width:480px) {
@@ -57,7 +62,7 @@ pre {
     padding-left: 16px;
     padding-right: 16px;
   }
-  .content > :first-child:not(.no-pad):not(.no-pad-top) {
+  .content > nav {
     padding-top: 16px;
   }
   .content > :last-child:not(.no-pad) {
@@ -91,6 +96,10 @@ pre {
   .container-margin-t {
     margin-top:32px;
   }
+  .comment {
+    margin-top: 16px;
+    margin-bottom: 16px
+  }
 }
 
 @media screen and (max-width:839px){
@@ -106,10 +115,6 @@ pre {
     padding: 0 0 10vmin 0;
     /* smaller space around «up» FAB */
   }
-}
-
-main {
-    margin-top: 5vmin;
 }
 
 .m-r-0 {

@@ -9,7 +9,6 @@ import online.javanese.model.*
 
 
 class LessonPage(
-        private val siteUrl: String,
         private val lesson: Lesson,
         private val tasks: List<Task>,
         private val previousAndNext: Pair<Lesson.BasicInfo?, Lesson.BasicInfo?>,
@@ -19,7 +18,8 @@ class LessonPage(
         private val language: Language,
         private val sandboxScript: String,
         private val codeMirrorStylePath: String,
-        private val beforeContent: HtmlBlock
+        private val beforeContent: HtmlBlock,
+        private val renderComments: FlowContent.(fragment: String) -> Unit
 ) : Layout.Page {
 
     override val meta: Meta get() = lesson.meta
@@ -164,11 +164,9 @@ class LessonPage(
                 }
             }
 
-            tabPanelSection(id = "comments", active = !hasTasks, moreClasses = "no-pad content-padding-v") {
-                vkComments(
-                        siteUrl, lessonLink.url(lesson.basicInfo), lesson.basicInfo.id.toString(),
-                        init = false
-                )
+            tabPanelSection(id = "comments", active = !hasTasks, moreClasses = "no-pad content") {
+                renderComments("comments")
+                hr(classes = "no-pad")
             }
 
             prevNextPane(previousAndNext, lessonLink, language.previousLesson, language.nextLesson)
@@ -184,7 +182,7 @@ class LessonPage(
                 +msg.reportError
             }
 
-            reportTaskAction.renderForm(this, Unit) {
+            reportTaskAction.renderForm(this, Unit, classes = "ajax-form") {
                 attributes["data-success-message"] = msg.errorReportedSuccessfully
                 attributes["data-error-message"] = msg.errorNotReported
 
@@ -196,16 +194,7 @@ class LessonPage(
                         }
                     }
 
-                    div(classes = "mdl-textfield mdl-js-textfield") {
-                        textArea(classes = "mdl-textfield__input") {
-                            id = "sandbox_errorReport_text"
-                            name = "text"
-                        }
-                        label(classes = "mdl-textfield__label") {
-                            htmlFor = "sandbox_errorReport_text"
-                            +msg.errorDescription
-                        }
-                    }
+                    materialTextArea("sandbox_errorReport_text", "text", { +msg.errorDescription })
 
                     hiddenInput(name = "code")
                     hiddenInput(name = "taskId")

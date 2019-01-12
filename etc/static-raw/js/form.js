@@ -1,5 +1,5 @@
 $(function() {
-    $('form').submit(function(e) {
+    $('form.ajax-form').submit(function(e) {
         e.preventDefault();
 
         var $form = $(this);
@@ -9,14 +9,9 @@ $(function() {
         headers[$("meta[name='_csrf_header']").attr("content")] =
             $("meta[name='_csrf']").attr("content");
         
-        $.ajax({
-            type:   $form.attr('method'),
-            url:    $form.attr('action'),
-            data:   $form.serialize(),
-            headers: headers,
-            processData: false,
-            timeout: 10000,
-            success: function(/*data, status, xhr*/) {
+        ajax(
+            $form.attr('method'), $form.attr('action'), $form.serialize(), headers,
+            function(/*data , status, xhr*/) {
                 var successMessage = $form.data('successMessage');
                 if (successMessage) {
                     snackbar(successMessage);
@@ -32,7 +27,7 @@ $(function() {
                     $dialog[0].close();
                 }
             },
-            error: function(/*xhr, errorType, error*/) {
+            function(/*xhr, errorType, error*/) {
                 var errorMessage = $form.data('errorMessage');
                 if (errorMessage) {
                     snackbar(errorMessage);
@@ -43,7 +38,7 @@ $(function() {
                     window[errorCallback]();
                 }
             },
-            complete: function(xhr, status) {
+            function(xhr, status) {
                 var completeCallback = $form.data('completeCallback');
                 if (completeCallback) {
                     if (window[completeCallback](status === 'success')) {
@@ -53,9 +48,23 @@ $(function() {
                     $submit.removeAttr('disabled');
                 }
             }
-        });
+        );
     });
 });
+
+function ajax(method, action, data, headers, success, error, complete) {
+    $.ajax({
+        type: method,
+        url: action,
+        data: data,
+        headers: headers,
+        processData: false,
+        timeout: 10000,
+        success: success,
+        error: error,
+        complete: complete
+    });
+}
 
 function snackbar(message) {
     document.getElementById('toast-container').MaterialSnackbar.showSnackbar({

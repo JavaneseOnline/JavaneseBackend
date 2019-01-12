@@ -42,6 +42,9 @@ ul {
 ul ul {
   padding-left: 20px;
 }
+.comment>div ul {
+  padding-left: 8px;
+}
 
 p, li, nav, td, h1, h2, h3, h4, h5, h6 {
   /* don't change <a> style in <menu> */
@@ -114,18 +117,20 @@ textarea {
 }
 
 /** pretty lists */
-ul.pretty-list {
-    list-style: none;
-}
-ul.pretty-list li:before {
+ul.pretty-list, .comment>div ul {
+  list-style: none;
+
+  li:before {
     content:  "—";
     position: relative;
     left:     -5px;
+  }
 }
-
 
 @import "indents";
 @import "sandbox";
 @import "trace";
 
 @import "dialog-polyfill.min";
+
+@import "comments";

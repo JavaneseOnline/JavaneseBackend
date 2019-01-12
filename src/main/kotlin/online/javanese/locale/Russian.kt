@@ -39,6 +39,21 @@ object Russian : Language {
         override val description: String get() = "Статьи о Java и Kotlin, JVM и Android"
     }
 
+    override val comments: Language.Comments = object : Language.Comments {
+        override fun author(source: String, name: String): String =
+                "$source / $name"
+
+        override val removed: String get() = "Комментарий удалён."
+        override val removalFailed: String get() = "Не удалилось."
+
+        override val authPrompt: String get() = "Чтобы оставить комментарий, зайдите через "
+
+        override val addPlaceholderHtml: String get() = "Текст комментария<br/><i>_поддерживается markdown_</i>"
+        override val add: String get() = "Отправить"
+        override val addFailed: String get() = "Не отправилось."
+
+    }
+
     override val siteTitle: String get() = "Javanese"
     override val error: String get() = "Ошибка"
     override val httpErrors: Map<Int, String> = hashMapOf(

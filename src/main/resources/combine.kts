@@ -8,16 +8,16 @@ val raw = "/home/miha/IdeaProjects/javanese/etc/static-raw/"
 val prepared = "/home/miha/IdeaProjects/javanese/etc/static-prepared/"
 
 
-combineAndUglifyMain("vue_zepto_mdl_dialog_scroll_unfocus_tabs_form")
-combineAndUglifySandbox("highlight_trace_codemirror_clike_sandbox_switcher")
-scssAndCsso("css/main")
-scssAndCsso("sandbox/codemirror_ambiance")
+combineAndUglifyMain("vue_zepto_mdl_dialog_scroll_unfocus_tabs_form_marked_comments")
+//combineAndUglifySandbox("highlight_trace_codemirror_clike_sandbox_switcher")
+//scssAndCsso("css/main")
+//scssAndCsso("sandbox/codemirror_ambiance")
 
 
 fun combineAndUglifyMain(fileName: String) {
     jsFile(prepared + fileName).assertNotExists().create().writer().use {
-        appendFrom(URL("https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.13/vue.min.js"), it)
-        appendFrom(URL("http://zeptojs.com/zepto.min.js"), it)
+        appendFrom(URL("https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.22/vue.min.js"), it)
+        appendFrom(URL("https://zeptojs.com/zepto.min.js"), it)
         appendFrom(URL("https://raw.githubusercontent.com/madrobby/zepto/master/src/fx.js"), it)
         appendFrom(URL("https://raw.githubusercontent.com/madrobby/zepto/master/src/fx_methods.js"), it)
 
@@ -32,6 +32,9 @@ fun combineAndUglifyMain(fileName: String) {
         appendFrom(URL("https://raw.githubusercontent.com/GoogleChrome/dialog-polyfill/master/dialog-polyfill.js"), it)
         appendFrom(File(raw + "js/scroll_unfocus_tabs.js"), it)
         appendFrom(File(raw + "js/form.js"), it)
+
+        appendFrom(URL("https://unpkg.com/marked@0.6.0/lib/marked.js"), it)
+        appendFrom(File(raw + "js/comments.js"), it)
     }
     minifyJs(prepared + fileName)
 }

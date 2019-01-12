@@ -40,6 +40,20 @@ interface Language {
         val description: String
     }
 
+    val comments: Comments
+    interface Comments {
+        fun author(source: String, name: String): String
+
+        val removed: String
+        val removalFailed: String
+
+        val authPrompt: String
+
+        val addPlaceholderHtml: String
+        val add: String
+        val addFailed: String
+    }
+
     val siteTitle: String
     val error: String
     val httpErrors: Map<Int, String>

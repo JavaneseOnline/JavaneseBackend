@@ -7,37 +7,90 @@ import io.ktor.auth.OAuthServerSettings
 import io.ktor.auth.authenticate
 import io.ktor.auth.authentication
 import io.ktor.auth.digest
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.features.StatusPages
 import io.ktor.html.respondHtml
 import io.ktor.http.HttpStatusCode
+import io.ktor.http.URLBuilder
 import io.ktor.http.content.files
 import io.ktor.http.content.static
+import io.ktor.routing.delete
 import io.ktor.routing.get
 import io.ktor.routing.post
 import io.ktor.routing.route
 import io.ktor.routing.routing
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
+import io.ktor.util.KtorExperimentalAPI
 import io.ktor.util.pipeline.PipelineContext
 import io.ktor.websocket.WebSockets
 import io.ktor.websocket.webSocket
-import online.javanese.exception.NotFoundException
-import online.javanese.handler.*
+import online.javanese.exception.HttpException
+import online.javanese.handler.ArticleRssHandler
+import online.javanese.handler.ChapterHandler
+import online.javanese.handler.CourseHandler
+import online.javanese.handler.PageHandler
+import online.javanese.handler.RobotsHandler
+import online.javanese.handler.SandboxWebSocketHandler
+import online.javanese.handler.SitemapHandler
+import online.javanese.handler.SubmitCodeReviewCandidateHandler
+import online.javanese.handler.SubmitTaskErrorReportHandler
 import online.javanese.krud.installAdmin
 import online.javanese.krud.krudStaticResources
 import online.javanese.krud.stat.HitStat
 import online.javanese.krud.stat.InMemoryStatTable
 import online.javanese.krud.stat.UserAgent
 import online.javanese.krud.stat.installHitStatInterceptor
-import online.javanese.link.*
+import online.javanese.link.Action
+import online.javanese.link.BetweenBlocks
+import online.javanese.link.HierarchicalThreeSegmentDirAddress
+import online.javanese.link.IndexOrSingleSegmDirAddress
+import online.javanese.link.Link
+import online.javanese.link.SingleSegmentDirAddress
+import online.javanese.link.SingleSegmentFileAddress
+import online.javanese.link.TwoSegmentDirAddress
+import online.javanese.link.TwoSegmentFileAddress
+import online.javanese.link.invoke
+import online.javanese.link.navOf
 import online.javanese.locale.Russian
-import online.javanese.model.*
+import online.javanese.model.ArticleDao
+import online.javanese.model.BasicArticleInfoTable
+import online.javanese.model.BasicChapterInfoTable
+import online.javanese.model.BasicCourseInfoTable
+import online.javanese.model.BasicLessonInfoTable
+import online.javanese.model.BasicTaskInfoTable
+import online.javanese.model.Chapter
+import online.javanese.model.ChapterDao
+import online.javanese.model.CodeReviewCandidateDao
+import online.javanese.model.CodeReviewDao
+import online.javanese.model.CodeReviewTable
+import online.javanese.model.Course
+import online.javanese.model.CourseDao
+import online.javanese.model.Lesson
+import online.javanese.model.LessonDao
+import online.javanese.model.Page
 import online.javanese.model.Page.Magic.Tree
-import online.javanese.page.*
+import online.javanese.model.PageDao
+import online.javanese.model.PageTable
+import online.javanese.model.TaskDao
+import online.javanese.model.TaskErrorReportDao
+import online.javanese.page.ArticlePage
+import online.javanese.page.ArticlesPage
+import online.javanese.page.CardsPage
+import online.javanese.page.ChapterPage
+import online.javanese.page.CodeReviewDetailsPage
+import online.javanese.page.CodeReviewPage
+import online.javanese.page.CoursePage
+import online.javanese.page.ErrorPage
+import online.javanese.page.LessonPage
+import online.javanese.page.MainLayout
+import online.javanese.page.TreePage
 import java.io.FileInputStream
 import java.util.*
 
 
+@KtorExperimentalAPI // just suppress :)
 object JavaneseServer {
 
     /**
@@ -150,6 +203,7 @@ object JavaneseServer {
                 ),
                 CodeReviewTable.MetaTitle.property
         )
+        // fixme: `bySegments` must not ignore their arguments!
 
         val reportTaskAction =
                 Action(TwoSegmentFileAddress(Just("task"), Just("report")) { dir, file ->
@@ -160,14 +214,19 @@ object JavaneseServer {
 
         val codeReviewAction =
                 Action(TwoSegmentFileAddress(Just("codeReview"), Just("add")) { dir, file ->
-                    if (dir == "codeReview" && file == "add") Unit else null }
-                )
+                    if (dir == "codeReview" && file == "add") Unit else null
+                })
+
+        val sendCommentAction =
+                Action(SingleSegmentFileAddress(Just("comments")) { file ->
+                    if (file == "comments") Unit else null
+                })
 
 
-        val mainStyle = "main.min.css?4"
+        val mainStyle = "main.min.css?5"
         val codeMirrorStyle = "codemirror_ambiance.min.css"
 
-        val mainScript = "vue_zepto_mdl_dialog_scroll_unfocus_tabs_form.min.js?1"
+        val mainScript = "vue_zepto_mdl_dialog_scroll_unfocus_tabs_form_marked_comments.min.js"
         val sandboxScript = "highlight_trace_codemirror_clike_sandbox_switcher.min.js?2"
 
         val layout = MainLayout(config.exposedStaticDir, mainStyle, mainScript, language)
@@ -177,6 +236,16 @@ object JavaneseServer {
         val breadCrumbsToPage = betweenLinks.navOf(pageLink, pageLink)
         val breadCrumbsToCourse = betweenLinks.navOf(pageLink, pageLink, courseLink)
         val breadCrumbsToChapter = betweenLinks.navOf(pageLink, pageLink, courseLink, chapterLink)
+
+        // won't use CIO until https://github.com/ktorio/ktor/issues/853 resolved
+        val httpClient = HttpClient(OkHttp)
+        val commentsSources = commentsSources(config, httpClient)
+        val oauthUrl = { oauth: OAuthServerSettings? -> "/OAuth/${oauth?.name ?: "logout"}/" }
+        val comments = JavaneseComments(
+                session, config, commentsSources, httpClient, "OAuth",
+                "/OAuth/{provider}/", { parameters["provider"]!! },
+                oauthUrl, "commenter", sendCommentAction
+        )
 
         val routing = Routing("parts") {
             pageLink x PageHandler(
@@ -226,9 +295,10 @@ object JavaneseServer {
                 val article = articleDao.findById(basicArticle.id)!!
                 val index = pageDao.findByMagic(Page.Magic.Index)!!
                 val articles = pageDao.findByMagic(Page.Magic.Articles)!!
+                val renderComments = comments(language.comments, this, comments, commentsSources, forArticle, article)
                 respondHtml { layout(this, ArticlePage(
-                        config.siteUrl, articleLink, article, language, config.exposedStaticDir,
-                        highlightScript = sandboxScript, beforeContent = breadCrumbsToPage(index, articles)
+                        article, language, config.exposedStaticDir, highlightScript = sandboxScript, beforeContent = breadCrumbsToPage(index, articles),
+                        renderComments = renderComments
                 )) }
             }
 
@@ -251,16 +321,36 @@ object JavaneseServer {
                 }
             }
 
-            lessonLink x LessonHandler(
-                    courseDao, chapterDao, lessonDao, taskDao, pageDao, layout
-            ) { idx, tr, crs, chp, l, lt, prNx -> LessonPage(
-                    config.siteUrl, l, lt, prNx, config.exposedStaticDir, lessonLink, reportTaskAction, language, sandboxScript,
-                    codeMirrorStyle, breadCrumbsToChapter(idx, tr, crs, chp)
-            ) }
+            lessonLink x { basicCourse: Course.BasicInfo, basicChapter: Chapter.BasicInfo, basicLesson: Lesson.BasicInfo ->
 
-            reportTaskAction x SubmitTaskErrorReportHandler(taskErrorReportDao)
+                val course = courseDao.findBasicById(basicCourse.id)!!
+                val chapter = chapterDao.findBasicById(basicChapter.id)!!
+                val lesson = lessonDao.findById(basicLesson.id)!!
 
-            codeReviewAction x SubmitCodeReviewCandidateHandler(codeReviewCandidateDao)
+                val index = pageDao.findByMagic(Page.Magic.Index)!!
+                val treePg = pageDao.findByMagic(Page.Magic.Courses)!!
+
+                val tasks = taskDao.findForLessonSorted(basicLesson.id)
+                val prevNext = lessonDao.findPreviousAndNext(lesson)
+
+                val renderComments = comments(language.comments, this, comments, commentsSources, forLesson, lesson)
+
+                respondHtml {
+                    val page = LessonPage(
+                            lesson, tasks, prevNext, config.exposedStaticDir, lessonLink,
+                            reportTaskAction, language, sandboxScript, codeMirrorStyle,
+                            breadCrumbsToChapter(index, treePg, course, chapter),
+                            renderComments
+                    )
+                    layout(this, page)
+                }
+
+            }
+
+            reportTaskAction post SubmitTaskErrorReportHandler(taskErrorReportDao)
+            codeReviewAction post SubmitCodeReviewCandidateHandler(codeReviewCandidateDao)
+            sendCommentAction post comments.sendHandler()
+            sendCommentAction delete comments.deleteHandler()
         }
 
         val errorHandler: suspend (ApplicationCall) -> Unit = { call ->
@@ -287,12 +377,15 @@ object JavaneseServer {
                 SandboxWebSocketHandler(config, taskDao)
 
         val noUa = UserAgent("", "", "")
-        val stat = HitStat(InMemoryStatTable(Just(noUa)))
+        val stat = HitStat(InMemoryStatTable(Just(noUa))) // TODO: use ua-parser here!
 
         val serveResourcesAs = (config.listenHost + ":" + config.listenPort).let { hostAndPort ->
             val idx = config.exposedStaticDir.indexOf(hostAndPort)
 
-            if (idx < 0) null else config.exposedStaticDir.substring(idx + hostAndPort.length)
+            if (idx < 0 && config.listenHost != "127.0.0.1") null
+            else URLBuilder(
+                    config.exposedStaticDir.let { if (it.startsWith("//")) "http:$it" else it }
+            ).build().encodedPath
         }
 
         embeddedServer(Netty, port = config.listenPort, host = config.listenHost, configure = {
@@ -303,26 +396,41 @@ object JavaneseServer {
             }
         }) {
             install(StatusPages) {
-                val errHandler: suspend PipelineContext<*, ApplicationCall>.(Any?) -> Unit = {
-                    call.response.status(HttpStatusCode.NotFound)
+                val errHandler: suspend PipelineContext<*, ApplicationCall>.(Any?) -> Unit = { ex ->
+                    call.response.status((ex as? HttpException)?.status ?: HttpStatusCode.NotFound)
                     errorHandler(call)
                 }
-                exception<NotFoundException>(errHandler)
+                exception<HttpException>(errHandler)
                 status(HttpStatusCode.NotFound, handler = errHandler)
             }
 
             install(WebSockets)
+            comments.configureSession(this)
+
+            authentication {
+                digest(name = "admin") {
+                    realm = "Admin"
+                    userNameRealmPasswordDigestProvider = { userName, realm ->
+                        when (userName) {
+                            config.adminUsername -> {
+                                digester.reset()
+                                digester.update("$userName:$realm:${config.adminPassword}".toByteArray())
+                                digester.digest()
+                            }
+                            else -> null
+                        }
+                    }
+                }
+                comments.configureAuth(this)
+            }
 
             routing {
 
                 installHitStatInterceptor(stat)
 
-                get("/{parts...}/") {
-                    routing.get(call)
-                }
-                post("/{parts...}/") {
-                    routing.post(call)
-                }
+                get("/{parts...}/") { routing.get(call) }
+                post("/{parts...}/") { routing.post(call) }
+                delete("/{parts...}/") { routing.delete(call) }
 
                 get("/articles.rss") { articleRssHandler(call) }
 
@@ -332,22 +440,6 @@ object JavaneseServer {
                 webSocket(path = "/sandbox/ws", handler = sandboxWebSocketHandler)
 
                 route("/${config.adminRoute}/") {
-                    authentication {
-                        digest(name = "admin") {
-                            realm = "Admin"
-                            userNameRealmPasswordDigestProvider = { userName, realm ->
-                                when (userName) {
-                                    config.adminUsername -> {
-                                        digester.reset()
-                                        digester.update("$userName:$realm:${config.adminPassword}".toByteArray())
-                                        digester.digest()
-                                    }
-                                    else -> null
-                                }
-                            }
-                        }
-                    }
-
                     authenticate("admin") {
                         installAdmin(JavaneseAdminPanel(
                                 config.adminRoute, session,
@@ -357,6 +449,8 @@ object JavaneseServer {
                         ))
                     }
                 }
+
+                comments.authEndpoint(this)
 
                 serveResourcesAs?.let {
                     println("Serving static resources from a directory is intended for debug only. Exposing as $it")

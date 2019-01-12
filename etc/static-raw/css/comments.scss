@@ -1,0 +1,22 @@
+
+.comment>div>:last-child { /* last <p> in comment */
+  margin-bottom: 0px
+}
+
+.comment {
+  p {
+    margin: 0 0 8px; /* material: 0 0 16 */
+  }
+  li a[href].dateTimeLink {
+    color: rgba(0, 0, 0, .6);
+    font-size: .8em;
+    text-decoration: none;
+  }
+  li {
+    a[href].dateTimeLink:focus,
+    a[href].dateTimeLink:hover {
+      background: transparent;
+      text-decoration: underline;
+    }
+  }
+}
