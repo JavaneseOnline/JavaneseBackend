@@ -84,8 +84,9 @@ form label {
 textarea {
   display: block;
   width: 100%;
-  min-height: 10ex;
+  min-height: 4ex;
   resize: vertical;
+  font-family: inherit;
 }
 
 /** screenshots from IDEA */
