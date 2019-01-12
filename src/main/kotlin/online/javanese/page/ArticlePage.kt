@@ -36,16 +36,13 @@ class ArticlePage(
 
             h1(classes = "content-padding-v") { +article.heading }
 
-            vkOpenApiScript() // required also for comments
-            // the script is invisible, so don't let it be :last-child, because this will eat indent
-
             article {
                 unsafe {
                     +article.bodyMarkup
                 }
             }
 
-            vkAndTgPosts(article.vkPostInfo, article.tgPost, false)
+            vkAndTgPosts(article.vkPostInfo, article.tgPost, true)
         }
 
         section(classes = "content container-margin-t") {
