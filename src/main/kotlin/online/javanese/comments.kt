@@ -119,134 +119,134 @@ fun <E> comments(
             generator.close()
 
             +output.toString()
-        }
 
-        script(type = "x-template") {
-            attributes["id"] = "commentsTemplate"
+            script(type = "x-template") {
+                attributes["id"] = "commentsTemplate"
 
-            div {
-                ul {
-                    unsafe { +"""<v-comment
+                div(classes = "comments") {
+                    ul {
+                        unsafe { +"""<v-comment
                         | v-for="comment in comments" :key="comment.id"
                         | v-bind:v-comment="comment" v-bind:v-type="type" v-bind:v-id="id" v-bind:v-users="users"
                         | v-on:comment-removed="onCommentRemoved" />""".trimMargin()
+                        }
                     }
-                }
 
-                // add a top-level comment
-                unsafe { +"""<v-comments-form v-bind:v-type="type" v-bind:v-id="id" v-on:comment-added="onCommentAdded" />""" }
+                    // add a top-level comment
+                    unsafe { +"""<v-comments-form v-bind:v-type="type" v-bind:v-id="id" v-on:comment-added="onCommentAdded" />""" }
+                }
             }
-        }
 
-        script(type = "x-template") {
-            attributes["id"] = "commentTemplate"
+            script(type = "x-template") {
+                attributes["id"] = "commentTemplate"
 
-            LI(mapOf("class" to "comment"), consumer).visit {
-                attributes["v-bind:id"] = "'comments/' + vComment.id" // see a[href] below; tabs-related code is in scroll_unfocus_tabs.js
+                LI(mapOf("class" to "comment"), consumer).visit {
+                    attributes["v-bind:id"] = "'comments/' + vComment.id" // see a[href] below; tabs-related code is in scroll_unfocus_tabs.js
 
-                address {
-                    attributes["v-if"] = "!vComment.removed"
+                    address {
+                        attributes["v-if"] = "!vComment.removed"
 
-                    /*img {
-                        attributes["v-if"] = "commenterAvatarUrl != null"
-                        attributes["v-bind:src"] = "commenterAvatarUrl"
-                        width = "36"
-                        height = "36"
-                    }*/
+                        /*img {
+                            attributes["v-if"] = "commenterAvatarUrl != null"
+                            attributes["v-bind:src"] = "commenterAvatarUrl"
+                            width = "36"
+                            height = "36"
+                        }*/
 
-                    +lang.author("{{vComment.authorSrc}}", "{{vComment.authorId}}") // todo: link
-                }
-                div {
-                    attributes["v-if"] = "!vComment.removed"
-                    attributes["v-html"] = "compiledCommentText"
-                }
-                div { small {
-                    attributes["v-if"] = "vComment.removed"
-                    +lang.removed
-                } }
+                        +lang.author("{{vComment.authorSrc}}", "{{vComment.authorId}}") // todo: link
+                    }
+                    div {
+                        attributes["v-if"] = "!vComment.removed"
+                        attributes["v-html"] = "compiledCommentText"
+                    }
+                    div { small {
+                        attributes["v-if"] = "vComment.removed"
+                        +lang.removed
+                    } }
 
-                a(classes = "dateTimeLink") {
-                    attributes["v-bind:href"] = "'#comments/' + vComment.id"
-                    +"{{readableCreationDate}}"
-                }
+                    a(classes = "dateTimeLink") {
+                        attributes["v-bind:href"] = "'#comments/' + vComment.id"
+                        +"{{readableCreationDate}}"
+                    }
 
-                materialIconButton(ButtonType.button, icon = "reply") {
-                    attributes["v-on:click"] = "reply"
-                    attributes["v-bind:class"] = "{ 'mdl-button--primary': answering }"
-                }
-                materialIconButton(ButtonType.button, icon = "delete_forever") {
-                    attributes["v-on:click"] = "remove"
-                    attributes["v-if"] = "vComment.canRemove"
-                    attributes["v-bind:disabled"] = "removing"
-                    attributes["data-error-message"] = lang.removalFailed
-                    formAction = comments.commentAction.url(Unit)
-                }
+                    materialIconButton(ButtonType.button, icon = "reply") {
+                        attributes["v-on:click"] = "reply"
+                        attributes["v-bind:class"] = "{ 'mdl-button--primary': answering }"
+                    }
+                    materialIconButton(ButtonType.button, icon = "delete_forever") {
+                        attributes["v-on:click"] = "remove"
+                        attributes["v-if"] = "vComment.canRemove"
+                        attributes["v-bind:disabled"] = "removing"
+                        attributes["data-error-message"] = lang.removalFailed
+                        formAction = comments.commentAction.url(Unit)
+                    }
 
-                ul {
-                    unsafe { +"""<v-comment v-for="comment in vComment.answers" :key="comment.id"
+                    ul {
+                        unsafe { +"""<v-comment v-for="comment in vComment.answers" :key="comment.id"
                         | v-bind:v-comment="comment" v-bind:v-type="vType" v-bind:v-id="vId" v-bind:v-users="vUsers"
                         | v-on:comment-removed="onCommentRemoved" />""".trimMargin() }
 
-                    HTMLTag("transition", consumer, mapOf(), null, false, false).visit {
-                        attributes["v-on:enter"] = "enter"
+                        HTMLTag("transition", consumer, mapOf(), null, false, false).visit {
+                            attributes["v-on:enter"] = "enter"
 
-                        LI(mapOf(), consumer).visit {
-                            attributes["v-if"] = "answering"
+                            LI(mapOf(), consumer).visit {
+                                attributes["v-if"] = "answering"
 
-                            unsafe {
-                                +"""<v-comments-form v-bind:v-type="vType" v-bind:v-id="vId" v-bind:v-parent-id="vComment.id"
+                                unsafe {
+                                    +"""<v-comments-form v-bind:v-type="vType" v-bind:v-id="vId" v-bind:v-parent-id="vComment.id"
                                     | v-on:comment-added="onCommentAdded" />""".trimMargin()
+                                }
                             }
                         }
                     }
                 }
             }
-        }
 
-        script(type = "x-template") {
-            attributes["id"] = "commentsFormTemplate"
+            script(type = "x-template") {
+                attributes["id"] = "commentsFormTemplate"
 
-            if (current === null) {
-                p(classes = "answer") {
-                    +lang.authPrompt
-                    sources.values.forEach { source ->
-                        source.oauth?.let { oauth ->
-                            a(href = comments.oauthLink(oauth, call.request.uri.withFragment(fragment)), titleAndText = source.name)
-                        }
-                    }
-                    +"."
-                }
-            } else {
-                comments.commentAction.renderForm(this, Unit, classes = "answer") {
-                    attributes["data-error-message"] = lang.addFailed
-                    attributes["v-on:submit"] = "send"
-
-                    materialTextArea(null, "text", { unsafe { +lang.addPlaceholderHtml } },
-                            "'commentText-' + vType + '-' + vId + '-' + vParentId", "text",
-                            // this helps getting events instantaneously on mobile (tested in FF Nightly and Beta on Android):
-                            areaOnInput = "text=\$event.target.value"
-                    )
-
-                    div(classes = "mdl-grid mdl-grid--no-spacing") {
-
-                        p(classes = "mdl-cell mdl-cell--1-col-desktop mdl-cell--1-col-tablet mdl-cell--1-col-phone") {
-                            img(src = current.avatarUrl) {
-                                width = "36"
-                                height = "36"
+                if (current === null) {
+                    p(classes = "answer") {
+                        +lang.authPrompt
+                        sources.values.forEach { source ->
+                            source.oauth?.let { oauth ->
+                                a(href = comments.oauthLink(oauth, call.request.uri.withFragment(fragment)), titleAndText = source.name)
                             }
                         }
+                        +"."
+                    }
+                } else {
+                    comments.commentAction.renderForm(this, Unit, classes = "answer") {
+                        attributes["data-error-message"] = lang.addFailed
+                        attributes["v-on:submit"] = "send"
 
-                        p(classes = "mdl-cell mdl-cell--5-col-desktop mdl-cell--3-col-tablet mdl-cell--1-col-phone") {
-                            small { +current.displayName }
-                            br()
-                            a(href = comments.logoutLink(call.request.uri.withFragment(fragment)), titleAndText = "выйти")
-                        }
+                        materialTextArea(null, "text", { unsafe { +lang.addPlaceholderHtml } },
+                                "'commentText-' + vType + '-' + vId + '-' + vParentId", "text",
+                                // this helps getting events instantaneously on mobile (tested in FF Nightly and Beta on Android):
+                                areaOnInput = "text=\$event.target.value"
+                        )
 
-                        p(classes = "mdl-cell mdl-cell--6-col-desktop mdl-cell--4-col-tablet mdl-cell--2-col-phone mdl-typography--text-right") {
-                            colouredRaisedMaterialButton(ButtonType.submit) {
-                                attributes["v-bind:disabled"] = "sending || empty"
+                        div(classes = "mdl-grid mdl-grid--no-spacing") {
 
-                                +lang.add
+                            p(classes = "mdl-cell mdl-cell--1-col-desktop mdl-cell--1-col-tablet mdl-cell--1-col-phone") {
+                                img(src = current.avatarUrl) {
+                                    width = "36"
+                                    height = "36"
+                                }
+                            }
+
+                            p(classes = "mdl-cell mdl-cell--5-col-desktop mdl-cell--3-col-tablet mdl-cell--1-col-phone") {
+                                small { +current.displayName }
+                                br()
+                                a(href = comments.logoutLink(call.request.uri.withFragment(fragment)), titleAndText = "выйти")
+                            }
+
+                            p(classes = "mdl-cell mdl-cell--6-col-desktop mdl-cell--4-col-tablet mdl-cell--2-col-phone mdl-typography--text-right") {
+                                colouredRaisedMaterialButton(ButtonType.submit) {
+                                    attributes["v-bind:disabled"] = "sending || empty"
+
+                                    +lang.add
+                                }
                             }
                         }
                     }
