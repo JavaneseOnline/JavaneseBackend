@@ -27,7 +27,9 @@ class CodeReviewDetailsPage(
             }
 
             blockQuote {
-                +codeReview.problemStatement
+                p { // markdown generates '<blockquote><p>test</...', do the same
+                    +codeReview.problemStatement
+                }
             }
             p(classes = "mdl-typography--text-right") {
                 style = "margin-top: -12px; margin: 0 40px"

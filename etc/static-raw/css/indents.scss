@@ -8,7 +8,7 @@ pre {
 @media screen and (max-width:479px) {
   /** phone */
   .no-pad.mdl-tabs > .mdl-tabs__panel,
-  .content > :not(.no-pad):not(pre):not(.trace):not(article),
+  .content > :not(.no-pad):not(pre):not(.trace):not(article):not(blockquote),
   .content > article > :not(.no-pad):not(pre):not(.trace) {
     padding-left: 10px;
     padding-right: 10px;
@@ -57,7 +57,7 @@ pre {
 @media screen and (min-width:480px) {
   /** tablet and desktop */
   .no-pad.mdl-tabs > .mdl-tabs__panel,
-  .content > :not(.no-pad):not(pre):not(.trace):not(article),
+  .content > :not(.no-pad):not(pre):not(.trace):not(article):not(blockquote),
   .content > article > :not(.no-pad):not(pre):not(.trace) {
     padding-left: 16px;
     padding-right: 16px;
