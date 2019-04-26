@@ -65,6 +65,7 @@ p{font-size:16px;letter-spacing:0;margin:0 0 16px}
 blockquote{position:relative;font-size:16px;font-weight:300;font-style:italic;line-height:1.35;letter-spacing:.08em}
 blockquote>p:first-child:before{position:absolute;left:-.5em;content:'“'}
 blockquote>p:last-child:after{content:'”';margin-left:-.05em}
+blockquote>p{white-space:pre-wrap}
 mark{background-color:#f4ff81}
 dt{font-weight:700}
 address{font-size:.9em;line-height:1;font-style:normal}
