@@ -87,7 +87,27 @@ object Russian : Language {
 
     override val articleComments: String get() = "Комментарии к статье"
 
-    override val readCodeReviews: String get() = "Читать"
-    override val submitCodeReview: String get() = "Разберите мой код!"
+    override val codeReviews: Language.CodeReviews = object : Language.CodeReviews {
+        override val readTab: String get() = "Читать"
+        override val submitTab: String get() = "Разберите мой код!"
+        override val submissionError: String get() = "Произошла ошибка"
+
+        override val nameLabel: String get() = "Имя или творческий псевдоним"
+        override val nameExplanation: String get() = "Будет видно всем читателям"
+
+        override val textLabel: String get() = "Вопросы или проблемы, возникшие в процессе написания кода"
+
+        override val codeLabel: String get() = "Проблемный фрагмент кода на Java или Kotlin. Или ссылка на Gist или GitHub."
+        override val codeExplanation: String get() = "Для наиболее подробного разбора ограничьтесь парой тысяч строк."
+
+        override val contactLabel: String get() = "E-mail или Telegram"
+        override val contactExplanation: String get() = "Для уведомления о публикации ревью"
+
+        override val permissionLabel: String get() = "У меня есть право на публикацию этого кода"
+        override val warning: String get() = "Учтите, что ваш Gist или репозиторий будет форкнут."
+
+        override val submit: String get() = "Отправить"
+        override val submitted: String get() = "Заявка отправлена."
+    }
 
 }

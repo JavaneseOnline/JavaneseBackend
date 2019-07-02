@@ -78,7 +78,28 @@ interface Language {
 
     val articleComments: String
 
-    val readCodeReviews: String
-    val submitCodeReview: String
+    val codeReviews: CodeReviews
+    interface CodeReviews {
+        val readTab: String
+        val submitTab: String
+        val submissionError: String
+
+        val nameLabel: String
+        val nameExplanation: String
+
+        val textLabel: String
+
+        val codeLabel: String
+        val codeExplanation: String
+
+        val contactLabel: String
+        val contactExplanation: String
+
+        val permissionLabel: String
+        val warning: String
+
+        val submit: String
+        val submitted: String
+    }
 
 }

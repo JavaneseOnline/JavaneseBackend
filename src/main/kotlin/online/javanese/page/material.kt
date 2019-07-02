@@ -66,9 +66,10 @@ inline fun FlowContent.materialDialogActions(noinline block: DIV.() -> Unit) =
 
 fun FlowContent.materialTextArea(
         areaId: String?, areaName: String, labelBlock: LABEL.() -> Unit,
-        areaVId: String? = null, areaVModel: String? = null, areaOnInput: String? = null
+        areaVId: String? = null, areaVModel: String? = null, areaOnInput: String? = null,
+        strangePlace: DIV.() -> Unit = { }
 ) {
-    div(classes = "mdl-textfield mdl-js-textfield") {
+    div(classes = "mdl-textfield mdl-js-textfield mdl-textfield--floating-label") {
         textArea(classes = "mdl-textfield__input") {
             if (areaId != null) id = areaId else if (areaVId != null) attributes["v-bind:id"] = areaVId
             if (areaVModel != null) attributes["v-model"] = areaVModel
@@ -76,11 +77,14 @@ fun FlowContent.materialTextArea(
 
             name = areaName
         }
+
         label(classes = "mdl-textfield__label") {
             if (areaId != null) htmlFor = areaId else if (areaVId != null) attributes["v-bind:for"] = areaVId
 
             labelBlock()
         }
+
+        strangePlace()
     }
 }
 
@@ -132,6 +136,40 @@ fun FlowOrInteractiveOrPhrasingContent
                 +icon
             }
         }
+
+fun FlowContent.materialInput(
+        inputId: String, inputName: String,
+        inputBlock: INPUT.() -> Unit, labelBlock: LABEL.() -> Unit, strangePlace: DIV.() -> Unit,
+        vModel: String? = null
+) {
+    div(classes="mdl-textfield mdl-js-textfield mdl-textfield--floating-label") {
+        input(type = InputType.text, name = inputName, classes = "mdl-textfield__input") {
+            id = inputId
+            if (vModel != null) attributes["v-model"] = vModel
+            inputBlock()
+        }
+
+        label(classes = "mdl-textfield__label") {
+            htmlFor = inputId
+            labelBlock()
+        }
+
+        strangePlace()
+    }
+}
+
+fun FlowContent.materialCheckBox(inputId: String, inputVModel: String? = null, label: SPAN.() -> Unit) {
+    label(classes = "mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect") {
+        htmlFor = inputId
+
+        input(type = InputType.checkBox, classes = "mdl-checkbox__input") {
+            id = inputId
+            if (inputVModel != null) attributes["v-model"] = inputVModel
+        }
+
+        span(classes = "mdl-checkbox__label", block = label)
+    }
+}
 
 
 

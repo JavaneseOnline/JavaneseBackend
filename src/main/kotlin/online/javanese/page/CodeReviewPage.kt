@@ -13,13 +13,15 @@ class CodeReviewPage(
         private val model: Page,
         private val reviews: List<CodeReview>,
         private val codeReviewLink: Link<CodeReview, *>,
-        private val language: Language,
+        private val language: Language.CodeReviews,
         private val beforeContent: HtmlBlock
 ) : Layout.Page {
 
     override val meta: Meta get() = model.meta
 
-    override fun additionalHeadMarkup(head: HEAD) = Unit
+    override fun additionalHeadMarkup(head: HEAD) = with(head) {
+        unsafe { +model.headMarkup }
+    }
 
     override fun bodyMarkup(body: BODY) = with(body) {
         contentCardMain {
@@ -29,8 +31,8 @@ class CodeReviewPage(
             div(classes = "no-pad mdl-tabs mdl-js-tabs mdl-js-ripple-effect content-padding-b") {
 
                 menu(classes = "mdl-tabs__tab-bar mdl-color-text--grey-600") {
-                    a(href = "#reviews", classes = "mdl-tabs__tab is-active") { +language.readCodeReviews }
-                    a(href = "#submit", classes = "mdl-tabs__tab") { +language.submitCodeReview }
+                    a(href = "#reviews", classes = "mdl-tabs__tab is-active") { +language.readTab }
+                    a(href = "#submit", classes = "mdl-tabs__tab") { +language.submitTab }
                 }
 
                 nav(classes = "mdl-tabs__panel is-active") {
@@ -52,8 +54,73 @@ class CodeReviewPage(
                         +model.heading
                     }
 
-                    unsafe {
-                        +model.bodyMarkup
+                    div {
+                        id = "vue-form"
+
+                        form(method = FormMethod.post, action = "/codeReview/add", classes = "ajax-form") {
+                            attributes["v-on:submit"] = "submit"
+                            attributes["data-complete-callback"] = "formSent"
+                            attributes["data-error-message"] = language.submissionError
+                            attributes["v-if"] = "state != 'SENT'"
+
+                            unsafe {
+                                +model.bodyMarkup
+                            }
+
+                            materialInput(
+                                    inputId = "field_name", inputName = "name",
+                                    inputBlock = { attributes["maxlength"] = "256" },
+                                    labelBlock = { +language.nameLabel },
+                                    strangePlace = { small { +language.nameExplanation } }
+                            )
+
+                            materialTextArea(
+                                    areaId = "field_text", areaName = "text", areaVModel = "text",
+                                    labelBlock = { +language.textLabel }
+                            )
+
+                            materialTextArea(areaId = "field_code", areaName = "code", areaVModel = "code",
+                                    labelBlock = { +language.codeLabel },
+                                    strangePlace = { small { +language.codeExplanation } }
+                            )
+
+                            materialInput(
+                                    inputId = "field_email", inputName = "email", inputBlock = { attributes["maxlength"] = "256" },
+                                    labelBlock = { +language.contactLabel },
+                                    strangePlace = { small { +language.contactExplanation } }
+                            )
+
+                            div {
+                                materialCheckBox("list-checkbox-1", "permission") {
+                                    +language.permissionLabel
+                                }
+
+                                br()
+                                p { +language.warning }
+                            }
+
+                            div {
+                                materialButton(ButtonType.submit, "mdl-button--raised mdl-button--colored") {
+                                    name = "submit"
+                                    attributes["v-bind:disabled"] = "state === 'INVALID'"
+
+                                    +language.submit
+                                }
+
+                                // div(classes = "mdl-spinner mdl-js-spinner is-active") does not work within tabs
+                                div(classes = "mdl-progress mdl-js-progress mdl-progress__indeterminate") {
+                                    attributes["v-show"] = "state === 'SENDING'"
+                                }
+
+                            }
+
+                        }
+
+                        div(classes = "content-padding-v") {
+                            attributes["v-if"] = "state === 'SENT'"
+                            +language.submitted
+                        }
+
                     }
                 }
             }
@@ -61,6 +128,55 @@ class CodeReviewPage(
     }
 
     override fun scripts(body: BODY) = with(body) {
+        script { unsafe {
+            val watch = '$' + "watch"
+            +"""'use strict';
+var FormState =
+    Object.freeze({INVALID:"INVALID", VALID: "VALID", SENDING:"SENDING", SENT:"SENT"})
+var vueForm = new Vue({
+  el: '#vue-form',
+  data: {
+    state: FormState.INVALID,
+    watches: null,
+    text: '',
+    code: '',
+    permission: false
+  },
+  created: function() {
+    this.subscribe(true);
+  },
+  methods: {
+    somethingChanged: function(to, from) {
+      this.state = this.text && this.code && this.permission
+        ? FormState.VALID : FormState.INVALID;
+    },
+    submit: function() {
+      this.subscribe(false);
+      this.state = FormState.SENDING;
+    },
+    subscribe(flag) {
+      if (flag) {
+        this.watches = [
+          this.$watch('text', this.somethingChanged),
+          this.$watch('code', this.somethingChanged),
+          this.$watch('permission', this.somethingChanged)
+        ];
+      } else {
+        this.watches.forEach(function(unwatch) { unwatch(); });
+        this.watches = null;
+      }
+    }
+  }
+});
+function formSent(success) { // <form data-complete-callback="formSent"
+  if (success) {
+    vueForm.state = FormState.SENT;
+  } else {
+    vueForm.subscribe(true);
+    vueForm.somethingChanged(); // update state depending on form values
+  }
+  return !success; // don't enable submit button if successful
+}""" } }
         unsafe {
             +model.beforeBodyEndMarkup
         }

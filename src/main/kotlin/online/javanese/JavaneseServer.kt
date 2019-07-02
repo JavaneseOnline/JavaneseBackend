@@ -277,7 +277,7 @@ object JavaneseServer {
                         ArticlesPage(ar, articles, config.exposedStaticDir, articleLink, breadCrumbsToIndex(idx))
                     },
                     codeReview = { idx, cr ->
-                        CodeReviewPage(cr, codeReviewDao.findAll(), codeReviewLink, language, breadCrumbsToIndex(idx))
+                        CodeReviewPage(cr, codeReviewDao.findAll(), codeReviewLink, language.codeReviews, breadCrumbsToIndex(idx))
                     }
             )
 
