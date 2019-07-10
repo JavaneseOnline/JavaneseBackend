@@ -6,6 +6,7 @@ import online.javanese.social.UserSessions
 import online.javanese.social.User
 import online.javanese.link.HtmlBlock
 import online.javanese.link.Link
+import online.javanese.link.withFragment
 import online.javanese.locale.Language
 import online.javanese.model.CodeReview
 import online.javanese.model.Meta
@@ -64,7 +65,7 @@ class CodeReviewPage(
                     val requestLogin = currentUser === null
                     if (requestLogin) {
                         p {
-                            with(userSessions) { authPrompt(language.authPrompt, redirectUri) }
+                            with(userSessions) { authPrompt(language.authPrompt, redirectUri.withFragment("submit")) }
                         }
                     } else {
                         codeReviewForm()
