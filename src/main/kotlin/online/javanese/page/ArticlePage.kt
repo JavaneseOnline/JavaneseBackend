@@ -51,7 +51,7 @@ class ArticlePage(
                 +language.articleComments
             }
             card(moreClasses = "no-pad") {
-                renderComments("#comments_section")
+                renderComments("comments_section")
             }
         }
     }

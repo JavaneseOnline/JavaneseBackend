@@ -13,7 +13,8 @@ class CodeReviewCandidate(
         val senderName: String,
         val problemStatement: String,
         val code: String,
-        val senderContact: String
+        val senderContact: String,
+        val senderAuth: String?
 )
 
 object CodeReviewCandidateTable : Table<CodeReviewCandidate, Uuid>("codeReviewCandidates") {
@@ -23,7 +24,7 @@ object CodeReviewCandidateTable : Table<CodeReviewCandidate, Uuid>("codeReviewCa
     val ProblemStatement by col(CodeReviewCandidate::problemStatement, name = "problemStatement")
     val Code by col(CodeReviewCandidate::code, name = "code")
     val SenderContact by col(CodeReviewCandidate::senderContact, name = "senderContact")
-
+    val SenderAuth by col(CodeReviewCandidate::senderAuth, name = "senderAuth")
 
     override fun idColumns(id: Uuid): Set<Pair<Column<CodeReviewCandidate, *>, *>> =
             setOf(Id of id)
@@ -33,7 +34,8 @@ object CodeReviewCandidateTable : Table<CodeReviewCandidate, Uuid>("codeReviewCa
             senderName = value of SenderName,
             problemStatement = value of ProblemStatement,
             code = value of Code,
-            senderContact = value of SenderContact
+            senderContact = value of SenderContact,
+            senderAuth = value of SenderAuth
     )
 
 }
@@ -56,6 +58,7 @@ CREATE TABLE public."codeReviewCandidates" (
 	"problemStatement" text NOT NULL,
 	"code" text NOT NULL,
 	"senderContact" varchar(256) NOT NULL,
+	"senderAuth" varchar(256) DEFAULT NULL,
 	CONSTRAINT codereviewcandidates_pk PRIMARY KEY (id)
 )
 WITH (

@@ -82,6 +82,7 @@ interface Language {
     interface CodeReviews {
         val readTab: String
         val submitTab: String
+        val authPrompt: String
         val submissionError: String
 
         val nameLabel: String

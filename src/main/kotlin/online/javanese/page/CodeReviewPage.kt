@@ -1,6 +1,9 @@
 package online.javanese.page
 
 import kotlinx.html.*
+import online.javanese.link.Action
+import online.javanese.social.UserSessions
+import online.javanese.social.User
 import online.javanese.link.HtmlBlock
 import online.javanese.link.Link
 import online.javanese.locale.Language
@@ -14,7 +17,11 @@ class CodeReviewPage(
         private val reviews: List<CodeReview>,
         private val codeReviewLink: Link<CodeReview, *>,
         private val language: Language.CodeReviews,
-        private val beforeContent: HtmlBlock
+        private val beforeContent: HtmlBlock,
+        private val userSessions: UserSessions,
+        private val currentUser: User?,
+        private val redirectUri: String,
+        private val submitCodeReview: Action<Unit, *>
 ) : Layout.Page {
 
     override val meta: Meta get() = model.meta
@@ -54,76 +61,96 @@ class CodeReviewPage(
                         +model.heading
                     }
 
-                    div {
-                        id = "vue-form"
-
-                        form(method = FormMethod.post, action = "/codeReview/add", classes = "ajax-form") {
-                            attributes["v-on:submit"] = "submit"
-                            attributes["data-complete-callback"] = "formSent"
-                            attributes["data-error-message"] = language.submissionError
-                            attributes["v-if"] = "state != 'SENT'"
-
-                            unsafe {
-                                +model.bodyMarkup
-                            }
-
-                            materialInput(
-                                    inputId = "field_name", inputName = "name",
-                                    inputBlock = { attributes["maxlength"] = "256" },
-                                    labelBlock = { +language.nameLabel },
-                                    strangePlace = { small { +language.nameExplanation } }
-                            )
-
-                            materialTextArea(
-                                    areaId = "field_text", areaName = "text", areaVModel = "text",
-                                    labelBlock = { +language.textLabel }
-                            )
-
-                            materialTextArea(areaId = "field_code", areaName = "code", areaVModel = "code",
-                                    labelBlock = { +language.codeLabel },
-                                    strangePlace = { small { +language.codeExplanation } }
-                            )
-
-                            materialInput(
-                                    inputId = "field_email", inputName = "email", inputBlock = { attributes["maxlength"] = "256" },
-                                    labelBlock = { +language.contactLabel },
-                                    strangePlace = { small { +language.contactExplanation } }
-                            )
-
-                            div {
-                                materialCheckBox("list-checkbox-1", "permission") {
-                                    +language.permissionLabel
-                                }
-
-                                br()
-                                p { +language.warning }
-                            }
-
-                            div {
-                                materialButton(ButtonType.submit, "mdl-button--raised mdl-button--colored") {
-                                    name = "submit"
-                                    attributes["v-bind:disabled"] = "state === 'INVALID'"
-
-                                    +language.submit
-                                }
-
-                                // div(classes = "mdl-spinner mdl-js-spinner is-active") does not work within tabs
-                                div(classes = "mdl-progress mdl-js-progress mdl-progress__indeterminate") {
-                                    attributes["v-show"] = "state === 'SENDING'"
-                                }
-
-                            }
-
+                    val requestLogin = currentUser === null
+                    if (requestLogin) {
+                        p {
+                            with(userSessions) { authPrompt(language.authPrompt, redirectUri) }
                         }
-
-                        div(classes = "content-padding-v") {
-                            attributes["v-if"] = "state === 'SENT'"
-                            +language.submitted
-                        }
-
+                    } else {
+                        codeReviewForm()
                     }
                 }
             }
+        }
+    }
+
+    private fun NAV.codeReviewForm() {
+        div {
+            id = "vue-form"
+
+            submitCodeReview.renderForm(this, Unit, classes = "ajax-form") {
+                attributes["v-on:submit"] = "submit"
+                attributes["data-complete-callback"] = "formSent"
+                attributes["data-error-message"] = language.submissionError
+                attributes["v-if"] = "state != 'SENT'"
+
+                unsafe {
+                    +model.bodyMarkup
+                }
+
+                materialInput(
+                        inputId = "field_name", inputName = "name",
+                        inputBlock = {
+                            attributes["maxlength"] = "256"
+                            value = currentUser?.displayName ?: ""
+                        },
+                        labelBlock = { +language.nameLabel },
+                        strangePlace = { small { +language.nameExplanation } }
+                )
+
+                materialTextArea(
+                        areaId = "field_text", areaName = "text", areaVModel = "text",
+                        labelBlock = { +language.textLabel }
+                )
+
+                materialTextArea(
+                        areaId = "field_code", areaName = "code", areaVModel = "code",
+                        labelBlock = { +language.codeLabel },
+                        strangePlace = { small { +language.codeExplanation } }
+                )
+
+                materialInput(
+                        inputId = "field_email", inputName = "email",
+                        inputBlock = {
+                            attributes["maxlength"] = "256"
+                        },
+                        labelBlock = { +language.contactLabel },
+                        strangePlace = { small { +language.contactExplanation } }
+                )
+
+                div {
+                    materialCheckBox(
+                            inputId = "list-checkbox-1",
+                            inputVModel = "permission",
+                            labelBlock = { +language.permissionLabel }
+                    )
+
+                    br()
+                    p { +language.warning }
+                }
+
+                div {
+                    materialButton(ButtonType.submit, "mdl-button--raised mdl-button--colored") {
+                        name = "submit"
+                        attributes["v-bind:disabled"] = "state === 'INVALID'"
+
+                        +language.submit
+                    }
+
+                    // div(classes = "mdl-spinner mdl-js-spinner is-active") does not work within tabs
+                    div(classes = "mdl-progress mdl-js-progress mdl-progress__indeterminate") {
+                        attributes["v-show"] = "state === 'SENDING'"
+                    }
+
+                }
+
+            }
+
+            div(classes = "content-padding-v") {
+                attributes["v-if"] = "state === 'SENT'"
+                +language.submitted
+            }
+
         }
     }
 

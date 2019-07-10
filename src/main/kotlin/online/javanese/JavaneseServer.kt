@@ -15,6 +15,7 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.http.URLBuilder
 import io.ktor.http.content.files
 import io.ktor.http.content.static
+import io.ktor.request.uri
 import io.ktor.routing.delete
 import io.ktor.routing.get
 import io.ktor.routing.post
@@ -26,6 +27,7 @@ import io.ktor.util.KtorExperimentalAPI
 import io.ktor.util.pipeline.PipelineContext
 import io.ktor.websocket.WebSockets
 import io.ktor.websocket.webSocket
+import online.javanese.social.Comments
 import online.javanese.exception.HttpException
 import online.javanese.handler.ArticleRssHandler
 import online.javanese.handler.ChapterHandler
@@ -86,6 +88,7 @@ import online.javanese.page.ErrorPage
 import online.javanese.page.LessonPage
 import online.javanese.page.MainLayout
 import online.javanese.page.TreePage
+import online.javanese.social.UserSessions
 import java.io.FileInputStream
 import java.util.*
 
@@ -239,13 +242,14 @@ object JavaneseServer {
 
         // won't use CIO until https://github.com/ktorio/ktor/issues/853 resolved
         val httpClient = HttpClient(OkHttp)
-        val commentsSources = commentsSources(config, httpClient)
+        val oauthSources = oauthSources(config, httpClient)
         val oauthUrl = { oauth: OAuthServerSettings? -> "/OAuth/${oauth?.name ?: "logout"}/" }
-        val comments = JavaneseComments(
-                session, config, commentsSources, httpClient, "OAuth",
-                "/OAuth/{provider}/", { parameters["provider"]!! },
-                oauthUrl, "commenter", sendCommentAction
+        val userSessions = UserSessions(
+                sessionName = "user", sources = oauthSources, siteUrl = config.siteUrl,
+                authName = "OAuth", oauthPathTemplate = "/OAuth/{provider}/", providerUrl = oauthUrl,
+                providerName = { parameters["provider"]!! }, httpClient = httpClient
         )
+        val comments = Comments(session, userSessions, sendCommentAction, forArticle, forLesson)
 
         val routing = Routing("parts") {
             pageLink x PageHandler(
@@ -276,8 +280,13 @@ object JavaneseServer {
                     articlesPage = { idx, ar, articles ->
                         ArticlesPage(ar, articles, config.exposedStaticDir, articleLink, breadCrumbsToIndex(idx))
                     },
-                    codeReview = { idx, cr ->
-                        CodeReviewPage(cr, codeReviewDao.findAll(), codeReviewLink, language.codeReviews, breadCrumbsToIndex(idx))
+                    codeReview = { idx, cr, call ->
+                        CodeReviewPage(
+                                cr, codeReviewDao.findAll(), codeReviewLink,
+                                language.codeReviews, breadCrumbsToIndex(idx),
+                                userSessions, userSessions.currentUser(call), call.request.uri,
+                                codeReviewAction
+                        )
                     }
             )
 
@@ -295,7 +304,7 @@ object JavaneseServer {
                 val article = articleDao.findById(basicArticle.id)!!
                 val index = pageDao.findByMagic(Page.Magic.Index)!!
                 val articles = pageDao.findByMagic(Page.Magic.Articles)!!
-                val renderComments = comments(language.comments, this, comments, commentsSources, forArticle, article)
+                val renderComments = comments(language.comments, this, comments, forArticle, article, request.uri)
                 respondHtml { layout(this, ArticlePage(
                         article, language, config.exposedStaticDir, highlightScript = sandboxScript, beforeContent = breadCrumbsToPage(index, articles),
                         renderComments = renderComments
@@ -333,7 +342,7 @@ object JavaneseServer {
                 val tasks = taskDao.findForLessonSorted(basicLesson.id)
                 val prevNext = lessonDao.findPreviousAndNext(lesson)
 
-                val renderComments = comments(language.comments, this, comments, commentsSources, forLesson, lesson)
+                val renderComments = comments(language.comments, this, comments, forLesson, lesson, request.uri)
 
                 respondHtml {
                     val page = LessonPage(
@@ -348,7 +357,7 @@ object JavaneseServer {
             }
 
             reportTaskAction post SubmitTaskErrorReportHandler(taskErrorReportDao)
-            codeReviewAction post SubmitCodeReviewCandidateHandler(codeReviewCandidateDao)
+            codeReviewAction post SubmitCodeReviewCandidateHandler(codeReviewCandidateDao, userSessions)
             sendCommentAction post comments.sendHandler()
             sendCommentAction delete comments.deleteHandler()
         }
@@ -405,7 +414,7 @@ object JavaneseServer {
             }
 
             install(WebSockets)
-            comments.configureSession(this)
+            userSessions.configureSession(this)
 
             authentication {
                 digest(name = "admin") {
@@ -421,7 +430,7 @@ object JavaneseServer {
                         }
                     }
                 }
-                comments.configureAuth(this)
+                userSessions.configureAuth(this)
             }
 
             routing {
@@ -450,7 +459,7 @@ object JavaneseServer {
                     }
                 }
 
-                comments.authEndpoint(this)
+                userSessions.authEndpoint(this)
 
                 serveResourcesAs?.let {
                     println("Serving static resources from a directory is intended for debug only. Exposing as $it")

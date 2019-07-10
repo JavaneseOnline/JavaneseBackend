@@ -74,7 +74,6 @@ fun FlowContent.materialTextArea(
             if (areaId != null) id = areaId else if (areaVId != null) attributes["v-bind:id"] = areaVId
             if (areaVModel != null) attributes["v-model"] = areaVModel
             if (areaOnInput != null) attributes["v-on:input"] = areaOnInput
-
             name = areaName
         }
 
@@ -158,7 +157,9 @@ fun FlowContent.materialInput(
     }
 }
 
-fun FlowContent.materialCheckBox(inputId: String, inputVModel: String? = null, label: SPAN.() -> Unit) {
+fun FlowContent.materialCheckBox(
+        inputId: String, inputVModel: String? = null, labelBlock: SPAN.() -> Unit
+) {
     label(classes = "mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect") {
         htmlFor = inputId
 
@@ -167,7 +168,7 @@ fun FlowContent.materialCheckBox(inputId: String, inputVModel: String? = null, l
             if (inputVModel != null) attributes["v-model"] = inputVModel
         }
 
-        span(classes = "mdl-checkbox__label", block = label)
+        span(classes = "mdl-checkbox__label", block = labelBlock)
     }
 }
 

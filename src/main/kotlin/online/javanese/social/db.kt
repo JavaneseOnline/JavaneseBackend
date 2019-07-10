@@ -1,4 +1,4 @@
-package online.javanese.comments
+package online.javanese.social
 
 import com.github.andrewoma.kwery.core.Session
 import com.github.andrewoma.kwery.mapper.AbstractDao
@@ -15,8 +15,8 @@ import java.time.Instant
 class Comment(
         val id: Uuid,
         val parentId: Uuid?,
-        val authorSource: CommentsSource,
-        val authorId: String, // specific for CommentsSource
+        val authorSource: OAuthSource,
+        val authorId: String, // specific for OAuthSource
         val text: String,
         val addedAt: Instant,
         val removed: Boolean
@@ -25,15 +25,15 @@ class Comment(
 private object NullableUuidConverter : SimpleConverter<Uuid?>({ row, name -> row.objectOrNull(name) as Uuid? })
 
 class CommentTable(
-        private val commentsSources: Map<String, CommentsSource>
+        private val OAuthSources: Map<String, OAuthSource>
 ) : Table<Comment, Uuid>("comments") {
 
     val Id by idCol(Comment::id)
     val ParentId by col(Comment::parentId, name = "parentId", converter = NullableUuidConverter)
     val AuthorSource by col(Comment::authorSource, name = "authorSource", converter = Converter(
-            { row, name -> commentsSources[row.string(name)]!! },
+            { row, name -> OAuthSources[row.string(name)]!! },
             { _, source -> source.name }
-    ), default = CommentsSource("<error>", null) { error("damn, screw these default values!") }) // fixme: kwery sucks
+    ), default = OAuthSource("<error>", null) { error("damn, screw these default values!") }) // fixme: kwery sucks
     val AuthorId by col(Comment::authorId, name = "authorId")
     val Text by col(Comment::text, name = "text")
     val AddedAt by col(Comment::addedAt, name = "addedAt")

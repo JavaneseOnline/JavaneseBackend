@@ -1,14 +1,12 @@
 package online.javanese
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.github.andrewoma.kwery.core.Session
 import io.ktor.application.ApplicationCall
 import io.ktor.auth.OAuthAccessTokenResponse
 import io.ktor.auth.OAuthServerSettings
 import io.ktor.client.HttpClient
 import io.ktor.client.call.call
 import io.ktor.client.response.readText
-import io.ktor.request.uri
 import kotlinx.html.ButtonType
 import kotlinx.html.FlowContent
 import kotlinx.html.HTMLTag
@@ -24,11 +22,10 @@ import kotlinx.html.small
 import kotlinx.html.ul
 import kotlinx.html.unsafe
 import kotlinx.html.visit
-import online.javanese.comments.Commenter
-import online.javanese.comments.Comments
-import online.javanese.comments.CommentsFor
-import online.javanese.comments.CommentsSource
-import online.javanese.link.Action
+import online.javanese.social.User
+import online.javanese.social.Comments
+import online.javanese.social.CommentsFor
+import online.javanese.social.OAuthSource
 import online.javanese.link.withFragment
 import online.javanese.locale.Language
 import online.javanese.model.ArticleTable
@@ -40,23 +37,10 @@ import online.javanese.page.materialTextArea
 import java.io.CharArrayWriter
 
 
-fun JavaneseComments(
-        session: Session, config: Config, sources: Map<String, CommentsSource>, client: HttpClient,
-        authName: String,
-        oauthPathTemplate: String, providerName: ApplicationCall.() -> String,
-        providerUrl: (OAuthServerSettings?) -> String,
-        commenterSessionName: String,
-        commentAction: Action<Unit, *>
-) = Comments(
-        session, commentAction, client, authName, sources,
-        oauthPathTemplate, providerName, config.siteUrl, providerUrl, commenterSessionName,
-        forArticle, forLesson
-)
-
 private val jackson = ObjectMapper()
-fun commentsSources(config: Config, client: HttpClient) = listOf(
-    CommentsSource("Vk", null) { error("VK auth is not supported") },
-    CommentsSource("GitHub", OAuthServerSettings.OAuth2ServerSettings(
+fun oauthSources(config: Config, client: HttpClient) = listOf(
+    OAuthSource("Vk", null) { error("VK auth is not supported") },
+    OAuthSource("GitHub", OAuthServerSettings.OAuth2ServerSettings(
             name = "GitHub",
             authorizeUrl = "https://github.com/login/oauth/authorize",
             accessTokenUrl = "https://github.com/login/oauth/access_token",
@@ -72,7 +56,7 @@ fun commentsSources(config: Config, client: HttpClient) = listOf(
         }.response.readText()
                 .let(jackson::readTree)
                 .let { node ->
-                    Commenter(
+                    User(
                             id = node.get("login").textValue(),
                             displayName = node.get("name").textValue() ?: node.get("login").textValue(),
                             avatarUrl = node.get("avatar_url").textValue(),
@@ -81,18 +65,19 @@ fun commentsSources(config: Config, client: HttpClient) = listOf(
                     )
                 }
     }
-).associateBy(CommentsSource::name)
+).associateBy(OAuthSource::name)
 
 
 fun <E> comments(
         lang: Language.Comments,
-        call: ApplicationCall, comments: Comments, sources: Map<String, CommentsSource>,
-        join: CommentsFor<E>, entity: E
+        call: ApplicationCall, comments: Comments, join: CommentsFor<E>,
+        entity: E, redirectUri: String
 ): FlowContent.(fragment: String) -> Unit {
-    val current = comments.currentCommenter(call)
+    val current = comments.userSessions.currentUser(call)
     val tree = comments.fetch(join, entity)
 
     return { fragment ->
+        val redirectUriWFragment = redirectUri.withFragment(fragment)
 
         div(classes = "comments") {
             val output = CharArrayWriter()
@@ -111,7 +96,7 @@ fun <E> comments(
 
             /*if (current != null) {
                 generator.writeFieldName("current")
-                comments.writeCommenter(generator, current)
+                comments.writeUser(generator, current)
             }*/
 
             generator.writeEndObject()
@@ -207,13 +192,7 @@ fun <E> comments(
 
                 if (current === null) {
                     p(classes = "answer") {
-                        +lang.authPrompt
-                        sources.values.forEach { source ->
-                            source.oauth?.let { oauth ->
-                                a(href = comments.oauthLink(oauth, call.request.uri.withFragment(fragment)), titleAndText = source.name)
-                            }
-                        }
-                        +"."
+                        with(comments.userSessions) { authPrompt(lang.authPrompt, redirectUriWFragment) }
                     }
                 } else {
                     comments.commentAction.renderForm(this, Unit, classes = "answer") {
@@ -238,7 +217,7 @@ fun <E> comments(
                             p(classes = "mdl-cell mdl-cell--5-col-desktop mdl-cell--3-col-tablet mdl-cell--1-col-phone") {
                                 small { +current.displayName }
                                 br()
-                                a(href = comments.logoutLink(call.request.uri.withFragment(fragment)), titleAndText = "выйти")
+                                a(href = comments.userSessions.logoutLink(redirectUriWFragment), titleAndText = "выйти")
                             }
 
                             p(classes = "mdl-cell mdl-cell--6-col-desktop mdl-cell--4-col-tablet mdl-cell--2-col-phone mdl-typography--text-right") {

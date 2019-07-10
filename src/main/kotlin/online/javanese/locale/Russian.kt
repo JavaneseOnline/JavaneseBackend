@@ -90,6 +90,7 @@ object Russian : Language {
     override val codeReviews: Language.CodeReviews = object : Language.CodeReviews {
         override val readTab: String get() = "Читать"
         override val submitTab: String get() = "Разберите мой код!"
+        override val authPrompt: String get() = "Чтобы отправить код на ревью, зайдите через "
         override val submissionError: String get() = "Произошла ошибка"
 
         override val nameLabel: String get() = "Имя или творческий псевдоним"
