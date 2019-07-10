@@ -226,7 +226,7 @@ object JavaneseServer {
                 })
 
 
-        val mainStyle = "main.min.css?7"
+        val mainStyle = "main.min.css?8"
         val codeMirrorStyle = "codemirror_ambiance.min.css"
 
         val mainScript = "vue_zepto_mdl_dialog_scroll_unfocus_tabs_form_marked_comments.min.js"
