@@ -18,7 +18,7 @@ fun SubmitCodeReviewCandidateHandler(
         sessions: UserSessions
 ): suspend (ApplicationCall, Unit) -> Unit {
 
-    val valuesToTaskErrorReport =
+    val valuesToReviewCandidate =
             MapToKweryEntityMapper(CodeReviewCandidateTable) {
                 when (it) {
                     "id" -> "id"
@@ -34,8 +34,8 @@ fun SubmitCodeReviewCandidateHandler(
 
     return { call, _ ->
         val user = sessions.currentUser(call) ?: throw UnauthorizedException("no user")
-        val values = valuesOf(call.receiveParameters().toMap() + ("senderAuth" to listOf("${user.source}:${user.displayName}")))
-        val reviewCandidate = valuesToTaskErrorReport(values)
+        val values = valuesOf(call.receiveParameters().toMap() + ("senderAuth" to listOf("${user.source}:${user.id}")))
+        val reviewCandidate = valuesToReviewCandidate(values)
         reviewCandidateDao.insert(reviewCandidate)
         call.respond(HttpStatusCode.NoContent, "")
     }
