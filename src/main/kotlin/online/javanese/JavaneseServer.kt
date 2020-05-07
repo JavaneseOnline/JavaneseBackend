@@ -90,6 +90,7 @@ import online.javanese.page.MainLayout
 import online.javanese.page.TreePage
 import online.javanese.social.UserSessions
 import java.io.FileInputStream
+import java.security.MessageDigest
 import java.util.*
 
 
@@ -330,8 +331,7 @@ object JavaneseServer {
                 }
             }
 
-            lessonLink x { basicCourse: Course.BasicInfo, basicChapter: Chapter.BasicInfo, basicLesson: Lesson.BasicInfo ->
-
+            lessonLink x { basicCourse, basicChapter, basicLesson ->
                 val course = courseDao.findBasicById(basicCourse.id)!!
                 val chapter = chapterDao.findBasicById(basicChapter.id)!!
                 val lesson = lessonDao.findById(basicLesson.id)!!
@@ -353,7 +353,6 @@ object JavaneseServer {
                     )
                     layout(this, page)
                 }
-
             }
 
             reportTaskAction post SubmitTaskErrorReportHandler(taskErrorReportDao)
@@ -419,9 +418,10 @@ object JavaneseServer {
             authentication {
                 digest(name = "admin") {
                     realm = "Admin"
-                    userNameRealmPasswordDigestProvider = { userName, realm ->
+                    digestProvider { userName, realm ->
                         when (userName) {
                             config.adminUsername -> {
+                                val digester = MessageDigest.getInstance(algorithmName)
                                 digester.reset()
                                 digester.update("$userName:$realm:${config.adminPassword}".toByteArray())
                                 digester.digest()

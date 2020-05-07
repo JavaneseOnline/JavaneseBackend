@@ -84,7 +84,7 @@ private val diffGenerator =
                 .showInlineDiffs(true)
                 .mergeOriginalRevised(true)
                 .inlineDiffByWord(false)
-                .newTag { if (it) "<s><span class=\"editNewInline\">" else "</span></s>" }
+                .newTag { it -> if (it) "<s><span class=\"editNewInline\">" else "</span></s>" }
                 .build()
 
 private fun diff(expected: String, actual: String): String {

@@ -5,8 +5,7 @@ import io.ktor.application.ApplicationCall
 import io.ktor.auth.OAuthAccessTokenResponse
 import io.ktor.auth.OAuthServerSettings
 import io.ktor.client.HttpClient
-import io.ktor.client.call.call
-import io.ktor.client.response.readText
+import io.ktor.client.request.request
 import kotlinx.html.ButtonType
 import kotlinx.html.FlowContent
 import kotlinx.html.HTMLTag
@@ -22,10 +21,6 @@ import kotlinx.html.small
 import kotlinx.html.ul
 import kotlinx.html.unsafe
 import kotlinx.html.visit
-import online.javanese.social.User
-import online.javanese.social.Comments
-import online.javanese.social.CommentsFor
-import online.javanese.social.OAuthSource
 import online.javanese.link.withFragment
 import online.javanese.locale.Language
 import online.javanese.model.ArticleTable
@@ -34,6 +29,10 @@ import online.javanese.page.a
 import online.javanese.page.colouredRaisedMaterialButton
 import online.javanese.page.materialIconButton
 import online.javanese.page.materialTextArea
+import online.javanese.social.Comments
+import online.javanese.social.CommentsFor
+import online.javanese.social.OAuthSource
+import online.javanese.social.User
 import java.io.CharArrayWriter
 
 
@@ -47,13 +46,13 @@ fun oauthSources(config: Config, client: HttpClient) = listOf(
             clientId = config.gitHubClientId,
             clientSecret = config.gitHubClientSecret
     )) { tokenResponse ->
-        client.call("https://api.github.com/user") {
+        client.request<String>("https://api.github.com/user") {
             headers.append("Accept", "application/vnd.github.v3+json")
             headers.append("Authorization", "token " + when (tokenResponse) {
                 is OAuthAccessTokenResponse.OAuth1a -> tokenResponse.token // unexpected
                 is OAuthAccessTokenResponse.OAuth2 -> tokenResponse.accessToken // expected
             })
-        }.response.readText()
+        }
                 .let(jackson::readTree)
                 .let { node ->
                     User(
@@ -171,7 +170,7 @@ fun <E> comments(
                         | v-bind:v-comment="comment" v-bind:v-type="vType" v-bind:v-id="vId" v-bind:v-users="vUsers"
                         | v-on:comment-removed="onCommentRemoved" />""".trimMargin() }
 
-                        HTMLTag("transition", consumer, mapOf(), null, false, false).visit {
+                        HTMLTag("transition", consumer, mapOf(), null, inlineTag = false, emptyTag = false).visit {
                             attributes["v-on:enter"] = "enter"
 
                             LI(mapOf(), consumer).visit {
