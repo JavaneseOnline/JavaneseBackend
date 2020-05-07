@@ -79,8 +79,10 @@ object Russian : Language {
     override val nextChapter: String get() = "Следующая глава"
     override val previousChapter: String get() = "Предыдущая глава"
 
-    override val lessonTasks: String get() = "Задачи к уроку"
-    override val lessonComments: String get() = "Комментарии к уроку"
+    // these two must be short to fit as tab labels on mobile
+    override val lessonTasks: String get() = "Задачи"
+    override val lessonComments: String get() = "Комментарии"
+
     override val nextLesson: String get() = "Следующий урок"
     override val previousLesson: String get() = "Предыдущий урок"
     override val shareLessonButtonLabel: String get() = "Поделиться"
