@@ -89,16 +89,17 @@ fun FlowContent.tgPost(post: String, classes: String? = null) = div(classes) {
 
 /// VK and TG ///
 
+private const val postWidth = "mdl-cell mdl-cell--6-col-desktop mdl-cell--8-col-tablet mdl-cell--4-col-phone"
 fun FlowContent.vkAndTgPosts(vkPostInfo: VkPostInfo?, tgPost: String?, initVk: Boolean) {
     if (vkPostInfo != null || !tgPost.isNullOrBlank()) {
         div("mdl-grid") {
             if (vkPostInfo != null) {
                 if (initVk) vkOpenApiScript()
-                vkEmbeddedPost(vkPostInfo, "mdl-cell mdl-cell--6-col-desktop mdl-cell--4-col")
+                vkEmbeddedPost(vkPostInfo, postWidth)
             }
 
             if (tgPost != null && tgPost.isNotBlank()) {
-                tgPost(tgPost, "mdl-cell mdl-cell--6-col-desktop mdl-cell--4-col")
+                tgPost(tgPost, postWidth)
             }
         }
     }
