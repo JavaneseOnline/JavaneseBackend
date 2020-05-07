@@ -63,21 +63,19 @@ class MainLayout(
                     h1(classes = "no-pad-top") { +"Javanese Online" }
 
                     ul {
-                        li { a(href = "javascript:showGitHubRepos();", title = "Javanese.Online в GitHub") {
-                                div(classes = "ic_github_white24")
-                        } }
-                        li { a(href = "https://vk.com/javanese.online", title = "группа ВКонтакте, где публикуются ссылки на статьи") {
-                            div(classes = "ic_vk_white24")
-                        } }
-                        li { a(href = "http://android-developers.ru/", title = "русскоязычный Slack о Java и Android") {
-                            div(classes = "ic_slack_white24")
-                        } }
-                        li { a(href = "javascript:showTelegramChatsAndChannels();", title = "Чаты и каналы в Telegram") {
-                            div(classes = "ic_tg_white24")
-                        } }
-                        li { a(href = "javascript:showRssFeeds();", title = "RSS-лента") {
-                            div(classes = "ic_rss_white24")
-                        } }
+                        arrayOf(
+                                Triple("javascript:showGitHubRepos();", "Javanese.Online в GitHub", "ic_github_white24"),
+                                Triple("https://vk.com/javanese.online", "группа ВКонтакте, где публикуются ссылки на статьи", "ic_vk_white24"),
+//                                Triple("http://android-developers.ru/", "русскоязычный Slack о Java и Android", "ic_slack_white24"),
+                                Triple("javascript:showTelegramChatsAndChannels();", "Чаты и каналы в Telegram", "ic_tg_white24"),
+                                Triple("javascript:showRssFeeds();", "RSS-лента", "ic_rss_white24")
+                        ).forEach { (href, title, classes) ->
+                            li {
+                                a(href = href, title = title) {
+                                    div(classes = classes)
+                                }
+                            }
+                        }
                     }
                     p(classes = "no-pad")
                 }
