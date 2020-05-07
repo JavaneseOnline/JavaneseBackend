@@ -8,6 +8,10 @@ Darkula color scheme from the JetBrains family of IDEs
   white-space: pre;
   background: #2b2b2b;
 }
+.hljs::-moz-selection{background:#0f4464}
+.hljs::selection{background:#0f4464}
+.hljs *::-moz-selection{background:#0f4464}
+.hljs *::selection{background:#0f4464}
 
 .hljs {
   color: #a9b7c6;

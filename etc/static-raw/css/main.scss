@@ -88,6 +88,11 @@ main.content {
   background: #2b2b2b;
   color: #bababa;
 }
+.content > pre > samp::-moz-selection,.content > article > pre > samp::-moz-selection{background:#0f4464}
+.content > pre > samp *::-moz-selection,.content > article > pre > samp *::-moz-selection{background:#0f4464}
+.content > pre > samp::-moz-selection,.content > article > pre > samp::selection{background:#0f4464}
+.content > pre > samp *::-moz-selection,.content > article > pre > samp *::selection{background:#0f4464}
+
 .card {
   background: #ffffff;
 }
