@@ -29,7 +29,7 @@ fun combineAndUglifyMain(fileName: String) {
         it.write(nl)
 
         appendFrom(URL("https://code.getmdl.io/1.1.3/material.min.js"), it) // TODO: upgrade whole MDL
-        appendFrom(URL("https://raw.githubusercontent.com/GoogleChrome/dialog-polyfill/master/dialog-polyfill.js"), it)
+        appendFrom(URL("https://raw.githubusercontent.com/GoogleChrome/dialog-polyfill/master/dist/dialog-polyfill.js"), it)
         appendFrom(File(raw + "js/scroll_unfocus_tabs.js"), it)
         appendFrom(File(raw + "js/form.js"), it)
 
