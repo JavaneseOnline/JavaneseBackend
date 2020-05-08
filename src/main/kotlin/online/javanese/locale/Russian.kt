@@ -21,7 +21,7 @@ object Russian : Language {
         override val frontendMessages: Language.SandboxLanguage.FrontendMessages = object : Language.SandboxLanguage.FrontendMessages {
             override val run: String get() = "Запустить"
             override val reportError: String get() = "Сообщить об ошибке"
-            override val errorReportedSuccessfully: String get() = "Спасибо, Ваше сообщение об ошибке отправлено."
+            override val errorReportedSuccessfully: String get() = "Спасибо, сообщение об ошибке отправлено."
             override val errorNotReported: String get() = "К сожалению, отправить сообщение об ошибке не удалось."
             override fun errorKind(kind: TaskErrorReport.ErrorKind): String = when (kind) {
                 TaskErrorReport.ErrorKind.RightSolutionNotAccepted -> "моё решение правильное, но оно не принимается"
