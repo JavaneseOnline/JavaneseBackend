@@ -111,6 +111,8 @@ object JavaneseServer {
         )
 
         val session = PostgreSqlSession(
+                dbHost = config.dbHost,
+                dbPort = config.dbPort,
                 dbName = config.dbName,
                 user = config.dbUser,
                 password = config.dbPassword

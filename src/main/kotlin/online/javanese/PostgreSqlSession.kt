@@ -7,11 +7,11 @@ import java.sql.DriverManager
 import java.util.*
 
 fun PostgreSqlSession(
-        dbName: String, user: String, password: String
+        dbHost: String, dbPort: Int, dbName: String, user: String, password: String
 ): Session {
     org.postgresql.Driver::class.java
     val connection = DriverManager.getConnection(
-            "jdbc:postgresql:$dbName",
+            "jdbc:postgresql://$dbHost:$dbPort/$dbName",
             Properties().also {
                 it["user"] = user
                 it["password"] = password

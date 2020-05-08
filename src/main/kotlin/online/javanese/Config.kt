@@ -6,9 +6,11 @@ class Config(
         props: Properties
 ) {
 
-    val dbName: String = props.getProperty("database")
-    val dbUser: String = props.getProperty("user")
-    val dbPassword: String = props.getProperty("password")
+    val dbHost: String = props.getProperty("db.host")
+    val dbPort: Int = props.getProperty("db.port").toInt()
+    val dbName: String = props.getProperty("db.name")
+    val dbUser: String = props.getProperty("db.user")
+    val dbPassword: String = props.getProperty("db.password")
 
     // //static.javanese.online in production,
     // //$listenHost:$listenPort/s/t/a/t/i/c (e. g. //localhost:8080/s/t/a/t/i/c) to serve static content from classpath
