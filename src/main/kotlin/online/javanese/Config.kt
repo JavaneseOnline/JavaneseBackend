@@ -20,7 +20,7 @@ class Config(
     val listenHost: String = props.getProperty("listenHost")
     val listenPort: Int = props.getProperty("listenPort").toInt()
     val siteHost: String = props.getProperty("siteHost")
-    val siteUrl: String = "http://$siteHost" // ignore port: we-re behind a proxy
+    val siteUrl: String = "https://$siteHost" // ignore port: we-re behind a proxy
 
     // /usr/lib/jvm/java-9-oracle/bin/java
     val sandboxJavaLocation: String = props.getProperty("sandbox.javaLocation")

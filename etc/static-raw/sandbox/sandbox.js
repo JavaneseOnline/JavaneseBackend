@@ -51,7 +51,7 @@ $('.sandbox').each(function() {
             run: function () {
                 var app = this;
                 app.messages = [];
-                this.connection = new WebSocket('ws://' + location.host + '/sandbox/ws?task=' + $sandbox.data('task'));
+                this.connection = new WebSocket('wss://' + location.host + '/sandbox/ws?task=' + $sandbox.data('task'));
                 this.connection.onopen = function() {
                     app.running = true;
                     this.send(app.editor.getValue());
